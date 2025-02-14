@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>사업자 메인화면</title>
 </head>
 <body>
-<h2>총 인원은 ${count }asdfasdf1</h2>
+<h2>사업자</h2>
 </body>
 </html>

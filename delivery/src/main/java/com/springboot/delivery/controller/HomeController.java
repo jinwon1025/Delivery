@@ -10,14 +10,16 @@ import com.springboot.delivery.service.SalesService;
 @Controller
 public class HomeController {
 
+
+	@GetMapping(value="/home/userIndex")
+	public ModelAndView userIndex() {
+		ModelAndView mav = new ModelAndView("user/index");
+		return mav;
+	}
 	
-	@Autowired
-	private SalesService salesSerivce;
-	@GetMapping(value="/home/index")
-	public ModelAndView index() {
-		ModelAndView mav = new ModelAndView("index");
-		Integer count = this.salesSerivce.getUserCount();
-		mav.addObject("count", count);
+	@GetMapping(value="/home/ownerIndex")
+	public ModelAndView ownerIndex() {
+		ModelAndView mav = new ModelAndView("owner/index");
 		return mav;
 	}
 }
