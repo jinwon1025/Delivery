@@ -11,7 +11,7 @@
 <title>아이디 중복체크</title>
 </head>
 <body>
-<h2 align="center">계정 중복 확인</h2>
+<h2 align="center">아이디 중복 확인</h2>
 <form action="/owner/register" name="frm">
 계정 : <input type="text" name="owner_id" value="${owner_id }"/>
 	<input type="submit" value="중복검사"/>
