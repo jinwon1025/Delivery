@@ -7,6 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h2>총 인원은 ${count }asdfasdf</h2>
+<h2>총 인원은 ${count }asdfasdf1</h2>
 </body>
 </html>
