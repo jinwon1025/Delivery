@@ -15,7 +15,6 @@ public class UserController {
 	
 	@GetMapping(value="/user/register")
 	public ModelAndView userRegister() {
-		
 		ModelAndView mav = new ModelAndView("user/register");
 		return mav;
 	}

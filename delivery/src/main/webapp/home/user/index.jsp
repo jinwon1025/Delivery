@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>    
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>   
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,5 +11,10 @@
 </head>
 <body>
 <h2>사용자</h2>
+<input type="text" placeholder="아이디를 입력하세요."/><br/>
+<input type="password" placeholder="비밀번호를 입력하세요"/><br/>
+<input type="submit" value="로그인"/><br/>
+<hr>
+<a href="/user/register">회원가입</a>
 </body>
 </html>
