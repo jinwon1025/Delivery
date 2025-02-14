@@ -17,7 +17,7 @@
 <input type="password" placeholder="비밀번호를 입력하세요."><br/>
 <input type="submit" value="로그인"/>
 <hr>
-<a href="/owner/register.html">회원가입</a>
+<a href="/owner/register">회원가입</a>
 </div>
 </body>
 </html>
