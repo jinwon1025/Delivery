@@ -13,7 +13,7 @@ public class HomeController {
 	
 	@Autowired
 	private SalesService salesSerivce;
-	@GetMapping(value="/home/index.html")
+	@GetMapping(value="/home/index")
 	public ModelAndView index() {
 		ModelAndView mav = new ModelAndView("index");
 		Integer count = this.salesSerivce.getUserCount();
