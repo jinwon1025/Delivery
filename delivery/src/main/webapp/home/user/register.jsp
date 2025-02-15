@@ -80,7 +80,15 @@
             <tr>
                 <th>전화번호</th>
                 <td>
-                    <form:input path="user_phone" id="user_phone" placeholder="전화번호를 입력해주세요"/>
+                   <form:select path="phone1">
+                   		<option value="010">010</option>
+                   		<option value="02">02</option>
+                   		<option value="031">031</option>
+                   		<option value="032">032</option>
+                   		<option value="033">033</option>
+                   </form:select> 
+   				   <form:input path="phone2" id="hone2" maxlength="4" size="4"  /> 
+    			   <form:input path="phone3" id="phone3" maxlength="4" size="4"/>
                     <font color="red"><form:errors path="user_phone"/></font>
                 </td>
             </tr>
