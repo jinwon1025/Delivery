@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class Owner {
 	
-	
+	//아이디 체크
 	private String idchecked;
 	private String passwordchecked;
 	
