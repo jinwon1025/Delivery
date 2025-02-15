@@ -10,11 +10,13 @@
 <title>사용자 메인화면</title>
 </head>
 <body>
+<div>
 <h2>사용자</h2>
 <input type="text" placeholder="아이디를 입력하세요."/><br/>
 <input type="password" placeholder="비밀번호를 입력하세요"/><br/>
 <input type="submit" value="로그인"/><br/>
 <hr>
 <a href="/user/register">회원가입</a>
+</div>
 </body>
 </html>
