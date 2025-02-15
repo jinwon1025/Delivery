@@ -2,9 +2,8 @@ package com.springboot.delivery.model;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +13,10 @@ import lombok.Setter;
 public class Owner {
 	
 	
-	@NotEmpty(message="계정 중복검사를 해야합니다.")
 	private String idchecked;
+	private String passwordchecked;
 	
-	@Id
-	@NotEmpty(message="아이디를 입력하세요.")
+	@NotBlank(message="아이디를 입력하세요.")
 	private String owner_id;
 	
 	@NotEmpty(message="이름을 입력하세요.")

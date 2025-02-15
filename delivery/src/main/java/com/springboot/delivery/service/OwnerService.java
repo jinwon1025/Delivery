@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.OwnerMapper;
+import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.Owner;
 
 @Service
@@ -18,6 +19,10 @@ public class OwnerService {
 	
 	public Integer idCheck(String user_id) {
 		return this.ownerMapper.idCheck(user_id);
+	}
+	
+	public LoginOwner login(LoginOwner loginOwner) {
+		return this.ownerMapper.login(loginOwner);
 	}
 
 }

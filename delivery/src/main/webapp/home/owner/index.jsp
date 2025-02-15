@@ -13,9 +13,14 @@
 <body>
 <div align="center">
 <h2>금베달리스트</h2>
-<input type="text" placeholder="아이디를 입력하세요."/><br/>
-<input type="password" placeholder="비밀번호를 입력하세요."><br/>
-<input type="submit" value="로그인"/>
+<form:form action="/owner/loginDo" method="post" modelAttribute="loginOwner">
+
+	아이디 <form:input path="id" size="12" />
+		<font color="red"><form:errors path="id"/></font><br/>
+	비밀번호 <form:input path="password" size="12"/>
+		<font color="red"><form:errors path="password"/></font><br/>
+	<input type="submit" value="로그인"/>
+</form:form>
 <hr>
 <a href="/owner/goRegister">회원가입</a>
 </div>
