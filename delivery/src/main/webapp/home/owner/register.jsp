@@ -12,7 +12,7 @@
 <body>
 	<h3 align="center">사업자 회원가입</h3>
 	<form:form action="/owner/register" method="post"
-		modelAttribute="owner" name="frm" onsubmit="return totalcheck()">
+		modelAttribute="owner" enctype="multipart/form-data" name="frm" onsubmit="return totalcheck()">
 		<form:hidden path="idchecked" />
 아이디 : <br />
 		<form:input path="owner_id" />
@@ -47,7 +47,7 @@
 		<br />
 		<br />
 프로필 이미지 : <br />
-		<input type="file" name="owner_image_name">
+		<input type="file" name="image">
 		<br />
 		<br />
 전화번호 : <br />

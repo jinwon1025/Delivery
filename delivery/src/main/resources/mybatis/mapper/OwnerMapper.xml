@@ -19,6 +19,11 @@
 	
 	</select>
 	
+	<select id="getOwner" parameterType ="com.springboot.delivery.model.LoginOwner" resultType="com.springboot.delivery.model.Owner">
+	
+	select owner_name, owner_image_name from b_owner_info where owner_id=#{id} and owner_password=#{password}
+	
+	</select>
 	
 </mapper>
 

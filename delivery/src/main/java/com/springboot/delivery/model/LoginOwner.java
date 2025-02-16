@@ -13,4 +13,5 @@ public class LoginOwner {
 	@NotEmpty(message="계정을 입력하세요.")
 	private String password;
 	
+	
 }
