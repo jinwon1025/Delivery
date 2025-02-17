@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>사업자 메인 화면</title>
+<title>사업자 메인</title>
 <style>
     /* 로그아웃 링크와 사용자 이름을 우측 상단에 배치 */
     .logout-container {

@@ -33,3 +33,5 @@ build/
 .vscode/
 
 src/main/resources/application-private.properties
+src/main/webapp/upload/ownerProfile
+src/main/webapp/upload/storeProfile
