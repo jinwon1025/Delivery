@@ -37,8 +37,6 @@ public class StoreController {
 		ModelAndView mav = new ModelAndView("owner/ownerMain");
 		mav.addObject("BODY", "storeRegister.jsp");
 		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
-		Owner ownerInfo = this.ownerService.getOwner(loginOwner);
-		mav.addObject("owner", ownerInfo);
 		mav.addObject(new Store());
 		return mav;
 	}
@@ -105,10 +103,8 @@ public class StoreController {
 			store.setStore_image_name(fileName);
 		}
 		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
-		Owner ownerInfo = this.ownerService.getOwner(loginOwner);
 		store.setOwner_id(loginOwner.getId());
 		this.storeService.storeRegister(store);
-		mav.addObject("owner", ownerInfo);
 		mav.addObject("BODY", "storeList.jsp");
 		return mav;
 	}
@@ -118,8 +114,6 @@ public class StoreController {
 		ModelAndView mav = new ModelAndView("owner/ownerMain");
 		mav.addObject("BODY", "storeList.jsp");
 		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
-		Owner ownerInfo = this.ownerService.getOwner(loginOwner);
-		mav.addObject("owner", ownerInfo);
 		return mav;
 	}
 }

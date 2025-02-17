@@ -127,8 +127,7 @@ public class OwnerController {
 			mav.addObject("FAIL","YES");
 		} else {
 			 mav.setViewName("owner/ownerMain");
-			Owner ownerInfo = this.ownerSerivce.getOwner(loginOwner);
-			mav.addObject("owner", ownerInfo);
+			 System.out.println(owner.getImage_name());
 			session.setAttribute("loginOwner", owner);
 		}
 		return mav;

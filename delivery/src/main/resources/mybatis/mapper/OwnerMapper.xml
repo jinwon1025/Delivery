@@ -15,7 +15,7 @@
 	
 	<select id="login" parameterType="com.springboot.delivery.model.LoginOwner" resultType="com.springboot.delivery.model.LoginOwner">
 	
-	select owner_id "id", owner_password "password" from b_owner_info where owner_id=#{id} and owner_password=#{password}
+	select owner_id "id", owner_name "name", owner_password "password", owner_image_name "image_name" from b_owner_info where owner_id=#{id} and owner_password=#{password}
 	
 	</select>
 	

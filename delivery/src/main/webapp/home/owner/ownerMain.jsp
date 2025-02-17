@@ -44,14 +44,14 @@
     <!-- 로그아웃 링크와 사용자 이름을 우측 상단에 배치 -->
     <div class="logout-container">
         <c:choose>
-            <c:when test="${owner.owner_image_name != null}">
-                <img alt="Profile Image" class="profile-image" src="${pageContext.request.contextPath}/upload/ownerProfile/${owner.owner_image_name}" />
+            <c:when test="${sessionScope.loginOwner.image_name != null}">
+                <img alt="Profile Image" class="profile-image" src="${pageContext.request.contextPath}/upload/ownerProfile/${sessionScope.loginOwner.image_name}" />
             </c:when>
             <c:otherwise>
                 <img alt="No Image" class="profile-image" src="${pageContext.request.contextPath}/image/noImage.png" />
             </c:otherwise>
         </c:choose>
-        <span>${owner.owner_name}님</span>
+        <span>${sessionScope.loginOwner.name}님</span>
         <a href="/owner/logout">로그아웃</a>
     </div>
     
