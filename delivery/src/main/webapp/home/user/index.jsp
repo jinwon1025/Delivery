@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>사용자 메인화면</title>
+<title>사용자 메인화면!</title>
 </head>
 <body>
 <div>
