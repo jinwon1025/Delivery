@@ -92,7 +92,7 @@
 		<br />
 
 
-		<input type="submit" value="회원가입" />
+		<input type="submit" value="매장등록" />
 
 		<script type="text/javascript">
             function idcheck() {

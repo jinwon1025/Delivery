@@ -38,7 +38,11 @@
 
         <p><input type="submit" value="로그인"/></p>
     </form:form>
-
+	    		<c:choose>
+			<c:when test="${BBODY != null}">
+				<jsp:include page="${BBODY}" />
+			</c:when>
+		</c:choose>
     <hr>
     <p><a href="/owner/goRegister">회원가입</a></p>
 </div>

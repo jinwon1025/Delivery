@@ -69,9 +69,6 @@ h1 {
 				<span>${sessionScope.loginOwner.name}님</span>
 				<a href="/owner/logout">로그아웃</a>
 			</c:when>
-			<c:otherwise>
-				<a href="/owner/login">로그인</a>
-			</c:otherwise>
 		</c:choose>
 	</div>
 
