@@ -44,7 +44,12 @@
                 <hr>
                 <p><a href="/owner/goRegister">회원가입</a></p>
             </div>
-
+			<c:choose>
+ 				<c:when test="${ BODY != null }">
+					<jsp:include page="${ BODY }"/>
+				</c:when>
+        
+        </c:choose>
         </td>
     </tr>
 </table>

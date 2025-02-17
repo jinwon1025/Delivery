@@ -45,7 +45,7 @@
     <div class="logout-container">
         <c:choose>
             <c:when test="${owner.owner_image_name != null}">
-                <img alt="Profile Image" class="profile-image" src="${pageContext.request.contextPath}/upload/${owner.owner_image_name}" />
+                <img alt="Profile Image" class="profile-image" src="${pageContext.request.contextPath}/upload/ownerProfile/${owner.owner_image_name}" />
             </c:when>
             <c:otherwise>
                 <img alt="No Image" class="profile-image" src="${pageContext.request.contextPath}/image/noImage.png" />
@@ -62,11 +62,17 @@
 
         <!-- 메뉴 (더 크게) -->
         <h2>
-            <a href="/store/list">매장 목록</a> |
-            <a href="/owner/storeRegister">매장 등록</a>
+            <a href="/store/storeList">매장 목록</a> |
+            <a href="/store/goRegister">매장 등록</a>
         </h2>
 
         <hr>
+        <c:choose>
+        	<c:when test="${BODY != null }">
+        		<jsp:include page="${BODY }"/>
+        	</c:when>
+        
+        </c:choose>
     </div>
 </body>
 </html>

@@ -7,6 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h2>등록 완료</h2>
+<h2>가게 리스트임.</h2>
 </body>
 </html>

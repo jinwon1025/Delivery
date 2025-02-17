@@ -46,9 +46,6 @@ public class OwnerController {
 		        });
 			return mav;
 		}
-		if (owner.getOwner_image_name() == "") {
-			owner.setOwner_image_name("등록된 이미지 없음.");
-		}
 
 		MultipartFile multiFile = owner.getImage(); // 파일을 읽어온다 (업로드한 파일을 서버에서 받기 위해)
 		String fileName = null;
@@ -58,7 +55,7 @@ public class OwnerController {
 		if (!fileName.equals("")) { // 파일이 존재하는 경우, 이미지 파일을 변경
 			ServletContext ctx = session.getServletContext();
 			// 업로드된 파일을 특정 디렉토리에 저장하기 위해 파일의 경로를 알아야 하기 때문에 사용
-			path = ctx.getRealPath("/upload/" + fileName);
+			path = ctx.getRealPath("/upload/ownerProfile/" + fileName);
 			System.out.println("업로드 위치" + path);
 			BufferedInputStream bis = null;
 			try {
@@ -119,16 +116,18 @@ public class OwnerController {
 
 	@PostMapping(value = "/owner/loginDo")
 	public ModelAndView login(@Valid LoginOwner loginOwner, BindingResult br, HttpSession session) {
-		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		ModelAndView mav = new ModelAndView("owner/index");
 		if (br.hasErrors()) {
 			mav.getModel().putAll(br.getModel());
 			return mav;
 		}
 		LoginOwner owner = this.ownerSerivce.login(loginOwner);
-		Owner ownerInfo = this.ownerSerivce.getUserName(loginOwner);
+		mav.addObject("BODY","loginResult.jsp");
 		if (owner == null) {
-			mav.setViewName("owner/notLogin");
+			mav.addObject("FAIL","YES");
 		} else {
+			 mav.setViewName("owner/ownerMain");
+			Owner ownerInfo = this.ownerSerivce.getOwner(loginOwner);
 			mav.addObject("owner", ownerInfo);
 			session.setAttribute("loginOwner", owner);
 		}
@@ -147,4 +146,6 @@ public class OwnerController {
 	    
 	    return mav;  // 리다이렉트하여 "owner/index" 페이지로 이동
 	}
+	
+	
 }
