@@ -27,4 +27,8 @@ public class StoreService {
 		return this.storeMapper.storeList(owner_id);
 	}
 	
+	public void deleteStore(Store store) {
+		this.storeMapper.deleteStore(store);
+	}
+	
 }

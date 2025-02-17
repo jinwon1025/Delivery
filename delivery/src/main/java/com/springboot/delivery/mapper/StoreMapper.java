@@ -13,4 +13,6 @@ public interface StoreMapper {
 	void storeRegister(Store store);
 	
 	List<Store> storeList(String owner_id);
+	void deleteStore(Store store);
+
 }

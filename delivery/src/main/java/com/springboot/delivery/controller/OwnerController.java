@@ -52,7 +52,11 @@ public class OwnerController {
 	    String fileName = null;
 	    String path = null;
 	    OutputStream out = null;
+	    if(multiFile.getOriginalFilename() == "") {
+	    	fileName="none";
+	    } else {
 	    fileName = owner.getOwner_id() + "_"+multiFile.getOriginalFilename(); // 업로드된 원본 파일명 가져오기
+	    }
 	    if (!fileName.equals("")) { // 파일이 존재하는 경우, 이미지 파일을 변경
 	        ServletContext ctx = session.getServletContext();
 	        path = ctx.getRealPath("/upload/ownerProfile/" + fileName);
@@ -146,6 +150,12 @@ public class OwnerController {
 	    mav.setViewName("redirect:/owner/index");
 	    
 	    return mav;  // 리다이렉트하여 "owner/index" 페이지로 이동
+	}
+	
+	@GetMapping(value="/owner/goLogin")
+	public ModelAndView goLogin() {
+		
+		return new ModelAndView("redirect:/owner/index");
 	}
 	
 	

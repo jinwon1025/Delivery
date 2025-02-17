@@ -70,7 +70,13 @@ public class StoreController {
 		String fileName = null;
 		String path = null;
 		OutputStream out = null;
-		fileName = store.getStore_id() + "_"+multiFile.getOriginalFilename(); // 업로드된 원본 파일명 가져오기
+		if(multiFile.getOriginalFilename() == "") {
+			fileName="none";
+		}
+		else {
+			fileName = store.getStore_id() + "_"+multiFile.getOriginalFilename(); // 업로드된 원본 파일명 가져오기
+		}
+		
 		if (!fileName.equals("")) { // 파일이 존재하는 경우, 이미지 파일을 변경
 			ServletContext ctx = session.getServletContext();
 			// 업로드된 파일을 특정 디렉토리에 저장하기 위해 파일의 경로를 알아야 하기 때문에 사용
@@ -102,8 +108,7 @@ public class StoreController {
 		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
 		store.setOwner_id(loginOwner.getId());
 		this.storeService.storeRegister(store);
-		mav.addObject("BODY", "storeList.jsp");
-		return mav;
+		return new ModelAndView("redirect:../store/storeList");
 	}
 	
 	@GetMapping(value="/store/storeList")
@@ -115,4 +120,17 @@ public class StoreController {
 		mav.addObject("BODY", "storeList.jsp");
 		return mav;
 	}
+	
+	@PostMapping(value="/store/delete")
+	public ModelAndView deleteStore(String store_id, HttpSession session) {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+		Store store = new Store();
+		store.setStore_id(store_id);
+		store.setOwner_id(loginOwner.getId());
+		this.storeService.deleteStore(store);
+		mav.setViewName("/store/storeList");
+		return mav;
+	}
+	
 }
