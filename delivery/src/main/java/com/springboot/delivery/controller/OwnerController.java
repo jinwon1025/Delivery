@@ -29,7 +29,14 @@ public class OwnerController {
 
 	@GetMapping(value = "/owner/index")
 	public ModelAndView ownerIndex() {
-		ModelAndView mav = new ModelAndView("owner/index");
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		return mav;
+	}
+	
+	@GetMapping(value="/owner/login")
+	public ModelAndView login() {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		mav.addObject("BODY", "ownerLogin.jsp");
 		mav.addObject(new LoginOwner());
 		return mav;
 	}
