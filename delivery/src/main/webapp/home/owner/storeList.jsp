@@ -108,7 +108,7 @@
                 
                 <!-- 가게 관리 및 삭제 버튼을 최소 주문 금액 아래에 배치 -->
                 <div class="store-actions">
-                	<form action="" method="get">
+                	<form action="/store/storeMain" method="get">
                 		<input type="hidden" name="store_id" value="${store.store_id }"/>
                 		<input type="submit" value="가게 관리" name="BTN"/>
                 	</form>

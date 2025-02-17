@@ -25,6 +25,6 @@ public class OwnerService {
 	public LoginOwner login(LoginOwner loginOwner) {
 		return this.ownerMapper.login(loginOwner);
 	}
-	
+
 
 }

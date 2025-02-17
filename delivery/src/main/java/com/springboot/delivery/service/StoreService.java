@@ -31,4 +31,13 @@ public class StoreService {
 		this.storeMapper.deleteStore(store);
 	}
 	
+	
+	public Store getStore(String store_id) {
+		return this.storeMapper.getStore(store_id);
+	}
+	
+	public void updateStore(Store store) {
+		this.storeMapper.updateStore(store);
+	}
+	
 }

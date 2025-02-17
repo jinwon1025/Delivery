@@ -14,5 +14,7 @@ public interface StoreMapper {
 	
 	List<Store> storeList(String owner_id);
 	void deleteStore(Store store);
+	Store getStore(String store_id);
+	void updateStore(Store store);
 
 }
