@@ -126,8 +126,7 @@ public class OwnerController {
 		if (owner == null) {
 			mav.addObject("FAIL","YES");
 		} else {
-			 mav.setViewName("owner/ownerMain");
-			 System.out.println(owner.getImage_name());
+			mav.setViewName("redirect:/store/storeList");
 			session.setAttribute("loginOwner", owner);
 		}
 		return mav;

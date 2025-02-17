@@ -3,6 +3,7 @@ package com.springboot.delivery.controller;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginOwner;
-import com.springboot.delivery.model.Owner;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.OwnerService;
 import com.springboot.delivery.service.StoreService;
@@ -26,17 +26,14 @@ import jakarta.validation.Valid;
 @Controller
 public class StoreController {
 
-	@Autowired
-	private OwnerService ownerService;
 	
 	@Autowired
 	private StoreService storeService;
 	
 	@GetMapping(value="/store/goRegister")
-	public ModelAndView storeRegister(HttpSession session) {
+	public ModelAndView storeRegister() {
 		ModelAndView mav = new ModelAndView("owner/ownerMain");
 		mav.addObject("BODY", "storeRegister.jsp");
-		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
 		mav.addObject(new Store());
 		return mav;
 	}
@@ -110,10 +107,12 @@ public class StoreController {
 	}
 	
 	@GetMapping(value="/store/storeList")
-	public ModelAndView mav(HttpSession session) {
-		ModelAndView mav = new ModelAndView("owner/ownerMain");
+	public ModelAndView storeList(HttpSession session) {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");	
+		LoginOwner owner = (LoginOwner)session.getAttribute("loginOwner");
+		List<Store> storeList = this.storeService.storeList(owner.getId());
+		mav.addObject("storeList", storeList);
 		mav.addObject("BODY", "storeList.jsp");
-		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
 		return mav;
 	}
 }

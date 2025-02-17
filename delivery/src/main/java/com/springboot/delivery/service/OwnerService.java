@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.springboot.delivery.mapper.OwnerMapper;
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Store;
 
 @Service
 public class OwnerService {
