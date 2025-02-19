@@ -5,4 +5,7 @@
 	<insert id="registerUser" parameterType="com.springboot.delivery.model.User">
 		insert into b_user_info(user_id,user_name,email,password,user_phone,point,birth) values(#{user_id},#{user_name},#{email},#{password},#{user_phone},0,to_date(#{birth},'YYYY-MM-DD'))
 	</insert>
+	<select id="loginUser" resultType="com.springboot.delivery.model.LoginUser" parameterType="com.springboot.delivery.model.LoginUser">
+		select user_id, password, user_name from b_user_info where user_id=#{user_id} and password=#{password}
+	</select>
 </mapper>
