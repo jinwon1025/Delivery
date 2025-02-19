@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.Store;
 
 @Mapper
@@ -16,5 +17,6 @@ public interface StoreMapper {
 	void deleteStore(Store store);
 	Store getStore(String store_id);
 	void updateStore(Store store);
-
+	List<MenuCategory> getAllMenu(String store_id);
+	Integer getMaxMenuCount();
 }

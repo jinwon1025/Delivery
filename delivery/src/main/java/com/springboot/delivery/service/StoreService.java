@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.StoreMapper;
+import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.Store;
 
 @Service
@@ -38,6 +39,14 @@ public class StoreService {
 	
 	public void updateStore(Store store) {
 		this.storeMapper.updateStore(store);
+	}
+	
+	public 	List<MenuCategory> getAllMenu(String store_id){
+		return this.storeMapper.getAllMenu(store_id);
+	}
+	
+	public Integer getMaxMenuCount() {
+		return this.storeMapper.getMaxMenuCount();
 	}
 	
 }

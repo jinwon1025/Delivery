@@ -42,6 +42,24 @@
 	
 	</update>
 	
+	<select id="getAllMenu" parameterType="String" resultType="com.springboot.delivery.model.MenuCategory">
+	
+		select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
+	
+	</select>
+	
+	<insert id="insertMenu" parameterType="com.springboot.delivery.model.MenuCategory">
+	
+	
+	insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name})
+	</insert>
+	
+	<select id="getMaxMenuCount" resultType="Integer">
+	
+	select count(*) from b-menu_category_tbl;
+	
+	</select>
+	
 </mapper>
 
 

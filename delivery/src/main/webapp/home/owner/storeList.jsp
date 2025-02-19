@@ -92,7 +92,7 @@
         <div class="store-box">
             <!-- 가게 프로필 사진 -->
             <c:choose>
-                <c:when test="${store.store_image_name != 'none'}">
+                <c:when test="${not empty store.store_image_name}">
                     <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="가게 프로필" class="store-image">
                 </c:when>
                 <c:otherwise>
