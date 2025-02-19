@@ -12,10 +12,21 @@
 <body>
 <div>
 <h2>사용자</h2>
-<input type="text" placeholder="아이디를 입력하세요."/><br/>
-<input type="password" placeholder="비밀번호를 입력하세요"/><br/>
+<form:form action="/user/login" method="post" modelAttribute="loginUser">
+<table>
+            <tr>
+                <td><label for="id">아이디</label></td>
+                <td><form:input path="user_id" id="id" size="12"/></td>
+                <td><font color="red"><form:errors path="user_id"/></font></td>
+            </tr>
+            <tr>
+                <td><label for="password">비밀번호</label></td>
+                <td><form:input path="password" id="password" size="12" type="password"/></td>
+                <td><font color="red"><form:errors path="password"/></font></td>
+            </tr>
+        </table>
 <input type="submit" value="로그인"/><br/>
-<hr>
+</form:form>
 <a href="/user/register">회원가입</a>
 </div>
 </body>
