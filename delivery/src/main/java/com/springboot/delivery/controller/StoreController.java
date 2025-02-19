@@ -220,7 +220,7 @@ public class StoreController {
     	Integer maxCount = this.storeService.getMaxMenuCount();
     	MenuCategory mc = new MenuCategory();
     	mc.setMenu_category_id(maxCount+1);
-    	//여기 해야함
+    	//여기 해야함1
     	return mav;
     	}
 }
