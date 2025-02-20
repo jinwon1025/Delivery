@@ -53,12 +53,12 @@ h1 {
 	<!-- 로그아웃 링크와 사용자 이름을 우측 상단에 배치 -->
 	<div class="logout-container">
 		<c:choose>
-			<c:when test="${sessionScope.loginOwner != null}">
+			<c:when test="${sessionScope.loginUser != null}">
 				<c:choose>
-					<c:when test="${sessionScope.loginOwner.image_name != 'none'}">
+					<c:when test="${sessionScope.loginUser.image_name != 'none'}">
 						<!-- 사업자의 프로필 사진이 있을 때 -->
 						<img alt="Profile Image" class="profile-image"
-							src="${pageContext.request.contextPath}/upload/ownerProfile/${sessionScope.loginOwner.image_name}" />
+							src="${pageContext.request.contextPath}/upload/ownerProfile/${sessionScope.loginUser.image_name}" />
 					</c:when>
 					<c:otherwise>
 						<!-- 사업자의 프로필 사진이 없을 때 -->
@@ -66,13 +66,12 @@ h1 {
 							src="${pageContext.request.contextPath}/image/noImage.png" />
 					</c:otherwise>
 				</c:choose>
-				<span>${sessionScope.loginOwner.name}님</span>
-				<a href="">마이페이지</a>
-				<a href="/owner/logout">로그아웃</a>
+				<span>${sessionScope.loginUser.user_name}님</span>
+				<a href="/user/logout">로그아웃</a>
 			
 			</c:when>
 			<c:otherwise>
-				<a href="/owner/goLogin">로그인</a>
+				<a href="/user/index">로그인</a>
 			
 			</c:otherwise>
 		</c:choose>
@@ -86,7 +85,7 @@ h1 {
 
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="/store/storeList">매장 목록</a> | <a href="/store/goRegister">매장 등록</a>
+			<a href="">장바구니</a> | <a href="">내 정보</a> | <a href="">즐겨찾기</a> | <a href="">주문내역</a>
 		</h2>
 
 		<hr>

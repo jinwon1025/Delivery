@@ -27,6 +27,11 @@
         </table>
 <input type="submit" value="로그인"/><br/>
 </form:form>
+		<c:choose>
+			<c:when test="${BBODY != null}">
+				<jsp:include page="${BBODY}" />
+			</c:when>
+		</c:choose>
 <a href="/user/register">회원가입</a>
 </div>
 </body>

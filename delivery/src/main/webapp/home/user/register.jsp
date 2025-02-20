@@ -102,7 +102,7 @@
             <tr>
                 <th>생년월일</th>
                 <td>
-                    <form:input path="birth" id="birth" placeholder="생일을 선택하세요"/>
+                    <form:input path="birth" id="birth" type="date" placeholder="생일을 선택하세요"/>
                     <font color="red"><form:errors path="birth"/></font>
                 </td>
             </tr>
