@@ -19,4 +19,6 @@ public interface StoreMapper {
 	void updateStore(Store store);
 	List<MenuCategory> getAllMenu(String store_id);
 	Integer getMaxMenuCount();
+	void insertMenu(MenuCategory mc);
+	void deleteMenuCategory(MenuCategory mc);
 }

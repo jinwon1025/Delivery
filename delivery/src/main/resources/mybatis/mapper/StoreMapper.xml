@@ -26,7 +26,7 @@
 	
 	<delete id="deleteStore" parameterType="com.springboot.delivery.model.Store">
 	
-		delete from b_store_tbl where store_id=#{store_id} and owner_id=#{owner_id}	
+		delete from b_store_tbl where store_id=#{store_id}	
 	
 	</delete>
 	
@@ -53,14 +53,20 @@
 	<insert id="insertMenu" parameterType="com.springboot.delivery.model.MenuCategory">
 	
 	
-	insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name})
+	insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name}, #{store_id})
 	</insert>
 	
 	<select id="getMaxMenuCount" resultType="Integer">
 	
-	select count(*) from b-menu_category_tbl;
+	select count(*) from b_menu_category_tbl
 	
 	</select>
+	
+	<delete id="deleteMenuCategory" parameterType="com.springboot.delivery.model.MenuCategory">
+	
+	delete from b_menu_category_tbl where menu_category_name=#{menu_category_name} and store_id=#{store_id}
+	
+	</delete>
 	
 </mapper>
 

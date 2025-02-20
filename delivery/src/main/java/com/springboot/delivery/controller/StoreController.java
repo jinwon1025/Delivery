@@ -27,200 +27,228 @@ import jakarta.validation.Valid;
 @Controller
 public class StoreController {
 
-    @Autowired
-    private StoreService storeService;
+   @Autowired
+   private StoreService storeService;
 
-    @GetMapping(value = "/store/goRegister")
-    public ModelAndView storeRegister() {
-        ModelAndView mav = new ModelAndView("owner/ownerMain");
-        mav.addObject("BODY", "storeRegister.jsp");
-        mav.addObject(new Store());
-        return mav;
-    }
+   @GetMapping(value = "/store/goRegister")
+   public ModelAndView storeRegister() {
+      ModelAndView mav = new ModelAndView("owner/ownerMain");
+      mav.addObject("BODY", "storeRegister.jsp");
+      mav.addObject(new Store());
+      return mav;
+   }
 
-    @GetMapping(value = "/store/idcheck")
-    public ModelAndView idcheck(String store_id) {
-        ModelAndView mav = new ModelAndView("owner/storeIdcheck");
-        Integer count = this.storeService.idcheck(store_id);
-        if (count > 0) {
-            mav.addObject("DUP", "YES");
-        } else {
-            mav.addObject("DUP", "NO");
-        }
-        mav.addObject("store_id", store_id);
-        return mav;
-    }
+   @GetMapping(value = "/store/idcheck")
+   public ModelAndView idcheck(String store_id) {
+      ModelAndView mav = new ModelAndView("owner/storeIdcheck");
+      Integer count = this.storeService.idcheck(store_id);
+      if (count > 0) {
+         mav.addObject("DUP", "YES");
+      } else {
+         mav.addObject("DUP", "NO");
+      }
+      mav.addObject("store_id", store_id);
+      return mav;
+   }
 
-    @PostMapping(value = "/store/register")
-    public ModelAndView register(@Valid Store store, BindingResult br, HttpSession session, HttpServletRequest request)
-            throws Exception {
-        ModelAndView mav = new ModelAndView("owner/ownerMain");
+   @PostMapping(value = "/store/register")
+   public ModelAndView register(@Valid Store store, BindingResult br, HttpSession session, HttpServletRequest request)
+         throws Exception {
+      ModelAndView mav = new ModelAndView("owner/ownerMain");
 
-        if (br.hasErrors()) {
-            mav.getModel().putAll(br.getModel());
-            mav.addObject("BODY", "storeRegister.jsp");
-            br.getFieldErrors().forEach(error -> {
-                System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
-            });
-            return mav;
-        }
+      if (br.hasErrors()) {
+         mav.getModel().putAll(br.getModel());
+         mav.addObject("BODY", "storeRegister.jsp");
+         br.getFieldErrors().forEach(error -> {
+            System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
+         });
+         return mav;
+      }
 
-        MultipartFile multiFile = store.getImage();
-        String fileName = null;
-        String path = null;
+      MultipartFile multiFile = store.getImage();
+      String fileName = null;
+      String path = null;
 
-        if (multiFile != null && !multiFile.getOriginalFilename().isEmpty()) {
-            fileName = store.getStore_id() + "_" + multiFile.getOriginalFilename();
-        }
+      if (multiFile != null && !multiFile.getOriginalFilename().isEmpty()) {
+         fileName = store.getStore_id() + "_" + multiFile.getOriginalFilename();
+      }
 
-        if (fileName != null) {
+      if (fileName != null) {
+         ServletContext ctx = session.getServletContext();
+         path = ctx.getRealPath("/upload/storeProfile/" + fileName);
+         System.out.println("업로드 위치: " + path);
+
+         try (BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream());
+               FileOutputStream fos = new FileOutputStream(path)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = bis.read(buffer)) > 0) {
+               fos.write(buffer, 0, read);
+            }
+         }
+         store.setStore_image_name(fileName);
+      } else {
+         store.setStore_image_name("");
+      }
+
+      LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
+      store.setOwner_id(loginOwner.getId());
+      this.storeService.storeRegister(store);
+
+      return new ModelAndView("redirect:../store/storeList");
+   }
+
+   @GetMapping(value = "/store/storeList")
+   public ModelAndView storeList(HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/ownerMain");
+      LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
+      List<Store> storeList = this.storeService.storeList(owner.getId());
+      mav.addObject("storeList", storeList);
+      mav.addObject("BODY", "storeList.jsp");
+      return mav;
+   }
+
+   @GetMapping(value = "/store/storeMain")
+   public ModelAndView storeMain(String store_id, HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/storeMain");
+      Store store = this.storeService.getStore(store_id);
+
+      // 세션에서 현재 가게 정보를 가져옴
+      Store currentStore = (Store) session.getAttribute("currentStore");
+
+      // 현재 세션에 저장된 가게가 없거나, 다른 가게의 정보일 경우 새로운 가게 정보로 교체
+      if (currentStore == null || !currentStore.getStore_id().equals(store_id)) {
+         session.setAttribute("currentStore", store);
+      }
+
+      mav.addObject("store", store);
+      return mav;
+   }
+
+   @GetMapping(value = "/store/goStoreModify")
+   public ModelAndView goStoreModify(HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/storeMain");
+      // 세션에서 현재 가게 정보 가져오기
+      Store store = (Store) session.getAttribute("currentStore");
+      mav.addObject("store", store);
+      mav.addObject("BODY", "storeModify.jsp");
+      return mav;
+   }
+
+   @PostMapping(value = "/store/modify")
+   public ModelAndView modify(Store store, HttpSession session) {
+      MultipartFile multiFile = store.getImage();
+      ServletContext ctx = session.getServletContext();
+
+      Store existingStore = this.storeService.getStore(store.getStore_id());
+      String existingImageName = existingStore.getStore_image_name();
+
+      if (multiFile != null && !multiFile.isEmpty()) {
+         String newFileName = store.getStore_id() + "_" + multiFile.getOriginalFilename();
+         String newPath = ctx.getRealPath("/upload/storeProfile/" + newFileName);
+
+         if (existingImageName != null && !existingImageName.isEmpty()) {
+            String existingPath = ctx.getRealPath("/upload/storeProfile/" + existingImageName);
+            File existingFile = new File(existingPath);
+            if (existingFile.exists()) {
+               existingFile.delete();
+            }
+         }
+
+         try (OutputStream os = new FileOutputStream(newPath);
+               BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream())) {
+            byte[] buffer = new byte[8156];
+            int read;
+            while ((read = bis.read(buffer)) > 0) {
+               os.write(buffer, 0, read);
+            }
+            store.setStore_image_name(newFileName);
+         } catch (Exception e) {
+            System.out.println("새 이미지 업로드 중 문제 발생: " + e.getMessage());
+         }
+      } else {
+         if (existingImageName != null && !existingImageName.isEmpty()) {
+            String existingPath = ctx.getRealPath("/upload/storeProfile/" + existingImageName);
+            File existingFile = new File(existingPath);
+            if (existingFile.exists()) {
+               existingFile.delete();
+            }
+         }
+         store.setStore_image_name("");
+      }
+
+      this.storeService.updateStore(store);
+      // 세션의 현재 가게 정보 업데이트
+      session.setAttribute("currentStore", store);
+      return new ModelAndView("redirect:../store/storeList");
+   }
+
+   @PostMapping(value = "/store/delete")
+   public ModelAndView deleteStore(String store_id, HttpSession session) {
+      // store_id로 스토어 정보 조회
+      Store store = this.storeService.getStore(store_id);
+
+      if (store != null) {
+         // 이미지가 있다면 삭제
+         if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
             ServletContext ctx = session.getServletContext();
-            path = ctx.getRealPath("/upload/storeProfile/" + fileName);
-            System.out.println("업로드 위치: " + path);
-
-            try (BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream());
-                 FileOutputStream fos = new FileOutputStream(path)) {
-                byte[] buffer = new byte[8192];
-                int read;
-                while ((read = bis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, read);
-                }
-            }
-            store.setStore_image_name(fileName);
-        } else {
-            store.setStore_image_name("");
-        }
-
-        LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
-        store.setOwner_id(loginOwner.getId());
-        this.storeService.storeRegister(store);
-
-        return new ModelAndView("redirect:../store/storeList");
-    }
-
-    @GetMapping(value = "/store/storeList")
-    public ModelAndView storeList(HttpSession session) {
-        ModelAndView mav = new ModelAndView("owner/ownerMain");
-        LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
-        List<Store> storeList = this.storeService.storeList(owner.getId());
-        mav.addObject("storeList", storeList);
-        mav.addObject("BODY", "storeList.jsp");
-        return mav;
-    }
-
-    @GetMapping(value = "/store/storeMain")
-    public ModelAndView storeMain(String store_id, HttpSession session) {
-        ModelAndView mav = new ModelAndView("owner/storeMain");
-        Store store = this.storeService.getStore(store_id);
-        // 세션에 현재 선택된 가게 정보 저장
-        session.setAttribute("currentStore", store);
-        mav.addObject("store", store);
-        return mav;
-    }
-
-    @GetMapping(value = "/store/goStoreModify")
-    public ModelAndView goStoreModify(HttpSession session) {
-        ModelAndView mav = new ModelAndView("owner/storeMain");
-        // 세션에서 현재 가게 정보 가져오기
-        Store store = (Store) session.getAttribute("currentStore");
-        mav.addObject("store", store);
-        mav.addObject("BODY", "storeModify.jsp");
-        return mav;
-    }
-
-    @PostMapping(value = "/store/modify")
-    public ModelAndView modify(Store store, HttpSession session) {
-        MultipartFile multiFile = store.getImage();
-        ServletContext ctx = session.getServletContext();
-        
-        Store existingStore = this.storeService.getStore(store.getStore_id());
-        String existingImageName = existingStore.getStore_image_name();
-        
-        if (multiFile != null && !multiFile.isEmpty()) {
-            String newFileName = store.getStore_id() + "_" + multiFile.getOriginalFilename();
-            String newPath = ctx.getRealPath("/upload/storeProfile/" + newFileName);
-            
-            if (existingImageName != null && !existingImageName.isEmpty()) {
-                String existingPath = ctx.getRealPath("/upload/storeProfile/" + existingImageName);
-                File existingFile = new File(existingPath);
-                if (existingFile.exists()) {
-                    existingFile.delete();
-                }
-            }
-            
-            try (OutputStream os = new FileOutputStream(newPath);
-                 BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream())) {
-                byte[] buffer = new byte[8156];
-                int read;
-                while ((read = bis.read(buffer)) > 0) {
-                    os.write(buffer, 0, read);
-                }
-                store.setStore_image_name(newFileName);
-            } catch (Exception e) {
-                System.out.println("새 이미지 업로드 중 문제 발생: " + e.getMessage());
-            }
-        } else {
-            if (existingImageName != null && !existingImageName.isEmpty()) {
-                String existingPath = ctx.getRealPath("/upload/storeProfile/" + existingImageName);
-                File existingFile = new File(existingPath);
-                if (existingFile.exists()) {
-                    existingFile.delete();
-                }
-            }
-            store.setStore_image_name("");
-        }
-        
-        this.storeService.updateStore(store);
-        // 세션의 현재 가게 정보 업데이트
-        session.setAttribute("currentStore", store);
-        return new ModelAndView("redirect:../store/storeList");
-    }
-
-    @PostMapping(value = "/store/delete")
-    public ModelAndView deleteStore(HttpSession session) {
-        LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
-        Store currentStore = (Store) session.getAttribute("currentStore");
-        
-        if (currentStore.getStore_image_name() != null && !currentStore.getStore_image_name().equals("none")) {
-            ServletContext ctx = session.getServletContext();
-            String filePath = ctx.getRealPath("/upload/storeProfile/" + currentStore.getStore_image_name());
-
+            String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
             File file = new File(filePath);
             if (file.exists()) {
-                if (file.delete()) {
-                    System.out.println("파일 삭제 성공: " + filePath);
-                } else {
-                    System.out.println("파일 삭제 실패: " + filePath);
-                }
+               file.delete();
             }
-        }
+         }
 
-        currentStore.setOwner_id(loginOwner.getId());
-        this.storeService.deleteStore(currentStore);
-        
-        // 세션에서 현재 가게 정보 제거
-        session.removeAttribute("currentStore");
-         
-        return new ModelAndView("redirect:../store/storeList");
-    }
-    
-    @GetMapping(value="/store/menuManager")
-    public ModelAndView goMenuManager(HttpSession session) {
-        ModelAndView mav = new ModelAndView("owner/storeMain");
-        Store currentStore = (Store) session.getAttribute("currentStore");
-        List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
-        mav.addObject("menuList", menuList);
-        mav.addObject("BODY", "menuManager.jsp");
-        return mav;
-    }
-    
-    @PostMapping(value="/store/menuRegister")
-    public ModelAndView menuRegister(String menu_category_name) {
-    	ModelAndView mav = new ModelAndView("owner/storeMain");
-    	Integer maxCount = this.storeService.getMaxMenuCount();
-    	MenuCategory mc = new MenuCategory();
-    	mc.setMenu_category_id(maxCount+1);
-    	//여기 해야함1
-    	return mav;
-    	}
+         // store 삭제
+         this.storeService.deleteStore(store);
+      }
+
+      return new ModelAndView("redirect:../store/storeList");
+   }
+
+   @GetMapping(value = "/store/menuManager")
+   public ModelAndView goMenuManager(HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/storeMain");
+      Store currentStore = (Store) session.getAttribute("currentStore");
+      List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
+      mav.addObject("menuList", menuList);
+      mav.addObject("BODY", "menuManager.jsp");
+      return mav;
+   }
+
+   @PostMapping(value = "/store/menuRegister")
+   public ModelAndView menuRegister(String menu_category_name, HttpSession session) {
+      // 현재 Store 정보 가져오기
+      Store currentStore = (Store) session.getAttribute("currentStore");
+
+      // MenuCategory 객체 생성 및 설정
+      Integer maxCount = this.storeService.getMaxMenuCount();
+      MenuCategory mc = new MenuCategory();
+      mc.setMenu_category_id(maxCount + 1);
+      mc.setMenu_category_name(menu_category_name);
+      mc.setStore_id(currentStore.getStore_id()); // Store ID 설정
+
+      // 메뉴 카테고리 저장
+      this.storeService.insertMenu(mc);
+
+      // 메뉴 관리자 페이지로 리다이렉트
+      return new ModelAndView("redirect:/store/menuManager");
+   }
+   
+   @PostMapping(value="/store/menuDelete")
+   public ModelAndView menuDelete(String menu_category_name, HttpSession session) {
+      
+      Store currentStore = (Store) session.getAttribute("currentStore");
+      MenuCategory mc = new MenuCategory();
+      mc.setMenu_category_name(menu_category_name);
+      mc.setStore_id(currentStore.getStore_id());
+      this.storeService.deleteMenuCategory(mc);
+      
+      return new ModelAndView("redirect:/store/menuManager");
+   }
+   
+   
+   
+   
+   
 }

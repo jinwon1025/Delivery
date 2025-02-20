@@ -49,4 +49,14 @@ public class StoreService {
 		return this.storeMapper.getMaxMenuCount();
 	}
 	
+	public void insertMenu(MenuCategory mc) {
+		this.storeMapper.insertMenu(mc);
+	}
+	
+	public void deleteMenuCategory(MenuCategory mc) {
+		this.storeMapper.deleteMenuCategory(mc);
+	}
+	
+	
+	
 }
