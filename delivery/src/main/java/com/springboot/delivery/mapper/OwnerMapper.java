@@ -14,5 +14,6 @@ public interface OwnerMapper {
 	Integer idCheck(String user_id);
 	
 	LoginOwner login(LoginOwner loginOwner);
-
+	Owner getOwnerInfo(String owner_id);
+	void updateInfo(Owner owner);
 }
