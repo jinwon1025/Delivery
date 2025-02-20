@@ -9,5 +9,7 @@ import com.springboot.delivery.model.User;
 public interface UserMapper {
 	void registerUser(User user);
 	LoginUser loginUser(LoginUser loginuser);
-	Integer idcheck(String user_id);
+	User getUserById(String user_id);
+    void updateUserInfo(User user);
+
 }

@@ -20,7 +20,13 @@ public class UserService {
 		return this.userMapper.loginUser(user);
 	}
 	
-	public Integer idcheck(String user_id) {
-		return this.userMapper.idcheck(user_id);
-	}
+	//마이페이지
+	public User getUserById(String user_id) {
+        return this.userMapper.getUserById(user_id);
+    }
+    
+    public void updateUserInfo(User user) {
+        this.userMapper.updateUserInfo(user);
+    }
+
 }
