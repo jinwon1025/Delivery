@@ -145,7 +145,7 @@ public class UserController {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    
 	    // 세션에서 로그인한 사용자 정보 가져오기
-	    LoginUser loginUser = (LoginUser) session.getAttribute("user");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 	    
 	    if (loginUser == null) {
 	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
@@ -166,7 +166,7 @@ public class UserController {
 	    ModelAndView mav = new ModelAndView("redirect:/user/mypage");
 	    
 	    // 세션에서 로그인한 사용자 정보 가져오기
-	    LoginUser loginUser = (LoginUser) session.getAttribute("user");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 	    
 	    if (loginUser == null) {
 	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
