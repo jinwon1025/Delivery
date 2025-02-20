@@ -19,4 +19,8 @@ public class UserService {
 	public LoginUser loginUser(LoginUser user) {
 		return this.userMapper.loginUser(user);
 	}
+	
+	public Integer idcheck(String user_id) {
+		return this.userMapper.idcheck(user_id);
+	}
 }

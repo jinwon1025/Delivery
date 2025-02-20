@@ -8,4 +8,10 @@
 	<select id="loginUser" resultType="com.springboot.delivery.model.LoginUser" parameterType="com.springboot.delivery.model.LoginUser">
 		select user_id, password, user_name from b_user_info where user_id=#{user_id} and password=#{password}
 	</select>
+	
+	<select id="idcheck" parameterType="String" resultType="Integer">
+	
+	select count(*) from b_user_info where user_id=#{user_id}
+	
+	</select>
 </mapper>

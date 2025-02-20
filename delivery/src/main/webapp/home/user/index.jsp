@@ -7,10 +7,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>사용자 메인화면!</title>
+<title>사용자 메인화면</title>
 </head>
 <body>
-<div>
+<div align="center">
 <h2>사용자</h2>
 <form:form action="/user/login" method="post" modelAttribute="loginUser">
 <table>
@@ -25,6 +25,7 @@
                 <td><font color="red"><form:errors path="password"/></font></td>
             </tr>
         </table>
+        <br/>
 <input type="submit" value="로그인"/><br/>
 </form:form>
 		<c:choose>

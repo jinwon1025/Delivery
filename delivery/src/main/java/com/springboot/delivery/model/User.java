@@ -1,5 +1,7 @@
 package com.springboot.delivery.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,20 +14,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
+	
+	
+	//아이디 체크
+	private String idchecked;
+	
 	private String phone1;
-	@NotBlank(message="전화번호를 입력하세요")
+	@NotBlank(message="전화번호 중간자리를 입력하세요")
 	private String phone2;
-	@NotBlank(message="전화번호를 입력하세요")
+
+	@NotBlank(message="전화번호 마지막자리를 입력하세요")
 	private String phone3;
-	@NotBlank(message="아이디를 입력하세요")
-	@Size(min = 6, max = 15, message="아이디는 6자이상15자이하로 입력해주세요")
+	@Size(min = 6, max = 15, message="아이디는 6자 이상15자 이하로 입력해주세요")
 	private String user_id;
 	@NotBlank(message="이름을 입력하세요")
 	private String user_name;
 	@NotEmpty(message="이메일을 입력하세요")
 	@Email(message="이메일 형식으로 입력하세요")
 	private String email;
-	@NotBlank(message="비밀번호를 입력하세요")
 	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,15}$", message = "비밀번호는 8~15자 이내로 영문자와 특수문자를 포함해야 합니다.")
 	private String password;
 	@NotBlank(message="비밀번호를 다시 입력하세요")
@@ -35,6 +41,7 @@ public class User {
 		return phone1+phone2+phone3;
 	}
 	private String image_name;
+	private MultipartFile image;
 	private Integer point;
 	@NotEmpty(message="생일을 선택하세요")
 	private String birth;
@@ -49,4 +56,6 @@ public class User {
 	        }
 	        return password.equals(passwordcheck);
 	    }
+	
+
 }
