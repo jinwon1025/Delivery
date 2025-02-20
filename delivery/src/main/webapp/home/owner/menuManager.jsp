@@ -33,11 +33,11 @@ pageEncoding="UTF-8"%>
 </table>
 </div>
 <br/><br/>
-<form action="/store/menuRegister" method="post">
-    카테고리명 : <input type="text" name="menu_category_name"/>
-    <font color="red">${errors.menu_category_name}</font>
-
-    <p><input type="submit" value="카테고리 등록"/></p>
-</form>
+<form:form action="/store/menuRegister" modelAttribute="menuCategory" method="post" >
+	<label for="menu_category_name">카테고리명:</label>
+	<form:input path="menu_category_name" type="text"/>
+	<font color="red"><form:errors path="menu_category_name"/></font>
+	<input type="submit" value="등록">
+</form:form>
 </body>
 </html>

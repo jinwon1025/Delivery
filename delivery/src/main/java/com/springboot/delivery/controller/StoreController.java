@@ -213,14 +213,20 @@ public class StoreController {
       List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
       mav.addObject("menuList", menuList);
       mav.addObject("BODY", "menuManager.jsp");
+      mav.addObject(new MenuCategory());
       return mav;
    }
 
    @PostMapping(value = "/store/menuRegister")
-   public ModelAndView menuRegister(String menu_category_name, HttpSession session) {
+   public ModelAndView menuRegister(@Valid MenuCategory menucategory, BindingResult br, String menu_category_name, HttpSession session) {
       // 현재 Store 정보 가져오기
+	  ModelAndView mav = new ModelAndView("owner/storeMain");
       Store currentStore = (Store) session.getAttribute("currentStore");
-
+      if (br.hasErrors()) {
+          mav.getModel().putAll(br.getModel());
+          mav.addObject("BODY", "menuManager.jsp");
+          return mav;
+         }
       // MenuCategory 객체 생성 및 설정
       Integer maxCount = this.storeService.getMaxMenuCount();
       MenuCategory mc = new MenuCategory();
@@ -230,7 +236,7 @@ public class StoreController {
 
       // 메뉴 카테고리 저장
       this.storeService.insertMenu(mc);
-
+   
       // 메뉴 관리자 페이지로 리다이렉트
       return new ModelAndView("redirect:/store/menuManager");
    }

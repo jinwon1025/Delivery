@@ -50,8 +50,8 @@
    
    <insert id="insertMenu" parameterType="com.springboot.delivery.model.MenuCategory">
    
-   
    insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name}, #{store_id})
+   
    </insert>
    
    <select id="getMaxMenuCount" resultType="Integer">
