@@ -72,7 +72,7 @@ public class UserController {
 	         }
 	         user.setImage_name(fileName);
 	      } else {
-	    	  user.setImage_name(fileName);
+	    	 user.setImage_name("");
 	      }
 		this.userService.registerUser(user);
     	mav.addObject("BODY","registerSuccess.jsp");
@@ -80,18 +80,18 @@ public class UserController {
     	return mav;
 	}
 	
-//	@GetMapping(value="/user/idcheck")
-//	public ModelAndView idcheck(String user_id) {
-//		ModelAndView mav = new ModelAndView("user/userIdcheck");
-//		Integer count = this.userService.idcheck(user_id);
-//		if(count > 0) {
-//			mav.addObject("DUP", "YES");
-//		} else {
-//			mav.addObject("DUP", "NO");
-//		}
-//		mav.addObject("user_id", user_id);
-//		return mav;
-//	}
+	@GetMapping(value="/user/idcheck")
+	public ModelAndView idcheck(String user_id) {
+		ModelAndView mav = new ModelAndView("user/userIdcheck");
+		Integer count = this.userService.idcheck(user_id);
+		if(count > 0) {
+			mav.addObject("DUP", "YES");
+		} else {
+			mav.addObject("DUP", "NO");
+		}
+		mav.addObject("user_id", user_id);
+		return mav;
+	}
 	
 	
 	@PostMapping(value="/user/login")
@@ -111,6 +111,7 @@ public class UserController {
 	        mav.addObject("FAIL","YES");
 		} else {
 			System.out.println("로그인 성공");
+			System.out.println(user.getImage_name());
 			session.setAttribute("loginUser", user);
 			mav.addObject("BODY","loginUser.jsp");
 		}

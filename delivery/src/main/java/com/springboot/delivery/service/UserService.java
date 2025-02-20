@@ -28,5 +28,9 @@ public class UserService {
     public void updateUserInfo(User user) {
         this.userMapper.updateUserInfo(user);
     }
+    
+    public Integer idcheck(String user_id) {
+    	return this.userMapper.idcheck(user_id);
+    }
 
 }

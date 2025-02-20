@@ -58,7 +58,7 @@ h1 {
 					<c:when test="${sessionScope.loginUser.image_name != 'none'}">
 						<!-- 사업자의 프로필 사진이 있을 때 -->
 						<img alt="Profile Image" class="profile-image"
-							src="${pageContext.request.contextPath}/upload/ownerProfile/${sessionScope.loginUser.image_name}" />
+							src="${pageContext.request.contextPath}/upload/userProfile/${sessionScope.loginUser.image_name}" />
 					</c:when>
 					<c:otherwise>
 						<!-- 사업자의 프로필 사진이 없을 때 -->
