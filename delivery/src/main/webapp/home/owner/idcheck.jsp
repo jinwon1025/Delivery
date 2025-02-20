@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>아이디 중복체크</title>
+<title>아이디 중복체크중</title>
 </head>
 <body>
 <h2 align="center">아이디 중복 확인</h2>
