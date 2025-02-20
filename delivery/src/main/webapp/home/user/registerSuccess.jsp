@@ -8,5 +8,6 @@
 </head>
 <body>
 <h2>회원가입 완료</h2>
+<a href="/user/index">홈으로</a>
 </body>
 </html>

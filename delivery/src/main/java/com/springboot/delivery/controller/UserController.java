@@ -26,11 +26,19 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	@GetMapping(value = "/user/index")
-	public ModelAndView userIndex() {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		mav.addObject("BODY", "index.jsp");
-		mav.addObject(new LoginUser());
-		return mav;
+	public ModelAndView userIndex(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    if(loginUser != null) {
+	        // 이미 로그인된 상태면 loginUser.jsp 보여주기
+	        mav.addObject("BODY", "loginUser.jsp");
+	    } else {
+	        // 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
+	        mav.addObject("BODY", "index.jsp");
+	        mav.addObject(new LoginUser());
+	    }
+	    return mav;
 	}
 	@GetMapping(value="/user/register")
 	public ModelAndView insertRegister() {
