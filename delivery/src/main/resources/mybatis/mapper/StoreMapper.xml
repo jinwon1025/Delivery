@@ -44,7 +44,7 @@
    
    <select id="getAllMenu" parameterType="String" resultType="com.springboot.delivery.model.MenuCategory">
    
-      select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
+      select menu_category_id,menu_category_name from b_menu_category_tbl where store_id=#{store_id}
    
    </select>
    
@@ -66,6 +66,23 @@
    
    </delete>
    
+   <insert id="menuRegister" parameterType="com.springboot.delivery.model.MenuItem">
+   
+   insert into b_menu_item_tbl values(#{menu_item_id},#{menu_name},#{menu_category_id},#{store_id},#{price},#{image_name},#{content})
+   
+   </insert>
+   
+   <select id="getMenuCount" resultType="Integer">
+   
+   select count(*) from b_menu_item_tbl
+   
+   </select>
+   
+   <select id="getMenuList" resultType="com.springboot.delivery.model.MenuItem">
+   
+   select * from b_menu_item_tbl where store_id=#{store_id}
+   
+   </select>
 </mapper>
 
 

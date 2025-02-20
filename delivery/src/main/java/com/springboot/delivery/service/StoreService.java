@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.StoreMapper;
 import com.springboot.delivery.model.MenuCategory;
+import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.Store;
 
 @Service
@@ -57,6 +58,15 @@ public class StoreService {
 		this.storeMapper.deleteMenuCategory(mc);
 	}
 	
+	public void menuRegister(MenuItem mi) {
+		this.storeMapper.menuRegister(mi);
+	}
+	public Integer getMenuCount() {
+		return this.storeMapper.getMenuCount();
+	}
 	
+	public List<MenuItem> getMenuList(String store_id){
+		return this.storeMapper.getMenuList(store_id);
+	}
 	
 }
