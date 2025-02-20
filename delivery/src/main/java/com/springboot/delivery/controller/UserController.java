@@ -68,5 +68,86 @@ public class UserController {
 	    ModelAndView mav = new ModelAndView("user/loginUser");
 	    return mav;
 	}
+	
+	
+	// UserController 클래스에 추가할 메소드들
+
+	@GetMapping("/user/mypage")
+	public ModelAndView myPage(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
+	    // 세션에서 로그인한 사용자 정보 가져오기
+	    LoginUser loginUser = (LoginUser) session.getAttribute("user");
+	    
+	    if (loginUser == null) {
+	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+	        mav.setViewName("redirect:/user/index");
+	        return mav;
+	    }
+	    
+	    // 사용자의 전체 정보 조회
+	    User userInfo = this.userService.getUserById(loginUser.getUser_id());
+	    mav.addObject("userInfo", userInfo);
+	    mav.addObject("BODY", "mypage.jsp");
+	    
+	    return mav;
+	}
+
+	@GetMapping("/user/updateForm")
+	public ModelAndView updateForm(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
+	    // 세션에서 로그인한 사용자 정보 가져오기
+	    LoginUser loginUser = (LoginUser) session.getAttribute("user");
+	    
+	    if (loginUser == null) {
+	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+	        mav.setViewName("redirect:/user/index");
+	        return mav;
+	    }
+	    
+	    // 사용자의 전체 정보 조회
+	    User userInfo = this.userService.getUserById(loginUser.getUser_id());
+	    mav.addObject("userInfo", userInfo);
+	    mav.addObject("BODY", "updateForm.jsp");
+	    
+	    return mav;
+	}
+
+	@PostMapping("/user/updateUser")
+	public ModelAndView updateUser(User user, HttpSession session) {
+	    ModelAndView mav = new ModelAndView("redirect:/user/mypage");
+	    
+	    // 세션에서 로그인한 사용자 정보 가져오기
+	    LoginUser loginUser = (LoginUser) session.getAttribute("user");
+	    
+	    if (loginUser == null) {
+	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+	        mav.setViewName("redirect:/user/index");
+	        return mav;
+	    }
+	    
+	    // user_id 설정 (보안을 위해 세션에서 가져온 값 사용)
+	    user.setUser_id(loginUser.getUser_id());
+	    
+	    // 회원 정보 수정
+	    this.userService.updateUserInfo(user);
+	    
+	    return mav;
+	}
+
+	@GetMapping("/user/logout")
+	public String logout(HttpSession session) {
+	    session.invalidate();
+	    return "redirect:/user/index";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

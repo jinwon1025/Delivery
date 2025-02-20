@@ -8,4 +8,30 @@
 	<select id="loginUser" resultType="com.springboot.delivery.model.LoginUser" parameterType="com.springboot.delivery.model.LoginUser">
 		select user_id, password, user_name from b_user_info where user_id=#{user_id} and password=#{password}
 	</select>
+	<!-- 회원 상세 정보 조회 -->
+<select id="getUserById" resultType="com.springboot.delivery.model.User">
+    select 
+        user_id, 
+        user_name,
+        email,
+        user_phone,
+        point,
+        birth,
+        user_phone
+        image_name
+    from b_user_info 
+    where user_id = #{user_id}
+</select>
+
+<!-- 회원 정보 수정 -->
+<update id="updateUserInfo" parameterType="com.springboot.delivery.model.User">
+    update b_user_info set
+        user_name = #{user_name},
+        user_phone = #{user_phone},
+        birth = #{birth}
+    where user_id = #{user_id}
+</update>
+	
+	
+	
 </mapper>

@@ -19,4 +19,17 @@ public class UserService {
 	public LoginUser loginUser(LoginUser user) {
 		return this.userMapper.loginUser(user);
 	}
+	
+	//마이페이지
+	public User getUserById(String user_id) {
+        return this.userMapper.getUserById(user_id);
+    }
+    
+    public void updateUserInfo(User user) {
+        this.userMapper.updateUserInfo(user);
+    }
+	
+	
+	
+	
 }
