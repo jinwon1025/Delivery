@@ -112,8 +112,15 @@ public class StoreController {
     public ModelAndView storeMain(String store_id, HttpSession session) {
         ModelAndView mav = new ModelAndView("owner/storeMain");
         Store store = this.storeService.getStore(store_id);
-        // 세션에 현재 선택된 가게 정보 저장
-        session.setAttribute("currentStore", store);
+        
+        // 세션에서 현재 가게 정보를 가져옴
+        Store currentStore = (Store) session.getAttribute("currentStore");
+        
+        // 현재 세션에 저장된 가게가 없거나, 다른 가게의 정보일 경우 새로운 가게 정보로 교체
+        if (currentStore == null || !currentStore.getStore_id().equals(store_id)) {
+            session.setAttribute("currentStore", store);
+        }
+        
         mav.addObject("store", store);
         return mav;
     }
@@ -177,29 +184,24 @@ public class StoreController {
     }
 
     @PostMapping(value = "/store/delete")
-    public ModelAndView deleteStore(HttpSession session) {
-        LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
-        Store currentStore = (Store) session.getAttribute("currentStore");
+    public ModelAndView deleteStore(String store_id, HttpSession session) {
+        // store_id로 스토어 정보 조회
+        Store store = this.storeService.getStore(store_id);
         
-        if (currentStore.getStore_image_name() != null && !currentStore.getStore_image_name().equals("none")) {
-            ServletContext ctx = session.getServletContext();
-            String filePath = ctx.getRealPath("/upload/storeProfile/" + currentStore.getStore_image_name());
-
-            File file = new File(filePath);
-            if (file.exists()) {
-                if (file.delete()) {
-                    System.out.println("파일 삭제 성공: " + filePath);
-                } else {
-                    System.out.println("파일 삭제 실패: " + filePath);
+        if (store != null) {
+            // 이미지가 있다면 삭제
+            if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
+                ServletContext ctx = session.getServletContext();
+                String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
+                File file = new File(filePath);
+                if (file.exists()) {
+                    file.delete();
                 }
             }
+            
+            // store 삭제
+            this.storeService.deleteStore(store);
         }
-
-        currentStore.setOwner_id(loginOwner.getId());
-        this.storeService.deleteStore(currentStore);
-        
-        // 세션에서 현재 가게 정보 제거
-        session.removeAttribute("currentStore");
         
         return new ModelAndView("redirect:../store/storeList");
     }

@@ -24,7 +24,7 @@
 	
 	<delete id="deleteStore" parameterType="com.springboot.delivery.model.Store">
 	
-		delete from b_store_tbl where store_id=#{store_id} and owner_id=#{owner_id}	
+		delete from b_store_tbl where store_id=#{store_id}	
 	
 	</delete>
 	
