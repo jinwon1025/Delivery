@@ -2,72 +2,70 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.delivery.mapper.StoreMapper">
-	<insert id="menuCategory" parameterType="com.springboot.delivery.model.MenuCategory">
-		insert into b_menu_category_tbl values(#{menu_category_id),#{menu_category_name},#{store_id})
-	</insert>
-	<select id="idcheck" parameterType="String" resultType="Integer">
-	
-	select count(*) from b_store_tbl where store_id=#{store_id}
-	
-	</select> 
-	
-	<insert id="storeRegister" parameterType="com.springboot.delivery.model.Store" >
-	
-	insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address}, #{last_price},
-	#{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour}, #{delivery_fee}, #{made_in}, #{store_image_name} )
-	
-	</insert>
-	
-	<select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
-	
-		select store_id, store_name, last_price, delivery_fee, store_image_name from b_store_tbl where owner_id=#{owner_id}
-	
-	</select>
-	
-	<delete id="deleteStore" parameterType="com.springboot.delivery.model.Store">
-	
-		delete from b_store_tbl where store_id=#{store_id}	
-	
-	</delete>
-	
-	<select id="getStore" parameterType="String" resultType="com.springboot.delivery.model.Store">
-	
-		select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, made_in, store_image_name from b_store_tbl where store_id=#{store_id}
-	
-	</select>
-	
-	<update id="updateStore" parameterType="com.springboot.delivery.model.Store">
-	
-		update b_store_tbl set store_name=#{store_name}, store_address=#{store_address}, last_price=#{last_price},
-		main_category_Id=#{main_category_Id}, store_phone=#{store_phone}, store_openHour=#{store_openHour}, delivery_fee=#{delivery_fee},
-		made_in=#{made_in}, store_image_name=#{store_image_name} where store_id=#{store_id}
-	
-	</update>
-	
-	<select id="getAllMenu" parameterType="String" resultType="com.springboot.delivery.model.MenuCategory">
-	
-		select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
-	
-	</select>
-	
-	<insert id="insertMenu" parameterType="com.springboot.delivery.model.MenuCategory">
-	
-	
-	insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name}, #{store_id})
-	</insert>
-	
-	<select id="getMaxMenuCount" resultType="Integer">
-	
-	select count(*) from b_menu_category_tbl
-	
-	</select>
-	
-	<delete id="deleteMenuCategory" parameterType="com.springboot.delivery.model.MenuCategory">
-	
-	delete from b_menu_category_tbl where menu_category_name=#{menu_category_name} and store_id=#{store_id}
-	
-	</delete>
-	
+   
+   <select id="idcheck" parameterType="String" resultType="Integer">
+   
+   select count(*) from b_store_tbl where store_id=#{store_id}
+   
+   </select> 
+   
+   <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store" >
+   
+   insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address}, #{last_price},
+   #{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour}, #{delivery_fee}, #{made_in}, #{store_image_name} )
+   
+   </insert>
+   
+   <select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
+   
+      select store_id, store_name, last_price, delivery_fee, store_image_name from b_store_tbl where owner_id=#{owner_id}
+   
+   </select>
+   
+   <delete id="deleteStore" parameterType="com.springboot.delivery.model.Store">
+   
+      delete from b_store_tbl where store_id=#{store_id}   
+   
+   </delete>
+   
+   <select id="getStore" parameterType="String" resultType="com.springboot.delivery.model.Store">
+   
+      select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, made_in, store_image_name from b_store_tbl where store_id=#{store_id}
+   
+   </select>
+   
+   <update id="updateStore" parameterType="com.springboot.delivery.model.Store">
+   
+      update b_store_tbl set store_name=#{store_name}, store_address=#{store_address}, last_price=#{last_price},
+      main_category_Id=#{main_category_Id}, store_phone=#{store_phone}, store_openHour=#{store_openHour}, delivery_fee=#{delivery_fee},
+      made_in=#{made_in}, store_image_name=#{store_image_name} where store_id=#{store_id}
+   
+   </update>
+   
+   <select id="getAllMenu" parameterType="String" resultType="com.springboot.delivery.model.MenuCategory">
+   
+      select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
+   
+   </select>
+   
+   <insert id="insertMenu" parameterType="com.springboot.delivery.model.MenuCategory">
+   
+   
+   insert into b_menu_category_tbl values(#{menu_category_id}, #{menu_category_name}, #{store_id})
+   </insert>
+   
+   <select id="getMaxMenuCount" resultType="Integer">
+   
+   select count(*) from b_menu_category_tbl
+   
+   </select>
+   
+   <delete id="deleteMenuCategory" parameterType="com.springboot.delivery.model.MenuCategory">
+   
+   delete from b_menu_category_tbl where menu_category_name=#{menu_category_name} and store_id=#{store_id}
+   
+   </delete>
+   
 </mapper>
 
 
