@@ -11,6 +11,6 @@ public class LoginUser {
 	private String user_id;
 	@NotBlank(message="비밀번호를 입력하세요")
 	private String password;
-	
+	private String image_name;
 	private String user_name;
 }

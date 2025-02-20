@@ -200,7 +200,7 @@ public class StoreController {
         
         // 세션에서 현재 가게 정보 제거
         session.removeAttribute("currentStore");
-        
+         
         return new ModelAndView("redirect:../store/storeList");
     }
     

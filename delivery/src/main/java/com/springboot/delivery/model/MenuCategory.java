@@ -9,4 +9,5 @@ public class MenuCategory {
 
 	private Integer menu_category_id;
 	private String menu_category_name;
+	private String store_id;
 }

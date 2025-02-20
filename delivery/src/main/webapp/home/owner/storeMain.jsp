@@ -86,7 +86,7 @@ h1 {
 
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="/store/menuManager">메뉴 관리</a> | <a href="">주문 목록</a> 
+			<a href="/store/menuManager" >메뉴 관리</a> | <a href="">주문 목록</a> 
 			| <a href="">리뷰 관리</a> | <a href="/store/goStoreModify">가게 정보 수정</a> | <a href="">쿠폰 등록
 			</a> | <a href="/store/storeList">가게 목록</a>
 		</h2>
