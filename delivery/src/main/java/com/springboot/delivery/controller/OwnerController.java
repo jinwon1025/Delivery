@@ -1,6 +1,7 @@
 package com.springboot.delivery.controller;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.OwnerService;
 
 import jakarta.servlet.ServletContext;
@@ -157,6 +159,91 @@ public class OwnerController {
 		
 		return new ModelAndView("redirect:/owner/index");
 	}
+	
+	@GetMapping(value="/owner/myPage")
+	public ModelAndView myPage(HttpSession session) {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+		Owner owner = this.ownerSerivce.getOwnerInfo(loginOwner.getId());
+		String maskedPassword= owner.getOwner_password().replaceAll(".", "*"); // "." : 모든 문자
+		owner.setOwner_password(maskedPassword);
+		mav.addObject("BODY", "ownerMyPage.jsp");
+		mav.addObject("owner", owner);
+		return mav;
+	}
+	
+	@GetMapping(value="/owner/goEdit")
+	public ModelAndView goEdit(HttpSession session) {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+		Owner owner = this.ownerSerivce.getOwnerInfo(loginOwner.getId());
+		mav.addObject("owner", owner);
+		mav.addObject("BODY", "ownerEditInfo.jsp");
+		return mav;
+	}
+	
+	@PostMapping(value="/owner/updateInfo")
+	public ModelAndView updateInfo(Owner owner, HttpSession session) {
+	    ModelAndView mav = new ModelAndView("owner/ownerMain");
+	    MultipartFile multiFile = owner.getImage();
+	    ServletContext ctx = session.getServletContext();
+
+	    Owner existingOwner = this.ownerSerivce.getOwnerInfo(owner.getOwner_id());
+	    String existingImageName = existingOwner.getOwner_image_name();
+
+	    if (multiFile != null && !multiFile.isEmpty()) {
+	        // 새로운 이미지가 업로드된 경우
+	        String newFileName = owner.getOwner_id() + "_" + multiFile.getOriginalFilename();
+	        String newPath = ctx.getRealPath("/upload/ownerProfile/" + newFileName);
+
+	        // 기존 이미지가 있으면 삭제
+	        if (existingImageName != null && !existingImageName.isEmpty()) {
+	            String existingPath = ctx.getRealPath("/upload/ownerProfile/" + existingImageName);
+	            File existingFile = new File(existingPath);
+	            if (existingFile.exists()) {
+	                existingFile.delete();
+	            }
+	        }
+
+	        // 새 이미지 저장
+	        try (OutputStream os = new FileOutputStream(newPath);
+	             BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream())) {
+	            byte[] buffer = new byte[8156];
+	            int read;
+	            while ((read = bis.read(buffer)) > 0) {
+	                os.write(buffer, 0, read);
+	            }
+	            owner.setOwner_image_name(newFileName);
+	        } catch (Exception e) {
+	            System.out.println("새 이미지 업로드 중 문제 발생: " + e.getMessage());
+	        }
+	    } else {
+	        // 새로운 이미지가 업로드되지 않은 경우, 기존 이미지 삭제
+	        if (existingImageName != null && !existingImageName.isEmpty()) {
+	            String existingPath = ctx.getRealPath("/upload/ownerProfile/" + existingImageName);
+	            File existingFile = new File(existingPath);
+	            if (existingFile.exists()) {
+	                existingFile.delete();
+	            }
+	        }
+	        owner.setOwner_image_name("");
+	    }
+
+	    this.ownerSerivce.updateInfo(owner);
+	    
+	    // 세션 업데이트
+	    LoginOwner loginOwner = new LoginOwner();
+	    loginOwner.setId(owner.getOwner_id());
+	    loginOwner.setPassword(owner.getOwner_password());
+	    loginOwner.setImage_name(owner.getOwner_image_name());
+	    loginOwner.setName(owner.getOwner_name());
+	    session.setAttribute("loginOwner", loginOwner);
+	    
+	    return new ModelAndView("redirect:../owner/myPage");
+	}
+
+	
+
 	
 	
 }

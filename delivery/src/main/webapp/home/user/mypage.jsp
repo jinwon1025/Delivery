@@ -46,6 +46,7 @@
                     
                     <div class="mt-3">
                         <a href="<c:url value='/user/updateForm'/>" class="btn btn-primary">회원정보 수정</a>
+                        <a href="<c:url value='/user/index'/>" class="btn btn-primary">홈으로</a>
                     </div>
                 </div>
             </div>

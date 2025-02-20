@@ -26,6 +26,12 @@ public class OwnerService {
 		return this.ownerMapper.login(loginOwner);
 	}
 	
-
+	public Owner getOwnerInfo(String owner_id) {
+		return this.ownerMapper.getOwnerInfo(owner_id);
+	}
+	
+	public void updateInfo(Owner owner) {
+		this.ownerMapper.updateInfo(owner);
+	}
 
 }

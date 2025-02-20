@@ -25,6 +25,23 @@
 	
 	</select>
 	
+	<select id="getOwnerInfo" parameterType="String" resultType="com.springboot.delivery.model.Owner">
+	
+	select owner_id, owner_name, owner_email, owner_password, owner_phone, owner_image_name from b_owner_info
+	where owner_id=#{owner_id}
+	
+	</select>
+	
+	<update id="updateInfo" parameterType="com.springboot.delivery.model.Owner">
+	
+	update b_owner_info set owner_name = #{owner_name}, owner_email = #{owner_email}, owner_password=#{owner_password}, owner_phone=#{owner_phone},
+	 owner_image_name = #{owner_image_name}
+	
+	
+	</update>
+	
+
+	
 </mapper>
 
 

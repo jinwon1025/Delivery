@@ -13,4 +13,5 @@ public class LoginUser {
 	private String password;
 	private String image_name;
 	private String user_name;
-}
+	private String role;
+}	
