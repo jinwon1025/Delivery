@@ -29,15 +29,18 @@ public class UserController {
 	public ModelAndView userIndex(HttpSession session) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-	    
+	    //로그인이 되어있다면 로그인상태 페이지 유지
 	    if(loginUser != null) {
-	        // 이미 로그인된 상태면 loginUser.jsp 보여주기
-	        mav.addObject("BODY", "loginUser.jsp");
+	    	if("ADMIN".equals(loginUser.getRole())) {
+	            mav.addObject("BODY", "admin/adminMain.jsp");  // 관리자는 관리자 페이지로
+	        } else {
+	            mav.addObject("BODY", "loginUser.jsp");  // 일반 사용자는 일반 페이지로
+	        }
 	    } else {
 	        // 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
 	        mav.addObject("BODY", "index.jsp");
 	        mav.addObject(new LoginUser());
-	    }
+	    }	
 	    return mav;
 	}
 	@GetMapping(value="/user/register")
@@ -104,26 +107,50 @@ public class UserController {
 	
 	@PostMapping(value="/user/login")
 	public ModelAndView loginUser(@Valid LoginUser loginuser, BindingResult br, HttpSession session) {
-		System.out.println("로그인 시도: " + loginuser.getUser_id());
-		ModelAndView mav = new ModelAndView("user/userMain");
-		if(br.hasErrors()) {
-			 System.out.println("유효성 검사 실패");
-			mav.getModel().putAll(br.getModel());
-			return mav;
-		}
-		LoginUser user = this.userService.loginUser(loginuser);
-		if (user == null) {
-			System.out.println("로그인 실패");
+	    System.out.println("로그인 시도: " + loginuser.getUser_id());
+	    System.out.println("입력된 비밀번호: " + loginuser.getPassword());  // 입력값 확인
+	    
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    if(br.hasErrors()) {
+	        System.out.println("유효성 검사 실패");
+	        mav.getModel().putAll(br.getModel());
+	        return mav;
+	    }
+	    
+	    // 로그인 시도 전 로그
+	    System.out.println("UserService.loginUser 호출 전");
+	    
+	    LoginUser user = this.userService.loginUser(loginuser);
+	    
+	    // 로그인 결과 확인
+	    System.out.println("로그인 결과: " + (user != null ? "성공" : "실패"));
+	    if(user != null) {
+	        System.out.println("조회된 사용자 정보:");
+	        System.out.println("ID: " + user.getUser_id());
+	        System.out.println("이름: " + user.getUser_name());
+	        System.out.println("역할: " + user.getRole());
+	    }
+
+	    if (user == null) {
+	        System.out.println("로그인 실패");
 	        mav.addObject("BODY","index.jsp");
 	        mav.addObject("BBODY","loginResult.jsp");
 	        mav.addObject("FAIL","YES");
-		} else {
-			System.out.println("로그인 성공");
-			System.out.println(user.getImage_name());
-			session.setAttribute("loginUser", user);
-			mav.addObject("BODY","loginUser.jsp");
-		}
-		return mav;
+	    } else {
+	        System.out.println("로그인 성공");
+	        System.out.println(user.getImage_name());
+	        System.out.println("사용자 역할: " + user.getRole());  // role 출력 추가
+	        session.setAttribute("loginUser", user);
+
+	        // role이 있고 ADMIN인 경우에만 관리자 페이지로
+	        if(user.getRole() != null && "ADMIN".equals(user.getRole())) {
+	            mav.setViewName("admin/adminMain");
+	            mav.addObject("BODY", "adminHome.jsp");
+	        } else {
+	            mav.addObject("BODY","loginUser.jsp");
+	        }
+	    }
+	    return mav;
 	}
 	// UserController 클래스에 추가할 메소드들
 
