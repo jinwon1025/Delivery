@@ -19,7 +19,6 @@ public class MenuItem {
 	private Integer price;
 	private String image_name;
 	@NotBlank(message="메뉴 설명을 입력해주세요")
-	private String content;
-	
+	private String content;	
 	private MultipartFile image;
 }

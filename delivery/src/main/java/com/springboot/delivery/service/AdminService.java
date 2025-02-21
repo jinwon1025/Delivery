@@ -10,4 +10,5 @@ public interface AdminService {
     void issueCouponToUser(String userId, Integer couponId);
     void deleteUser(String userId);
     List<Coupon> getUserCoupons(String userId);
+    void createCoupon(Coupon coupon);
 }

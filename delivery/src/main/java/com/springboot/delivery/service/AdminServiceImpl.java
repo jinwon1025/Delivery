@@ -7,12 +7,19 @@ import com.springboot.delivery.mapper.AdminMapper;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.Coupon;
 
-@Service  // 이 어노테이션이 중요합니다!
+@Service  
 public class AdminServiceImpl implements AdminService {
     
     @Autowired
     private AdminMapper adminMapper;
 
+    @Override
+    public void createCoupon(Coupon coupon) {
+        adminMapper.createCoupon(coupon);
+    }
+    
+    
+    
     @Override
     public List<User> getAllUsers() {
         return adminMapper.getAllUsers();

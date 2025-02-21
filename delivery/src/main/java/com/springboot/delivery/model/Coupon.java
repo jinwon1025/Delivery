@@ -10,8 +10,8 @@ public class Coupon {
     private Integer cp_id;
     private String co_name;
     private Integer sale_price;
-    private Date created_date;
-    private Date end_date;
+    private String created_date;  // Date -> String
+    private String end_date;      // Date -> String
     private Integer minimum_purchase;
     private String store_id;
 }
