@@ -18,6 +18,8 @@ public class MenuItem {
 	@NotNull(message="가격을 입력해주세요")
 	private Integer price;
 	private String image_name;
-	private String content;
+
+	@NotBlank(message="메뉴 설명을 입력해주세요")
+	private String content;	
 	private MultipartFile image;
 }

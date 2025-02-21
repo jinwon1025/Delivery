@@ -5,11 +5,12 @@ import org.apache.ibatis.annotations.Mapper;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.Coupon;
 
-@Mapper  // 이 어노테이션이 중요합니다!
+@Mapper 
 public interface AdminMapper {
     List<User> getAllUsers();
     List<Coupon> getAllCoupons();
     void issueCouponToUser(String userId, Integer couponId);
     List<Coupon> getUserCoupons(String userId);
     void deleteUser(String userId);
+	void createCoupon(Coupon coupon);
 }

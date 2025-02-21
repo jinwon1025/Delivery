@@ -7,12 +7,55 @@
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>쿠폰 관리</h2>
-                <a href="<c:url value='/admin/'/>" class="btn btn-secondary">관리자 홈으로</a>
+                <a href="<c:url value='/admin/home'/>" class="btn btn-secondary">관리자 홈으로</a>
             </div>
 
+            <!-- 쿠폰 생성 폼 -->
             <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">새 쿠폰 생성</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">쿠폰 목록</h5>
+                    <form action="<c:url value='/admin/coupon/create'/>" method="post">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">쿠폰명</label>
+                                    <input type="text" class="form-control" name="co_name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">할인 금액</label>
+                                    <input type="number" class="form-control" name="sale_price" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">최소 구매 금액</label>
+                                    <input type="number" class="form-control" name="minimum_purchase" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">만료일</label>
+                                    <input type="date" class="form-control" name="end_date" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">쿠폰 생성</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 쿠폰 목록 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">쿠폰 목록</h5>
+                </div>
+                <div class="card-body">
                     <table class="table">
                         <thead>
                             <tr>
@@ -22,7 +65,8 @@
                                 <th>최소구매금액</th>
                                 <th>생성일</th>
                                 <th>만료일</th>
-                                <th>발급 현황</th>
+                                <th>상태</th>
+                                <th>관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,11 +76,21 @@
                                     <td>${coupon.co_name}</td>
                                     <td><fmt:formatNumber value="${coupon.sale_price}" type="currency" currencySymbol="₩"/></td>
                                     <td><fmt:formatNumber value="${coupon.minimum_purchase}" type="currency" currencySymbol="₩"/></td>
-                                    <td><fmt:formatDate value="${coupon.created_date}" pattern="yyyy-MM-dd"/></td>
-                                    <td><fmt:formatDate value="${coupon.end_date}" pattern="yyyy-MM-dd"/></td>
+                                    <td>${coupon.created_date}</td>
+									<td>${coupon.end_date}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-info" 
-                                                onclick="showCouponUsage(${coupon.cp_id})">발급현황</button>
+                                        <c:choose>
+                                            <c:when test="${coupon.end_date < now}">
+                                                <span class="badge bg-danger">만료됨</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge bg-success">사용가능</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                onclick="if(confirm('정말 삭제하시겠습니까?')) deleteCoupon(${coupon.cp_id})">삭제</button>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -48,29 +102,17 @@
     </div>
 </div>
 
-<!-- 쿠폰 발급 현황 모달 -->
-<div class="modal fade" id="couponUsageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">쿠폰 발급 현황</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="couponUsageContent"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-function showCouponUsage(couponId) {
+function deleteCoupon(couponId) {
     $.ajax({
-        url: '<c:url value="/admin/coupon/usage"/>' + '?couponId=' + couponId,
-        type: 'GET',
+        url: '<c:url value="/admin/coupon/delete/"/>' + couponId,
+        type: 'POST',
         success: function(response) {
-            $('#couponUsageContent').html(response);
-            $('#couponUsageModal').modal('show');
+            alert('쿠폰이 삭제되었습니다.');
+            location.reload();
+        },
+        error: function() {
+            alert('쿠폰 삭제에 실패했습니다.');
         }
     });
 }
