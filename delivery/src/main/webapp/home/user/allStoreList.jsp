@@ -207,7 +207,7 @@ body {
                         <div class="min-order">
                             <span class="min-order-label">최소주문금액:</span> 
                             <span class="min-order-value">${store.last_price}원</span> 이상 배달
-                            <c:if test="${status.index % 2 == 0}">
+                            <c:if test="${store.last_price > 12000}">
                                 <span class="coupon-tag">쿠폰할인</span>
                             </c:if>
                         </div>
