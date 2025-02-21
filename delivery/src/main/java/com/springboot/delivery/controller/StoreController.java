@@ -252,17 +252,20 @@ public class StoreController {
 	   ModelAndView mav = new ModelAndView("owner/storeMain");
 	   MenuItem menu = new MenuItem();
 	   session.setAttribute("menu_category_id", menu_category_id);
-	   mav.addObject("menu",menu);
+	   mav.addObject("menuItem", menu);
 	   mav.addObject("BODY", "menuRegister.jsp");
 	   return mav;
    }
    @PostMapping(value="/store/menuRegister")
-   public ModelAndView menuRegister(@Valid MenuItem menu, HttpSession session, BindingResult br) {
+   public ModelAndView menuRegister(@Valid MenuItem menu, BindingResult br, HttpSession session) {
 	   ModelAndView mav = new ModelAndView("owner/storeMain");
 	   Store currentStore = (Store) session.getAttribute("currentStore");
 	   if(br.hasErrors()) {
 		   mav.getModel().putAll(br.getModel());
 		   mav.addObject("BODY","menuRegister.jsp");
+		   br.getFieldErrors().forEach(error -> {
+	            System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
+	         });
 		   return mav;
 	   }
 	   MultipartFile multiFile = menu.getImage();

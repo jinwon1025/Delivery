@@ -193,9 +193,8 @@
                                              alt="${menuItem.menu_name}">
                                     </c:when>
                                     <c:otherwise>
-                                        <div style="width: 100%; height: 100%; background-color: #ddd; 
+                                        <div style="width: 100%; height: 100%; background-color: #fff; 
                                                     display: flex; align-items: center; justify-content: center;">
-                                            <span>이미지 없음</span>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
