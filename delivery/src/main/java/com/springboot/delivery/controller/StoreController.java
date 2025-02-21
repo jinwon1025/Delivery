@@ -263,9 +263,6 @@ public class StoreController {
 	   if(br.hasErrors()) {
 		   mav.getModel().putAll(br.getModel());
 		   mav.addObject("BODY","menuRegister.jsp");
-		   br.getFieldErrors().forEach(error -> {
-	            System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
-	         });
 		   return mav;
 	   }
 	   MultipartFile multiFile = menu.getImage();
