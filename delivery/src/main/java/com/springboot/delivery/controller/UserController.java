@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.service.UserService;
 
@@ -288,6 +290,15 @@ public class UserController {
 		session.invalidate();
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("redirect:/user/index");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allStore")
+	public ModelAndView allStore() {
+		ModelAndView mav =new ModelAndView("user/userMain");
+		List<Store> allStore = this.userService.getAllStore();
+		mav.addObject("StoreList", allStore);
+		mav.addObject("BODY", "allStoreList.jsp");
 		return mav;
 	}
 	

@@ -50,6 +50,12 @@
 		select count(*) from b_user_info where user_id=#{user_id}
 
 	</select>
+	
+	<select id="getAllStore" resultType="com.springboot.delivery.model.Store">
+	
+	select store_id, store_name, store_address, last_price, store_image_name from b_store_tbl
+	
+	</select>
 
 
 

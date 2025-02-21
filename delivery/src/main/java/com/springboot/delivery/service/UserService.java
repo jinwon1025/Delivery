@@ -1,10 +1,13 @@
 package com.springboot.delivery.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserMapper;
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 
 @Service
@@ -47,6 +50,10 @@ public class UserService {
     
     public Integer idcheck(String user_id) {
     	return this.userMapper.idcheck(user_id);
+    }
+    
+    public List<Store> getAllStore(){
+    	return this.userMapper.getAllStore();
     }
 
 }
