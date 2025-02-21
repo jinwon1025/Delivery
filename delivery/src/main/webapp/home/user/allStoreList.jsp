@@ -5,7 +5,7 @@ pageEncoding="UTF-8"%>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>배달 사이트</title>
+<title>배달사이트</title>
 <style>
 body {
     font-family: 'Noto Sans KR', sans-serif;
