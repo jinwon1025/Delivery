@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>쿠폰 관리</h2>
-                <a href="<c:url value='/admin/'/>" class="btn btn-secondary">관리자 홈으로</a>
+                <a href="<c:url value='/admin/couponManagement'/>" class="btn btn-secondary">관리자 홈으로</a>
             </div>
 
             <div class="card mb-4">

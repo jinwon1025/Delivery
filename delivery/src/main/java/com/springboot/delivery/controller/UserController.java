@@ -32,7 +32,7 @@ public class UserController {
 	    //로그인이 되어있다면 로그인상태 페이지 유지
 	    if(loginUser != null) {
 	    	if("ADMIN".equals(loginUser.getRole())) {
-	            mav.addObject("BODY", "admin/adminMain.jsp");  // 관리자는 관리자 페이지로
+	            mav.addObject("BODY", "admin/adminHome.jsp");  // 관리자는 관리자 페이지로
 	        } else {
 	            mav.addObject("BODY", "loginUser.jsp");  // 일반 사용자는 일반 페이지로
 	        }

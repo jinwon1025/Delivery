@@ -1,55 +1,47 @@
 package com.springboot.delivery.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
-import com.springboot.delivery.service.AdminService;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/admin")
 public class AdminController {
-    
-    @Autowired
-    private AdminService adminService;
 
-    // 관리자 권한 체크 메서드
-    private boolean checkAdminAuth(HttpSession session) {
-        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-        return loginUser != null && "ADMIN".equals(loginUser.getRole());
-    }
-
-    // 유저 관리 페이지
-    @GetMapping("/users")
-    public ModelAndView userManagement(HttpSession session) {
-        ModelAndView mav = new ModelAndView("user/userMain");
-        
-        if (!checkAdminAuth(session)) {
-            mav.setViewName("redirect:/user/index");
-            return mav;
-        }
-        
-        mav.addObject("userList", adminService.getAllUsers());
-        mav.addObject("BODY", "admin/userManagement.jsp");
-        return mav;
-    }
-
-    // 쿠폰 관리 페이지
-    @GetMapping("/coupons")
+    @GetMapping("/admin/couponManagement")
     public ModelAndView couponManagement(HttpSession session) {
         ModelAndView mav = new ModelAndView("user/userMain");
         
-        if (!checkAdminAuth(session)) {
+        // 세션에서 로그인 사용자 확인 (관리자 권한 체크)
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            // 관리자가 아니면 로그인 페이지로 리다이렉트
             mav.setViewName("redirect:/user/index");
             return mav;
         }
         
-        mav.addObject("couponList", adminService.getAllCoupons());
-        mav.addObject("BODY", "admin/couponManagement.jsp");
+        mav.addObject("BODY", "../admin/couponManagement.jsp");
+        return mav;
+    }
+
+    @GetMapping("/admin/userManagement")
+    public ModelAndView userManagement(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
+        
+        // 세션에서 로그인 사용자 확인 (관리자 권한 체크)
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            // 관리자가 아니면 로그인 페이지로 리다이렉트
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        
+        mav.addObject("BODY", "../admin/userManagement.jsp");
         return mav;
     }
 }
