@@ -189,7 +189,7 @@
                             <div class="menu-item-image">
                                 <c:choose>
                                     <c:when test="${not empty menuItem.image_name}">
-                                        <img src="/upload/menuItemProfile/${menuItem.image_name}" 
+                                        <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menuItem.image_name}" 
                                              alt="${menuItem.menu_name}">
                                     </c:when>
                                     <c:otherwise>
@@ -205,7 +205,7 @@
                                 <p class="menu-item-price">${menuItem.price}원</p>
                                 
                                 <div class="admin-controls">
-                                    <form action="/store/menuModify" method="post">
+                                    <form action="/store/menuDetail" method="post">
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="수정" class="btn btn-primary"/>
                                     </form>

@@ -26,4 +26,6 @@ public interface StoreMapper {
 	Integer getMenuCount();
 	List<MenuItem> getMenuList(String store_id);
 	void deleteMenu(MenuItem mi);
+	MenuItem menuDetail(MenuItem mi); 
+	void menuModify(MenuItem mi);
 }

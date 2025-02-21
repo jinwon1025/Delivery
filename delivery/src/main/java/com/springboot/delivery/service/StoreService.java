@@ -73,4 +73,11 @@ public class StoreService {
 		this.storeMapper.deleteMenu(mi);
 	}
 	
+	public MenuItem menuDetail(MenuItem mi) {
+		return this.storeMapper.menuDetail(mi);
+	}
+	
+	public void menuModify(MenuItem mi) {
+		this.storeMapper.menuModify(mi);
+	}
 }

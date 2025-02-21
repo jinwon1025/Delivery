@@ -329,4 +329,25 @@ public class StoreController {
 	   this.storeService.deleteMenu(mi);
 	   return new ModelAndView("redirect:/store/menuManager");
    }  
+   @PostMapping(value="/store/menuDetail")
+   public ModelAndView menuDetail(HttpSession session, Integer menu_item_id) {
+	   Store currentStore = (Store) session.getAttribute("currentStore");
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(menu_item_id);
+	   MenuItem m2 = this.storeService.menuDetail(mi);
+	   mav.addObject("menuItem",m2);
+	   mav.addObject("BODY","menuModify.jsp");
+	   return mav;
+   }
+   @PostMapping(value="/store/menuModify")
+   public ModelAndView menuModify(HttpSession session, Integer menu_item_id, MenuItem menuItem) {
+	   Store currentStore = (Store) session.getAttribute("currentStore");
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   menuItem.setMenu_item_id(menu_item_id);
+	   menuItem.setStore_id(currentStore.getStore_id());
+	   this.storeService.menuModify(menuItem);
+	   return new ModelAndView("redirect:/store/menuManager");
+   }
 }

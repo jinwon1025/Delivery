@@ -90,6 +90,17 @@
    
    </delete>
    
+   <select id="menuDetail" resultType="com.springboot.delivery.model.MenuItem" parameterType="com.springboot.delivery.model.MenuItem">
+   
+   select * from b_menu_item_tbl where store_id=#{store_id} and menu_item_id=#{menu_item_id}
+   
+   </select>
+   
+   <update id="menuModify" parameterType="com.springboot.delivery.model.MenuItem">
+   update b_menu_item_tbl set menu_name=#{menu_name}, price=#{price}, content=#{content}, 
+   			image_name=#{image_name} where store_id=#{store_id} and menu_item_id=#{menu_item_id}
+   </update>
+   
 </mapper>
 
 
