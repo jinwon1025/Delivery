@@ -323,7 +323,7 @@ public class StoreController {
 	   Store cureentStore = (Store) session.getAttribute("currentStore");
 	   List<MenuItem> menuList = storeService.getMenuList(cureentStore.getStore_id());
 	   mav.addObject("menuList",menuList);
-	   mav.addObject("BODY","../store/menuList.jsp");
+	   mav.addObject("BODY","menuList.jsp");
 	   return mav;
    }
    
