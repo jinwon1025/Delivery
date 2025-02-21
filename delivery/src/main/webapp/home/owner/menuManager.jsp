@@ -176,57 +176,61 @@
   <h2 style="text-align: center; margin-bottom: 20px;">메뉴 관리</h2>
   
   <div class="menu-container">
-    <c:forEach items="${menuCategoryList}" var="category" varStatus="status">
-      <div class="category ${status.first ? 'active' : ''}">
-        <div class="category-header">
-          <h3>${category.menu_category_name}</h3>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="menu-items">
-          <c:forEach items="${menuItemMap[category.menu_category_id]}" var="menuItem">
-            <div class="menu-item">
-              <div class="menu-item-image">
-                <c:choose>
-                  <c:when test="${not empty menuItem.image_name}">
-                    <img src="/upload/menuItemProfile/${menuItem.image_name}" alt="${menuItem.menu_name}">
-                  </c:when>
-                  <c:otherwise>
-                    <div style="width: 100%; height: 100%; background-color: #ddd; display: flex; align-items: center; justify-content: center;">
-                      <span>이미지 없음</span>
-                    </div>
-                  </c:otherwise>
-                </c:choose>
-              </div>
-              <div class="menu-item-details">
-                <h4>${menuItem.menu_name}</h4>
-                <p class="menu-item-description">${menuItem.description}</p>
-                <p class="menu-item-price">${menuItem.price}원</p>
-                
-                <div class="admin-controls">
-                  <form action="/store/menuModify" method="post">
-                    <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
-                    <input type="submit" value="수정" class="btn btn-primary"/>
-                  </form>
-                  <form action="/store/menuDelete" method="post">
-                    <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
-                    <input type="submit" value="삭제" class="btn btn-danger"/>
-                  </form>
-                </div>
-              </div>
+    <c:forEach items="${menuList}" var="category" varStatus="status">
+        <div class="category ${status.first ? 'active' : ''}">
+            <div class="category-header">
+                <h3>${category.menu_category_name}</h3>
+                <span class="toggle-icon">▼</span>
             </div>
-          </c:forEach>
-          
-          <!-- 메뉴 추가 버튼 -->
-          <div style="padding: 15px; text-align: center;">
-            <form action="/store/menuInsert" method="post">
-              <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
-              <input type="submit" value="+ 메뉴 추가" class="btn btn-primary"/>
-            </form>
-          </div>
+            <div class="menu-items">
+                <c:forEach items="${menuItemList}" var="menuItem">
+                    <c:if test="${menuItem.menu_category_id eq category.menu_category_id}">
+                        <div class="menu-item">
+                            <div class="menu-item-image">
+                                <c:choose>
+                                    <c:when test="${not empty menuItem.image_name}">
+                                        <img src="/upload/menuItemProfile/${menuItem.image_name}" 
+                                             alt="${menuItem.menu_name}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div style="width: 100%; height: 100%; background-color: #ddd; 
+                                                    display: flex; align-items: center; justify-content: center;">
+                                            <span>이미지 없음</span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="menu-item-details">
+                                <h4>${menuItem.menu_name}</h4>
+                                <p class="menu-item-description">${menuItem.content}</p>
+                                <p class="menu-item-price">${menuItem.price}원</p>
+                                
+                                <div class="admin-controls">
+                                    <form action="/store/menuModify" method="post">
+                                        <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                        <input type="submit" value="수정" class="btn btn-primary"/>
+                                    </form>
+                                    <form action="/store/menuDelete" method="post">
+                                        <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                        <input type="submit" value="삭제" class="btn btn-danger"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+                </c:forEach>
+                
+                <!-- 메뉴 추가 버튼 -->
+                <div style="padding: 15px; text-align: center;">
+                    <form action="/store/menuInsert" method="post">
+                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                        <input type="submit" value="+ 메뉴 추가" class="btn btn-primary"/>
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
     </c:forEach>
-  </div>
+</div>
   
   <!-- 카테고리 추가 폼 -->
   <div class="register-form">

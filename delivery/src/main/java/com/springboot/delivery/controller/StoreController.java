@@ -206,16 +206,7 @@ public class StoreController {
       return new ModelAndView("redirect:../store/storeList");
    }
 
-   @GetMapping(value = "/store/menuManager")
-   public ModelAndView goMenuManager(HttpSession session) {
-      ModelAndView mav = new ModelAndView("owner/storeMain");
-      Store currentStore = (Store) session.getAttribute("currentStore");
-      List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
-      mav.addObject("menuList", menuList);
-      mav.addObject("BODY", "menuManager.jsp");
-      mav.addObject(new MenuCategory());
-      return mav;
-   }
+  
 
    @PostMapping(value = "/store/categoryRegister")
    public ModelAndView menuRegister(@Valid MenuCategory menucategory, BindingResult br, String menu_category_name, HttpSession session) {
@@ -315,16 +306,19 @@ public class StoreController {
 	   
 	   this.storeService.menuRegister(menu);
 	   
-	   return new ModelAndView("redirect:/store/menuList");
-   }
-   @GetMapping(value="/store/menuList")
-   public ModelAndView menuList(MenuItem menu, HttpSession session) {
-	   ModelAndView mav = new ModelAndView("owner/storeMain");
-	   Store cureentStore = (Store) session.getAttribute("currentStore");
-	   List<MenuItem> menuList = storeService.getMenuList(cureentStore.getStore_id());
-	   mav.addObject("menuList",menuList);
-	   mav.addObject("BODY","menuList.jsp");
-	   return mav;
+	   return new ModelAndView("redirect:/store/menuManager");
+   }	
+   @GetMapping(value = "/store/menuManager")
+   public ModelAndView goMenuManager(HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/storeMain");
+      Store currentStore = (Store) session.getAttribute("currentStore");
+      List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
+      List<MenuItem> menuItemList = this.storeService.getMenuList(currentStore.getStore_id());
+      mav.addObject("menuList", menuList);
+      mav.addObject("menuItemList",menuItemList);
+      mav.addObject("BODY", "menuManager.jsp");
+      mav.addObject(new MenuCategory());
+      return mav;
    }
    
    
