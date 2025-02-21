@@ -55,7 +55,7 @@ h1 {
 		<c:choose>
 			<c:when test="${sessionScope.loginUser != null}">
 				<c:choose>
-					<c:when test="${sessionScope.loginUser.image_name != 'none'}">
+					<c:when test="${not empty sessionScope.loginUser.image_name}">
 						<!-- 사업자의 프로필 사진이 있을 때 -->
 						<img alt="Profile Image" class="profile-image"
 							src="${pageContext.request.contextPath}/upload/userProfile/${sessionScope.loginUser.image_name}" />
@@ -67,6 +67,7 @@ h1 {
 					</c:otherwise>
 				</c:choose>
 				<span>${sessionScope.loginUser.user_name}님</span>
+				<a href="/user/mypage">마이페이지</a>
 				<a href="/user/logout">로그아웃</a>
 			
 			</c:when>
@@ -85,7 +86,9 @@ h1 {
 
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="">장바구니</a> | <a href="">내 정보</a> | <a href="">즐겨찾기</a> | <a href="">주문내역</a>
+			<a href="/user/allStore">전체보기</a> | <a href="">치킨</a> | <a href="">중식</a> | <a href="">돈까스·회</a> |
+			 <a href="">피자</a> | <a href="">패스트푸드</a> | <a href="">찜·탕</a> | <a href="">족발·보쌈</a>
+			  | <a href="">분식</a> | <a href="">카페·디저트</a> | <a href="">한식</a>
 		</h2>
 
 		<hr>

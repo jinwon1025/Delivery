@@ -206,16 +206,7 @@ public class StoreController {
       return new ModelAndView("redirect:../store/storeList");
    }
 
-   @GetMapping(value = "/store/menuManager")
-   public ModelAndView goMenuManager(HttpSession session) {
-      ModelAndView mav = new ModelAndView("owner/storeMain");
-      Store currentStore = (Store) session.getAttribute("currentStore");
-      List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
-      mav.addObject("menuList", menuList);
-      mav.addObject("BODY", "menuManager.jsp");
-      mav.addObject(new MenuCategory());
-      return mav;
-   }
+  
 
    @PostMapping(value = "/store/categoryRegister")
    public ModelAndView menuRegister(@Valid MenuCategory menucategory, BindingResult br, String menu_category_name, HttpSession session) {
@@ -261,12 +252,12 @@ public class StoreController {
 	   ModelAndView mav = new ModelAndView("owner/storeMain");
 	   MenuItem menu = new MenuItem();
 	   session.setAttribute("menu_category_id", menu_category_id);
-	   mav.addObject("menu",menu);
+	   mav.addObject("menuItem", menu);
 	   mav.addObject("BODY", "menuRegister.jsp");
 	   return mav;
    }
    @PostMapping(value="/store/menuRegister")
-   public ModelAndView menuRegister(@Valid MenuItem menu, HttpSession session, BindingResult br) {
+   public ModelAndView menuRegister(@Valid MenuItem menu, BindingResult br, HttpSession session) {
 	   ModelAndView mav = new ModelAndView("owner/storeMain");
 	   Store currentStore = (Store) session.getAttribute("currentStore");
 	   if(br.hasErrors()) {
@@ -315,20 +306,27 @@ public class StoreController {
 	   
 	   this.storeService.menuRegister(menu);
 	   
-	   return new ModelAndView("redirect:/store/menuList");
+	   return new ModelAndView("redirect:/store/menuManager");
+   }	
+   @GetMapping(value = "/store/menuManager")
+   public ModelAndView goMenuManager(HttpSession session) {
+      ModelAndView mav = new ModelAndView("owner/storeMain");
+      Store currentStore = (Store) session.getAttribute("currentStore");
+      List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
+      List<MenuItem> menuItemList = this.storeService.getMenuList(currentStore.getStore_id());
+      mav.addObject("menuList", menuList);
+      mav.addObject("menuItemList",menuItemList);
+      mav.addObject("BODY", "menuManager.jsp");
+      mav.addObject(new MenuCategory());
+      return mav;
    }
-   @GetMapping(value="/store/menuList")
-   public ModelAndView menuList(MenuItem menu, HttpSession session) {
-	   ModelAndView mav = new ModelAndView("owner/storeMain");
-	   Store cureentStore = (Store) session.getAttribute("currentStore");
-	   List<MenuItem> menuList = storeService.getMenuList(cureentStore.getStore_id());
-	   mav.addObject("menuList",menuList);
-	   mav.addObject("BODY","../store/menuList.jsp");
-	   return mav;
-   }
-   
-   
-   
-   
-   
+   @PostMapping(value="/store/menuDelete")
+   public ModelAndView deleteMenu(HttpSession session,Integer menu_item_id) {
+	   Store currentStore = (Store) session.getAttribute("currentStore");
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(menu_item_id);
+	   this.storeService.deleteMenu(mi);
+	   return new ModelAndView("redirect:/store/menuManager");
+   }  
 }

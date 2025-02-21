@@ -1,77 +1,130 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>User Information</title>
+<style>
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.profile-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    margin-right: 20px;
+}
+
+.info-table {
+    border-collapse: collapse;
+    text-align: left;
+    width: 400px;
+}
+
+.info-table th, .info-table td {
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.info-table th {
+    background-color: #f2f2f2;
+}
+
+.edit-btn {
+    display: block;
+    width: 100px;
+    padding: 10px;
+    margin: 10px auto;
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2 style="text-align: center;">My Page</h2>
 
 <div class="container">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h2 class="mb-4">마이페이지</h2>
-            
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">회원 정보</h5>
+    <table class="info-table">
+        <tr>
+            <th>아이디</th>
+            <td>${userInfo.user_id}</td>
+        </tr>
+        <tr>
+            <th>이름</th>
+            <td>${userInfo.user_name}</td>
+        </tr>
+        <tr>
+            <th>비밀번호</th>
+            <td>${userInfo.password}</td>
+        </tr>
+        <tr>
+            <th>전화번호</th>
+            <td>${userInfo.user_phone}</td>
+        </tr>
+        <tr>
+            <th>생년월일</th>
+            <td>${userInfo.birth}</td>
+        </tr>
+        <tr>
+            <th>이메일</th>
+            <td>${userInfo.email}</td>
+        </tr>
+        <c:if test="${not empty userInfo.point}">
+        <tr>
+            <th>포인트</th>
+            <td>${userInfo.point}</td>
+        </tr>
+        </c:if>
+        <tr>
+            <th>프로필 사진</th>
+            <td>
+                <c:choose>
+                    <c:when test="${not empty userInfo.image_name}">
+                        <img alt="Profile Image" class="profile-img"
+                            src="${pageContext.request.contextPath}/upload/userProfile/${userInfo.image_name}" />
+                    </c:when>
+                    <c:otherwise>
+                        <img alt="No Image" class="profile-img"
+                            src="${pageContext.request.contextPath}/image/noImage.png" />
+                    </c:otherwise>
+                </c:choose>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <div class="btn-group">
+                    <a href="<c:url value='/user/updateForm'/>" class="edit-btn">회원정보 수정</a>
+                    <a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
                 </div>
-                <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th>아이디</th>
-                            <td>${userInfo.user_id}</td>
-                        </tr>
-                        <tr>
-                            <th>이름</th>
-                            <td>${userInfo.user_name}</td>
-                        </tr>
-                        <tr>
-                            <th>비밀번호</th>
-                            <td>••••••••</td>
-                        </tr>
-                        <tr>
-                            <th>전화번호</th>
-                            <td>${userInfo.user_phone}</td>
-                        </tr>
-                        <tr>
-                            <th>생년월일</th>
-                            <td>${userInfo.birth}</td>
-                        </tr>
-                        <tr>
-                            <th>이메일</th>
-                            <td>${userInfo.email}</td>
-                        </tr>
-                        <c:if test="${not empty userInfo.point}">
-                            <tr>
-                                <th>포인트</th>
-                                <td>${userInfo.point}</td>
-                            </tr>
-                        </c:if>
-                    </table>
-                    
-                    <div class="mt-3">
-                        <a href="<c:url value='/user/updateForm'/>" class="btn btn-primary">회원정보 수정</a>
-                        <a href="<c:url value='/user/index'/>" class="btn btn-primary">홈으로</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">서비스 바로가기</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-secondary w-100">리뷰 관리</a>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-secondary w-100">결제수단 관리</a>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-secondary w-100">주소 관리</a>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-secondary w-100">쿠폰함</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            </td>
+        </tr>
+    </table>
 </div>
+
+</body>
+</html>

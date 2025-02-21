@@ -1,8 +1,11 @@
 package com.springboot.delivery.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 
 @Mapper
@@ -12,4 +15,5 @@ public interface UserMapper {
 		User getUserById(String user_id);
     void updateUserInfo(User user);
     Integer idcheck(String user_id);
+    List<Store> getAllStore();
 }	

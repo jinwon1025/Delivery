@@ -109,6 +109,12 @@ body {
 							path="birth" /></font></td>
 			</tr>
 			<tr>
+				<th>주소</th>
+				<td><form:input path="user_address" id="email"
+						placeholder="주소를 입력해주세요" /> <font color="red"><form:errors
+							path="user_address" /></font></td>
+			</tr>
+			<tr>
 				<th>사용자 프로필 이미지</th>
 				<td><input type="file" name="image"></td>
 			</tr>
