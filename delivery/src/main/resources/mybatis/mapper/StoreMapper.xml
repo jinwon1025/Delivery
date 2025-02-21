@@ -84,6 +84,12 @@
    
    </select>
    
+   <delete id="deleteMenu" parameterType="com.springboot.delivery.model.MenuItem">
+   
+   delete from b_menu_item_tbl where store_id=#{store_id} and menu_item_id=#{menu_item_id}
+   
+   </delete>
+   
 </mapper>
 
 

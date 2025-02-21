@@ -320,9 +320,13 @@ public class StoreController {
       mav.addObject(new MenuCategory());
       return mav;
    }
-   
-   
-   
-   
-   
+   @PostMapping(value="/store/menuDelete")
+   public ModelAndView deleteMenu(HttpSession session,Integer menu_item_id) {
+	   Store currentStore = (Store) session.getAttribute("currentStore");
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(menu_item_id);
+	   this.storeService.deleteMenu(mi);
+	   return new ModelAndView("redirect:/store/menuManager");
+   }  
 }

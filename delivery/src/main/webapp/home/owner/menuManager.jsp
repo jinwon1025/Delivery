@@ -209,7 +209,7 @@
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="수정" class="btn btn-primary"/>
                                     </form>
-                                    <form action="/store/menuDelete" method="post">
+                                    <form action="/store/menuDelete" method="post" onsubmit="return confirmDelete();">
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="삭제" class="btn btn-danger"/>
                                     </form>
@@ -253,6 +253,15 @@
         header.classList.toggle('active');
       });
     });
+    
+    function confirmDelete(){
+    	if(confirm("정말로 삭제하시겠습니까?")){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    
   </script>
 </body>
 </html>
