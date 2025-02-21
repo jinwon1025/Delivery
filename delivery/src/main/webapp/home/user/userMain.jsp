@@ -55,7 +55,7 @@ h1 {
 		<c:choose>
 			<c:when test="${sessionScope.loginUser != null}">
 				<c:choose>
-					<c:when test="${sessionScope.loginUser.image_name != 'none'}">
+					<c:when test="${not empty sessionScope.loginUser.image_name}">
 						<!-- 사업자의 프로필 사진이 있을 때 -->
 						<img alt="Profile Image" class="profile-image"
 							src="${pageContext.request.contextPath}/upload/userProfile/${sessionScope.loginUser.image_name}" />
@@ -67,6 +67,7 @@ h1 {
 					</c:otherwise>
 				</c:choose>
 				<span>${sessionScope.loginUser.user_name}님</span>
+				<a href="/user/mypage">마이페이지</a>
 				<a href="/user/logout">로그아웃</a>
 			
 			</c:when>

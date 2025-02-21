@@ -1,7 +1,9 @@
 package com.springboot.delivery.controller;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -152,6 +154,9 @@ public class UserController {
 	    
 	    // 사용자의 전체 정보 조회
 	    User userInfo = this.userService.getUserById(loginUser.getUser_id());
+	    String maskedPassword= userInfo.getPassword().replaceAll(".", "*");
+	    userInfo.setPassword(maskedPassword);
+	    System.out.println(userInfo.getUser_phone());
 	    mav.addObject("userInfo", userInfo);
 	    mav.addObject("BODY", "mypage.jsp");
 	    
@@ -173,6 +178,7 @@ public class UserController {
 	    
 	    // 사용자의 전체 정보 조회
 	    User userInfo = this.userService.getUserById(loginUser.getUser_id());
+	    System.out.println(userInfo.getImage_name());
 	    mav.addObject("userInfo", userInfo);
 	    mav.addObject("BODY", "updateForm.jsp");
 	    
@@ -195,8 +201,85 @@ public class UserController {
 	    // user_id 설정 (보안을 위해 세션에서 가져온 값 사용)
 	    user.setUser_id(loginUser.getUser_id());
 	    
+	    // 기존 사용자 정보 조회
+	    User existingUser = this.userService.getUserById(loginUser.getUser_id());
+	    String existingImageName = existingUser.getImage_name();
+	    
+	    MultipartFile multiFile = user.getImage();
+	    ServletContext ctx = session.getServletContext();
+	    
+	    // multiFile이 null이 아니고 비어있지 않은 경우 (새 이미지 업로드)
+	    if (multiFile != null && !multiFile.isEmpty()) {
+	        String originalFilename = multiFile.getOriginalFilename();
+	        // 파일명 길이 제한 (30자 이내)
+	        String newFileName = user.getUser_id() + "_";
+	        
+	        // 확장자 추출
+	        int lastDotIndex = originalFilename.lastIndexOf('.');
+	        String extension = "";
+	        String baseFileName = originalFilename;
+	        
+	        if (lastDotIndex > 0) {
+	            extension = originalFilename.substring(lastDotIndex); // .jpg 같은 확장자
+	            baseFileName = originalFilename.substring(0, lastDotIndex);
+	        }
+	        
+	        // 남은 길이 계산 (user_id + "_" + 확장자 길이를 제외한 나머지)
+	        int remainingLength = 30 - newFileName.length() - extension.length();
+	        
+	        // 파일명이 너무 길면 자르기
+	        if (baseFileName.length() > remainingLength) {
+	            baseFileName = baseFileName.substring(0, remainingLength);
+	        }
+	        
+	        newFileName += baseFileName + extension;
+	        String newPath = ctx.getRealPath("/upload/userProfile/" + newFileName);
+	        
+	        // 기존 이미지가 있으면 삭제
+	        if (existingImageName != null && !existingImageName.isEmpty()) {
+	            String existingPath = ctx.getRealPath("/upload/userProfile/" + existingImageName);
+	            File existingFile = new File(existingPath);
+	            if (existingFile.exists()) {
+	                boolean deleted = existingFile.delete();
+	                System.out.println("기존 파일 삭제 " + (deleted ? "성공" : "실패") + ": " + existingPath);
+	            }
+	        }
+	        
+	        // 새 이미지 저장
+	        try (OutputStream os = new FileOutputStream(newPath);
+	             BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream())) {
+	            byte[] buffer = new byte[8156];
+	            int read;
+	            while ((read = bis.read(buffer)) > 0) {
+	                os.write(buffer, 0, read);
+	            }
+	            user.setImage_name(newFileName);
+	            System.out.println("새 이미지 저장 성공: " + newPath);
+	        } catch (Exception e) {
+	            System.out.println("새 이미지 업로드 중 문제 발생: " + e.getMessage());
+	        }
+	    } else {
+	        // 새 이미지가 없는 경우, 기존 이미지가 있으면 삭제
+	        if (existingImageName != null && !existingImageName.isEmpty()) {
+	            String existingPath = ctx.getRealPath("/upload/userProfile/" + existingImageName);
+	            File existingFile = new File(existingPath);
+	            if (existingFile.exists()) {
+	                boolean deleted = existingFile.delete();
+	                System.out.println("이미지 선택 안함 - 기존 파일 삭제 " + (deleted ? "성공" : "실패") + ": " + existingPath);
+	            }
+	        }
+	        // 이미지 이름을 빈 문자열로 설정
+	        user.setImage_name("");
+	    }
+	    
 	    // 회원 정보 수정
 	    this.userService.updateUserInfo(user);
+	    LoginUser lu = new LoginUser();
+	    lu.setUser_id(user.getUser_id());
+	    lu.setPassword(user.getPassword());
+	    lu.setUser_name(user.getUser_name());
+	    lu.setImage_name(user.getImage_name());
+	    session.setAttribute("loginUser", lu);
 	    
 	    return mav;
 	}

@@ -5,8 +5,8 @@
 	<insert id="registerUser"
 		parameterType="com.springboot.delivery.model.User">
 		insert into
-		b_user_info(user_id,user_name,email,password,user_phone,image_name, point,birth,role)
-		values(#{user_id},#{user_name},#{email},#{password},#{user_phone},#{image_name}, 0,to_date(#{birth},'YYYY-MM-DD'),'USER')
+		b_user_info(user_id,user_name,email,password,user_phone,image_name, point,birth,user_address, role)
+		values(#{user_id},#{user_name},#{email},#{password},#{user_phone},#{image_name}, 0,to_date(#{birth},'YYYY-MM-DD'),#{user_address}, 'USER')
 	</insert>
 	<select id="loginUser"
 		resultType="com.springboot.delivery.model.LoginUser"
@@ -22,11 +22,12 @@
 		user_id,
 		user_name,
 		email,
+		password,
 		user_phone,
+		image_name,
 		point,
 		birth,
-		user_phone,
-		image_name
+		user_address
 		from b_user_info
 		where user_id = #{user_id}
 	</select>
@@ -36,8 +37,12 @@
 		parameterType="com.springboot.delivery.model.User">
 		update b_user_info set
 		user_name = #{user_name},
+		email = #{email},
+		password = #{password},
 		user_phone = #{user_phone},
-		birth = #{birth}
+		image_name = #{image_name},
+		birth = #{birth},
+		user_address = #{user_address}
 		where user_id = #{user_id}
 	</update>
 	<select id="idcheck" parameterType="String" resultType="Integer">
