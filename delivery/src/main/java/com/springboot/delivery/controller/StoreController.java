@@ -274,6 +274,39 @@ public class StoreController {
 		   mav.addObject("BODY","menuRegister.jsp");
 		   return mav;
 	   }
+	   MultipartFile multiFile = menu.getImage();
+	   String fileName = null;
+	   String path = null;
+	   OutputStream out = null;
+	   if(multiFile.getOriginalFilename() == "") {
+		   fileName="";
+	   } else {
+		   fileName=menu.getMenu_name()+"_"+multiFile.getOriginalFilename();
+	   }
+	   if(!fileName.equals("")) {
+		   ServletContext ctx = session.getServletContext();
+		   path = ctx.getRealPath("/upload/menuItemProfile/"+fileName);
+		   System.out.println("업로드 위치:"+path);
+		   BufferedInputStream bis = null;
+		   try {
+			   out = new FileOutputStream(path);
+			   bis = new BufferedInputStream(multiFile.getInputStream());
+			   byte[] buffer = new byte[8192];
+			   int read = 0;
+			   while((read = bis.read(buffer)) > 0) {
+				   out.write(buffer, 0, read);
+			   }
+		   } catch (Exception e) {
+			   e.printStackTrace();
+		   } finally {
+			   try {
+				   if(out != null) out.close();
+				   if(bis != null) bis.close();
+			   } catch(Exception e) {
+			   }
+		   }
+	   }
+	   menu.setImage_name(fileName);
 	   Integer menu_category_id = (Integer) session.getAttribute("menu_category_id");	
 	   Integer count = this.storeService.getMenuCount();
 	   menu.setMenu_category_id(menu_category_id);
@@ -290,7 +323,7 @@ public class StoreController {
 	   Store cureentStore = (Store) session.getAttribute("currentStore");
 	   List<MenuItem> menuList = storeService.getMenuList(cureentStore.getStore_id());
 	   mav.addObject("menuList",menuList);
-	   mav.addObject("BODY","/store/menuList.jsp");
+	   mav.addObject("BODY","../store/menuList.jsp");
 	   return mav;
    }
    

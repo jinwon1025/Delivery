@@ -12,7 +12,7 @@
 </head>
 <body>
 <h2>메뉴 등록</h2>
-<form:form action="/store/menuRegister" method="post" modelAttribute="menu">
+<form:form action="/store/menuRegister" method="post" modelAttribute="menu" enctype="multipart/form-data">
 	<div>
         <label for="menuName">메뉴명:</label>
         <form:input path="menu_name" id="menuName" type="text" />
@@ -22,8 +22,8 @@
         <form:input path="price" id="menuPrice" type="number" />
     </div>
     <div>
-        <label for="imageName">이미지:</label>
-        <form:input path="image_name" id="imageName" type="file" />
+        <label for="image">이미지:</label>
+        <form:input path="image" id="image" type="file" />
     </div>
     <div>
         <label for="menuContent">메뉴설명:</label>

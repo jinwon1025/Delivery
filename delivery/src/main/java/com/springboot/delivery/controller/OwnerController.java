@@ -55,7 +55,7 @@ public class OwnerController {
 	    String path = null;
 	    OutputStream out = null;
 	    if(multiFile.getOriginalFilename() == "") {
-	    	fileName="none";
+	    	fileName="";
 	    } else {
 	    fileName = owner.getOwner_id() + "_"+multiFile.getOriginalFilename(); // 업로드된 원본 파일명 가져오기
 	    }
@@ -81,8 +81,8 @@ public class OwnerController {
 	            } catch (Exception e) {
 	            }
 	        }
-	        owner.setOwner_image_name(fileName);
 	    }
+	    owner.setOwner_image_name(fileName);
 
 	    System.out.println("아이디: " + owner.getOwner_id());
 	    System.out.println("이름: " + owner.getOwner_name());
