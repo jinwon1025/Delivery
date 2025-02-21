@@ -12,7 +12,7 @@
 </head>
 <body>
 <h2>메뉴 등록</h2>
-<form:form action="/store/menuRegister" method="post" modelAttribute="menu" enctype="multipart/form-data">
+<form:form action="/store/menuRegister" method="post" modelAttribute="menuItem" enctype="multipart/form-data">
 	<div>
         <label for="menu_name">메뉴명:</label>
         <form:input path="menu_name" id="menu_name" type="text"/>
