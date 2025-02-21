@@ -22,8 +22,8 @@ body {
 
 .store-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개의 가게 배치 */
+    gap: 15px;
 }
 
 .store-item {
@@ -43,6 +43,7 @@ body {
     margin-right: 15px;
     overflow: hidden;
     flex-shrink: 0;
+    border: 2px solid #f0f0f0;
 }
 
 .store-logo img {
@@ -55,20 +56,31 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0; /* 텍스트 오버플로우 방지를 위한 설정 */
 }
 
 .store-name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+    letter-spacing: -0.5px;
 }
 
 .store-type {
     font-size: 12px;
     color: #777;
     margin-left: 5px;
+    white-space: nowrap;
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: normal;
 }
 
 .store-details {
@@ -76,17 +88,38 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-top: 5px;
+    width: 100%;
 }
 
 .min-order {
-    color: #666;
+    color: #555;
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.min-order-label {
+    color: #888;
+    font-weight: 500;
+}
+
+.min-order-value {
+    font-weight: 600;
+    color: #333;
 }
 
 .delivery-time {
-    color: #666;
+    color: #333;
     font-size: 14px;
     text-align: right;
+    white-space: nowrap;
+    margin-left: 10px;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    padding: 3px 8px;
+    border-radius: 4px;
 }
 
 .coupon-tag {
@@ -97,6 +130,9 @@ body {
     padding: 2px 6px;
     border-radius: 3px;
     margin-left: 5px;
+    white-space: nowrap;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .location {
@@ -105,6 +141,9 @@ body {
     right: 15px;
     color: #999;
     font-size: 13px;
+    background-color: #f9f9f9;
+    padding: 3px 8px;
+    border-radius: 12px;
 }
 
 .btn-group {
@@ -116,8 +155,8 @@ body {
 
 .edit-btn {
     display: block;
-    width: 100px;
-    padding: 10px;
+    width: 120px;
+    padding: 12px;
     text-align: center;
     background-color: #ff6b6b;
     color: white;
@@ -125,10 +164,21 @@ body {
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s ease;
 }
 
 .edit-btn:hover {
     background-color: #e74c3c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .store-grid {
+        grid-template-columns: 1fr; /* 모바일에서는 한 줄에 하나만 */
+    }
 }
 </style>
 </head>
@@ -144,7 +194,7 @@ body {
                             <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="${store.store_name}">
                         </c:when>
                         <c:otherwise>
-                            <img src="${pageContext.request.contextPath}/images/default-store.png" alt="기본 이미지">
+                            <img src="${pageContext.request.contextPath}/image/noStoreProfile.png" alt="기본 이미지">
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -155,7 +205,8 @@ body {
                     </div>
                     <div class="store-details">
                         <div class="min-order">
-                            최소주문금액: ${store.last_price}원 이상 배달
+                            <span class="min-order-label">최소주문금액:</span> 
+                            <span class="min-order-value">${store.last_price}원</span> 이상 배달
                             <c:if test="${status.index % 2 == 0}">
                                 <span class="coupon-tag">쿠폰할인</span>
                             </c:if>
