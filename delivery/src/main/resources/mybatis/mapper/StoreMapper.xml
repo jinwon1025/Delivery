@@ -9,16 +9,37 @@
    
    </select> 
    
-   <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store" >
-   
-   insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address}, #{last_price},
-   #{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour}, #{delivery_fee}, #{made_in}, #{store_image_name} )
-   
-   </insert>
+   <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store">
+    insert into b_store_tbl (
+        store_id,
+        store_name,
+        store_address,
+        last_price,
+        owner_id,
+        main_category_Id,
+        store_phone,
+        store_openHour,
+        delivery_fee,
+        made_in,
+        store_image_name
+    ) values (
+        #{store_id},
+        #{store_name},
+        #{store_address},
+        #{last_price},
+        #{owner_id},
+        #{main_category_Id},
+        #{store_phone},
+        #{store_openHour},
+        #{delivery_fee},
+        #{made_in},
+        #{store_image_name}
+    )
+</insert>
    
    <select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
-      select store_id, store_name, last_price, delivery_fee, store_image_name from b_store_tbl where owner_id=#{owner_id}
+      select store_id, store_name, last_price, delivery_fee, delivery_time, store_image_name from b_store_tbl where owner_id=#{owner_id}
    
    </select>
    
@@ -30,7 +51,7 @@
    
    <select id="getStore" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
-      select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, made_in, store_image_name from b_store_tbl where store_id=#{store_id}
+      select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, delivery_time made_in, store_image_name from b_store_tbl where store_id=#{store_id}
    
    </select>
    
@@ -38,7 +59,7 @@
    
       update b_store_tbl set store_name=#{store_name}, store_address=#{store_address}, last_price=#{last_price},
       main_category_Id=#{main_category_Id}, store_phone=#{store_phone}, store_openHour=#{store_openHour}, delivery_fee=#{delivery_fee},
-      made_in=#{made_in}, store_image_name=#{store_image_name} where store_id=#{store_id}
+      delivery_time=#{delivery_time},made_in=#{made_in}, store_image_name=#{store_image_name} where store_id=#{store_id}
    
    </update>
    

@@ -44,5 +44,7 @@ public class Store {
 	
 	private MultipartFile image;
 	
+	private String delivery_time; 
+	
 
 }

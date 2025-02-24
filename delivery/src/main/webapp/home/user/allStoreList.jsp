@@ -219,7 +219,7 @@ body {
                             </c:if>
                         </div>
                         <div class="delivery-time">
-                            20-30분
+                 			<span class="delivery_time">${store.delivery_time}</span>
                         </div>
                     </div>
                 </div>

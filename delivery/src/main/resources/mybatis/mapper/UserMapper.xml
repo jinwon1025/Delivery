@@ -53,7 +53,7 @@
 	
 	<select id="getAllStore" resultType="com.springboot.delivery.model.Store">
 	
-	select store_id, store_name, store_address, last_price, store_image_name from b_store_tbl
+	select store_id, store_name, store_address, last_price, delivery_time, store_image_name from b_store_tbl
 	
 	</select>
 	
