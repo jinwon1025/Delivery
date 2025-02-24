@@ -195,8 +195,9 @@
             <div class="category-header">
                 <h3>${category.menu_category_name}</h3>
                 <div class="button-group">
-                    <form action="/store/categoryUpdate" method="post" style="margin: 0;">
+                    <form action="/store/categoryUpdate" method="post" style="margin: 0;" onsubmit="return confirmCategoryUpdate(${category.menu_category_id});">
                         <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                        <input type="hidden" id="menu_category_name_${category.menu_category_id}" name="menu_category_name"  value="${category.menu_category_name}"/>
                         <input type="submit" value="수정" class="btn btn-primary"/>
                     </form>
                     <form action="/store/categoryDelete" method="post" style="margin: 0;" onsubmit="return confirmCategoryDelete();">
@@ -262,6 +263,11 @@
   <!-- 카테고리 추가 폼 -->
   <div class="register-form">
     <h3>새 카테고리 추가</h3>
+    <c:if test="${not empty errorMessage }">
+    	<div class="alert alert-danger">
+    		<font color="red"> ${errorMessage } </font>
+    	</div>
+    </c:if>
     <form:form action="/store/categoryRegister" modelAttribute="menuCategory" method="post">
       <div class="form-group">
         <label for="menu_category_name">카테고리명:</label>
@@ -303,6 +309,19 @@
         }else{
             return false;
         }
+    }
+    // 카테고리 수정
+    function confirmCategoryUpdate(categoryId){
+    	const newCategoryName = prompt("새 카테고리명을 입력하세요","");
+    	
+    	if(newCategoryName !== null && newCategoryName !== ""){
+    	const inputElement = document.getElementById('menu_category_name_'+categoryId);
+    	inputElement.value = newCategoryName;
+    	return true;
+    	}else{
+    		alert("카테고리명을 입력해주세요.");
+    		return false;
+    	}
     }
   </script>
 </body>

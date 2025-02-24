@@ -32,6 +32,11 @@
         <form:input path="content" id="content" type="text" />
     </div>
     <br/>
+    <c:if test="${not empty errorMessage }">
+    	<div class="alert alert-danger">
+    		<font color="red"> ${errorMessage } </font>
+    	</div>
+    </c:if>
     <input type="submit" value="등록하기">
 </form:form>
 </body>
