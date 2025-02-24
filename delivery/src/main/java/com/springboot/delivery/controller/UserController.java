@@ -293,7 +293,7 @@ public class UserController {
 		return mav;
 	}
 	
-	@GetMapping(value="/user/allStore")
+	@GetMapping(value="/user/allStore") //모든 가맹점 목록 가져오기
 	public ModelAndView allStore() {
 		ModelAndView mav =new ModelAndView("user/userMain");
 		List<Store> allStore = this.userService.getAllStore();
@@ -301,6 +301,98 @@ public class UserController {
 		mav.addObject("BODY", "allStoreList.jsp");
 		return mav;
 	}
+	
+	@GetMapping(value="/user/allChicken") // 치킨 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allChicken(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allChicken = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("ChickenList", allChicken);
+		mav.addObject("BODY", "allChickenList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allChina") // 중식 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allChina(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allChina = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("ChinaList", allChina);
+		mav.addObject("BODY", "allChinaList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allJapan") // 일식 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allJapan(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allJapan = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("JapanList", allJapan);
+		mav.addObject("BODY", "allJapanList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allPizza") // 피자 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allPizza(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allPizza = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("PizzaList", allPizza);
+		mav.addObject("BODY", "allPizzaList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allFastFood") // 패스트푸드 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allFastFood(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allFastFood = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("FastFoodList", allFastFood);
+		mav.addObject("BODY", "allFastFoodList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allDish") // 찜·탕 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allDish(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allDish = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("DishList", allDish);
+		mav.addObject("BODY", "allDishList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allJokBo") // 족발 · 보쌈 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allJokBo(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allJokBo = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("JokBoList", allJokBo);
+		mav.addObject("BODY", "allJokBoList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allSnackFood") // 분식 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allSnackFood(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allSnackFood = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("SnackFoodList", allSnackFood);
+		mav.addObject("BODY", "allSnackFoodList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allDessert") // 카페 · 디저트 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allDessert(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allDessert = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("DessertList", allDessert);
+		mav.addObject("BODY", "allDessertList.jsp");
+		return mav;
+	}
+	
+	@GetMapping(value="/user/allKorea") // 한식 카테고리에 속한 가맹점 목록 가져오기
+	public ModelAndView allKorea(Integer main_category_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		List<Store> allKorea = this.userService.getStoresByCategory(main_category_id);
+		mav.addObject("KoreaList", allKorea);
+		mav.addObject("BODY", "allKoreaList.jsp");
+		return mav;
+	}
+	
+	
 	
 
 }

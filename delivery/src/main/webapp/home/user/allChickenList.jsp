@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -191,50 +191,49 @@ body {
 </head>
 <body>
 
-<div class="container">
-    <div class="store-grid">
-        <c:forEach items="${StoreList}" var="store" varStatus="status">
-            <div class="store-item">
-                <div class="store-logo">
-                    <c:choose>
-                        <c:when test="${not empty store.store_image_name}">
-                            <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="${store.store_name}">
-                        </c:when>
-                        <c:otherwise>
-                            <img src="${pageContext.request.contextPath}/image/noStoreProfile.png" alt="기본 이미지">
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-                <div class="store-info">
-                    <div class="store-name">
-                        ${store.store_name}
-                        <span class="store-type">배달</span>
-                    </div>
-                    <div class="store-details">
-                        <div class="min-order">
-                            <span class="min-order-label">최소주문금액:</span> 
-                            <span class="min-order-value">${store.last_price}원</span> 이상 배달
-                            <c:if test="${store.last_price > 12000}">
-                                <span class="coupon-tag">쿠폰할인</span>
-                            </c:if>
-                        </div>
-                        <div class="delivery-time">
-                            20-30분
-                        </div>
-                    </div>
-                </div>
-                <div class="location">
-                    지구
-                </div>
-            </div>
-        </c:forEach>
-    </div>
+	<div class="container">
+		<div class="store-grid">
+			<c:forEach items="${ChickenList}" var="store" varStatus="status">
+				<div class="store-item">
+					<div class="store-logo">
+						<c:choose>
+							<c:when test="${not empty store.store_image_name}">
+								<img
+									src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}"
+									alt="${store.store_name}">
+							</c:when>
+							<c:otherwise>
+								<img
+									src="${pageContext.request.contextPath}/image/noStoreProfile.png"
+									alt="기본 이미지">
+							</c:otherwise>
+						</c:choose>
+					</div>
+					<div class="store-info">
+						<div class="store-name">
+							${store.store_name} <span class="store-type">배달</span>
+						</div>
+						<div class="store-details">
+							<div class="min-order">
+								<span class="min-order-label">최소주문금액:</span> <span
+									class="min-order-value">${store.last_price}원</span> 이상 배달
+								<c:if test="${store.last_price > 12000}">
+									<span class="coupon-tag">쿠폰할인</span>
+								</c:if>
+							</div>
+							<div class="delivery-time">20-30분</div>
+						</div>
+					</div>
+					<div class="location">지구</div>
+				</div>
+			</c:forEach>
+		</div>
 
-    <div class="btn-group">
-        <a href="<c:url value='/store/list'/>" class="edit-btn">전체보기</a>
-        <a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
-    </div>
-</div>
+		<div class="btn-group">
+			<a href="<c:url value='/store/list'/>" class="edit-btn">전체보기</a> <a
+				href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
+		</div>
+	</div>
 
 </body>
 </html>
