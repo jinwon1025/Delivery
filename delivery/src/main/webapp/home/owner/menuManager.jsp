@@ -237,7 +237,7 @@
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="삭제" class="btn btn-danger"/>
                                     </form>
-                                    <form action="/store/optionManage" method="post">
+                                    <form action="/store/optionManage" method="get">
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="옵션 관리" class="btn btn-info"/>
                                     </form>
@@ -274,18 +274,19 @@
 
   <script>
     // 카테고리 클릭 시 토글 기능
-    document.querySelectorAll('.category-header').forEach(header => {
-      header.addEventListener('click', (e) => {
-        // 버튼 클릭시 토글 동작 방지
-        if (e.target.classList.contains('btn')) {
-          e.stopPropagation();
-          return;
-        }
-        const category = header.parentElement;
-        category.classList.toggle('active');
-        header.classList.toggle('active');
-      });
-    });
+    var headers = document.querySelectorAll('.category-header');
+    for(var i = 0; i < headers.length; i++) {
+        headers[i].addEventListener('click', function(e) {
+            // 버튼 클릭시 토글 동작 방지
+            if (e.target.classList.contains('btn')) {
+                e.stopPropagation();
+                return;
+            }
+            var category = this.parentElement;
+            category.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    }
     
     // 메뉴 삭제 확인
     function confirmDelete(){
