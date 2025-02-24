@@ -1,6 +1,94 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<!-- 임시 css -->
+
+<style>
+.container {
+    padding: 20px;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.table {
+    margin-top: 10px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    padding: 8px 16px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    padding: 8px 16px;
+}
+
+.btn-danger {
+    padding: 4px 8px;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.badge {
+    padding: 6px 10px;
+    font-weight: normal;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.table th, .table td {
+    padding: 12px;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+</style>
+
+
+
+
+
+
+
 
 <div class="container">
     <div class="row">

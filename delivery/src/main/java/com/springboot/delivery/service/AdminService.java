@@ -9,6 +9,6 @@ public interface AdminService {
     List<Coupon> getAllCoupons();
     void issueCouponToUser(String userId, Integer couponId);
     void deleteUser(String userId);
-    List<Coupon> getUserCoupons(String userId);
     void createCoupon(Coupon coupon);
+    void deleteCoupon(Integer cp_id);
 }

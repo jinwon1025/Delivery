@@ -18,8 +18,6 @@ public class AdminServiceImpl implements AdminService {
         adminMapper.createCoupon(coupon);
     }
     
-    
-    
     @Override
     public List<User> getAllUsers() {
         return adminMapper.getAllUsers();
@@ -36,12 +34,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Coupon> getUserCoupons(String userId) {
-        return adminMapper.getUserCoupons(userId);
-    }
-
-    @Override
     public void deleteUser(String userId) {
         adminMapper.deleteUser(userId);
     }
+    
+    @Override
+    public void deleteCoupon(Integer cp_id) {
+        adminMapper.deleteCoupon(cp_id);
+    }
+    
 }

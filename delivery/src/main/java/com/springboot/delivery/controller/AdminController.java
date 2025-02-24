@@ -4,13 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;  // 추가
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.User;
 import com.springboot.delivery.service.AdminService;  // 추가
 
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +45,23 @@ public class AdminController {
         return mav;
     }
     
+     //쿠폰삭제
+    @PostMapping("/admin/coupon/delete/{cp_id}")
+    @ResponseBody
+    public ResponseEntity<String> deleteCoupon(@PathVariable Integer cp_id, HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        }
+        
+        try {
+            adminService.deleteCoupon(cp_id);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("삭제 실패");
+        }
+    }
+        
     
     @GetMapping("/admin/userManagement")
     public ModelAndView userManagement(HttpSession session) {
@@ -54,9 +76,14 @@ public class AdminController {
             return mav;
         }
         
+        // 유저 목록가져와서 모델에 추가
+        List<User> userList = adminService.getAllUsers();
+        mav.addObject("userList", userList); 
         mav.addObject("BODY", "../admin/userManagement.jsp");
         return mav;
-    }
+    
+}
+
     
     @GetMapping("/admin/home")
     public ModelAndView adminHome(HttpSession session) {

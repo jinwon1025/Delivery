@@ -23,31 +23,36 @@
     )
 </insert>
     <!-- 전체 유저 조회 -->
-    <select id="getAllUsers" resultType="com.springboot.delivery.model.User">
-        SELECT * FROM b_user_info ORDER BY user_id
-    </select>
+<select id="getAllUsers" resultType="com.springboot.delivery.model.User">
+    SELECT 
+        user_id,
+        user_name,
+        email,
+        password,
+        user_phone,
+        point,
+        TO_CHAR(birth, 'YYYY-MM-DD') as birth,
+        user_address
+    FROM b_user_info 
+    ORDER BY user_id
+</select>
     
     <!-- 전체 쿠폰 조회 -->
     <select id="getAllCoupons" resultType="com.springboot.delivery.model.Coupon">
         SELECT * FROM b_coupon_tbl ORDER BY cp_id DESC
     </select>
     
-    <!-- 유저에게 쿠폰 발급 -->
-    <insert id="issueCouponToUser">
-        INSERT INTO b_usedcoupon_tbl (cp_id, order_id, user_id, used_date)
-        VALUES (#{couponId}, 'ADMIN_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'), #{userId}, NULL)
-    </insert>
-
-    <!-- 유저의 쿠폰 조회 -->
-    <select id="getUserCoupons" resultType="com.springboot.delivery.model.Coupon">
-        SELECT c.* 
-        FROM b_coupon_tbl c 
-        JOIN b_usedcoupon_tbl uc ON c.cp_id = uc.cp_id 
-        WHERE uc.user_id = #{userId}
-    </select>
+    <!-- 쿠폰 삭제 -->
+    <delete id="deleteCoupon" parameterType="Integer">
+    DELETE FROM b_coupon_tbl WHERE cp_id = #{cp_id}
+	</delete>
+    
 
     <!-- 유저 삭제 -->
     <delete id="deleteUser">
         DELETE FROM b_user_info WHERE user_id = #{userId}
     </delete>
+
+    
+    
 </mapper>

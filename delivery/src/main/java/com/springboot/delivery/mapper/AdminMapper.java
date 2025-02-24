@@ -10,7 +10,7 @@ public interface AdminMapper {
     List<User> getAllUsers();
     List<Coupon> getAllCoupons();
     void issueCouponToUser(String userId, Integer couponId);
-    List<Coupon> getUserCoupons(String userId);
     void deleteUser(String userId);
 	void createCoupon(Coupon coupon);
+	void deleteCoupon(Integer cp_id);
 }
