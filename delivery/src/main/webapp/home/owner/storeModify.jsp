@@ -64,6 +64,12 @@
 		<br />
 		<font color="red"><form:errors path="store_phone" /></font>
 		<br /><br/>
+		
+		배달시간 : <br />
+		<form:input path="delivery_time" />
+		<br />
+		<font color="red"><form:errors path="delivery_time" /></font>
+		<br /><br/>
         
         배달요금 : <br />
 		<form:input path="delivery_fee" />
@@ -80,8 +86,7 @@
 		<form:input path="made_in" />
 		<br />
 		<font color="red"><form:errors path="made_in" /></font>
-		<br />
- 		
+		<br />		
 		<br />
 
 
