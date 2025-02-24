@@ -61,8 +61,8 @@ public class StoreService {
 	public void menuRegister(MenuItem mi) {
 		this.storeMapper.menuRegister(mi);
 	}
-	public Integer getMenuCount() {
-		return this.storeMapper.getMenuCount();
+	public Integer getMenuCount(MenuItem mi) {
+		return this.storeMapper.getMenuCount(mi);
 	}
 	
 	public List<MenuItem> getMenuList(String store_id){

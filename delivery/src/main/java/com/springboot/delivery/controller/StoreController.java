@@ -298,11 +298,17 @@ public class StoreController {
 		   }
 	   }
 	   menu.setImage_name(fileName);
-	   Integer menu_category_id = (Integer) session.getAttribute("menu_category_id");	
-	   Integer count = this.storeService.getMenuCount();
+	   Integer menu_category_id = (Integer) session.getAttribute("menu_category_id");
+	   System.out.println("메뉴카테고리 아이디 = "+menu_category_id);
+	   MenuItem menu1 = new MenuItem();
+	   menu1.setMenu_category_id(menu_category_id);
+	   menu1.setStore_id(currentStore.getStore_id());
+	   Integer count = this.storeService.getMenuCount(menu1);
 	   menu.setMenu_category_id(menu_category_id);
 	   menu.setStore_id(currentStore.getStore_id());
 	   menu.setMenu_item_id(count+1);
+	   System.out.println("카테고리 아이디="+menu.getMenu_category_id()+"스토어 아이디 ="+menu.getStore_id()+",메뉴 아이템 아이디="+menu.getMenu_item_id()
+	   +"메뉴명"+menu.getMenu_name()+"메뉴가격"+menu.getPrice()+"메뉴설명"+menu.getContent());
 	   
 	   this.storeService.menuRegister(menu);
 	   

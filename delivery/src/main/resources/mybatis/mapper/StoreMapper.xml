@@ -72,9 +72,9 @@
    
    </insert>
    
-   <select id="getMenuCount" resultType="Integer">
+   <select id="getMenuCount" resultType="Integer" parameterType="com.springboot.delivery.model.MenuItem">
    
-   select count(*) from b_menu_item_tbl
+   select max(menu_item_id) from b_menu_item_tbl where menu_category_id=#{menu_category_id} and store_id=#{store_id}
    
    </select>
    
