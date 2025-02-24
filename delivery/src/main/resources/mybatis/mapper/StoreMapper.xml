@@ -9,12 +9,33 @@
    
    </select> 
    
-   <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store" >
-   
-   insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address}, #{last_price},
-   #{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour}, #{delivery_fee},#{delivery_time}, #{made_in}, #{store_image_name} )
-   
-   </insert>
+   <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store">
+    insert into b_store_tbl (
+        store_id,
+        store_name,
+        store_address,
+        last_price,
+        owner_id,
+        main_category_Id,
+        store_phone,
+        store_openHour,
+        delivery_fee,
+        made_in,
+        store_image_name
+    ) values (
+        #{store_id},
+        #{store_name},
+        #{store_address},
+        #{last_price},
+        #{owner_id},
+        #{main_category_Id},
+        #{store_phone},
+        #{store_openHour},
+        #{delivery_fee},
+        #{made_in},
+        #{store_image_name}
+    )
+</insert>
    
    <select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
@@ -30,7 +51,7 @@
    
    <select id="getStore" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
-      select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, delivery_time, made_in, store_image_name from b_store_tbl where store_id=#{store_id}
+      select store_id, store_name, store_address,  last_price, main_category_id, store_phone, store_openhour, delivery_fee, delivery_time made_in, store_image_name from b_store_tbl where store_id=#{store_id}
    
    </select>
    
