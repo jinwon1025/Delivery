@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.service.AdminService;  // 추가
 
@@ -62,6 +63,24 @@ public class AdminController {
         }
     }
         
+    //카테고리삭제
+    @PostMapping("/admin/maincategory/delete/{main_category_id}")
+    @ResponseBody
+    public ResponseEntity<String> deleteMaincategory(@PathVariable Integer main_category_id, HttpSession session) {
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        }
+        
+        try {
+            adminService.deleteMaincategory(main_category_id);
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("삭제 실패");
+        }
+    }
+    
+    
     
     @GetMapping("/admin/userManagement")
     public ModelAndView userManagement(HttpSession session) {
@@ -100,7 +119,26 @@ public class AdminController {
         mav.addObject("BODY", "../admin/adminHome.jsp");
         return mav;
     }
-   
+    
+    
+    @GetMapping("/admin/categoryManagement")
+    public ModelAndView categoryManagement(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
+        
+        // 세션에서 로그인 사용자 확인 (관리자 권한 체크)
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            // 관리자가 아니면 로그인 페이지로 리다이렉트
+            mav.setViewName("redirect:/user/index");
+
+        }
+        // 카테고리 목록을 가져와서 모델에 추가
+           List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+           mav.addObject("maincategoryList", maincategoryList);
+           mav.addObject("BODY", "../admin/categoryManagement.jsp");
+           return mav;
+}
    
     @PostMapping("/admin/coupon/create")
     public ModelAndView createCoupon(Coupon coupon, HttpSession session) {
@@ -114,5 +152,19 @@ public class AdminController {
         coupon.setCreated_date(new String());  // 생성일자 설정
         adminService.createCoupon(coupon);        
         return mav;
-    }        
+    }      
+    
+    @PostMapping("/admin/maincategory/create")
+    public ModelAndView createMaincategory(Maincategory maincategory, HttpSession session) {
+        ModelAndView mav = new ModelAndView("redirect:/admin/couponManagement");  // 여기가 문제
+        
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        adminService.createMaincategory(maincategory);        
+        return new ModelAndView("redirect:/admin/categoryManagement"); 
+    } 
+    
 }

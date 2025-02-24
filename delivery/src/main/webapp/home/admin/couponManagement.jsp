@@ -2,106 +2,198 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-<!-- 임시 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
 .container {
-    padding: 20px;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.dashboard-header {
+    background: linear-gradient(to right, #1a237e, #283593);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .card {
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: none;
 }
 
 .card-header {
-    background-color: #f8f9fa;
-    padding: 15px;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
 .card-body {
-    padding: 20px;
-}
-
-.table {
-    margin-top: 10px;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-}
-
-.table td {
-    vertical-align: middle;
+    padding: 2rem;
 }
 
 .btn-primary {
-    background-color: #0d6efd;
+    background: linear-gradient(to right, #1e88e5, #1976d2);
     border: none;
-    padding: 8px 16px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    color: white;
 }
 
 .btn-secondary {
-    background-color: #6c757d;
+    background: linear-gradient(to right, #757575, #616161);
     border: none;
-    padding: 8px 16px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    opacity: 0.9;
+}
+
+.form-control {
+    padding: 0.8rem;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 0 0 2px rgba(30,136,229,0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1rem 0;
+}
+
+.table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
+    text-align: left;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    color: white;
+}
+
+.bg-success {
+    background: #4caf50 !important;
+}
+
+.bg-danger {
+    background: #f44336 !important;
 }
 
 .btn-danger {
-    padding: 4px 8px;
+    background: linear-gradient(to right, #f44336, #e53935);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
 }
 
 .form-label {
     font-weight: 500;
-    margin-bottom: 8px;
+    color: #333;
+    margin-bottom: 0.5rem;
 }
 
-.form-control {
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #dee2e6;
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.5rem;
 }
 
-.badge {
-    padding: 6px 10px;
-    font-weight: normal;
+.col-md-6 {
+    flex: 0 0 50%;
+    padding: 0.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
 }
 
 .mb-4 {
     margin-bottom: 1.5rem;
 }
 
-.table th, .table td {
-    padding: 12px;
+.d-flex {
+    display: flex;
 }
 
-.btn:hover {
-    opacity: 0.9;
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-md-6 {
+        width: 100%;
+    }
 }
 </style>
 
-
-
-
-
-
-
-
 <div class="container">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h2><i class="fas fa-ticket-alt"></i> 쿠폰 관리</h2>
+            <a href="<c:url value='/admin/home'/>" class="btn btn-secondary">
+                <i class="fas fa-home"></i> 관리자 홈으로
+            </a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>쿠폰 관리</h2>
-                <a href="<c:url value='/admin/home'/>" class="btn btn-secondary">관리자 홈으로</a>
-            </div>
-
             <!-- 쿠폰 생성 폼 -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">새 쿠폰 생성</h5>
+                    <h5 class="mb-0"><i class="fas fa-plus-circle"></i> 새 쿠폰 생성</h5>
                 </div>
                 <div class="card-body">
                     <form action="<c:url value='/admin/coupon/create'/>" method="post">
@@ -133,7 +225,9 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">쿠폰 생성</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 쿠폰 생성
+                        </button>
                     </form>
                 </div>
             </div>
@@ -141,7 +235,7 @@
             <!-- 쿠폰 목록 -->
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">쿠폰 목록</h5>
+                    <h5 class="mb-0"><i class="fas fa-list"></i> 쿠폰 목록</h5>
                 </div>
                 <div class="card-body">
                     <table class="table">
@@ -165,7 +259,7 @@
                                     <td><fmt:formatNumber value="${coupon.sale_price}" type="currency" currencySymbol="₩"/></td>
                                     <td><fmt:formatNumber value="${coupon.minimum_purchase}" type="currency" currencySymbol="₩"/></td>
                                     <td>${coupon.created_date}</td>
-									<td>${coupon.end_date}</td>
+                                    <td>${coupon.end_date}</td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${coupon.end_date < now}">
@@ -178,7 +272,9 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-danger" 
-                                                onclick="if(confirm('정말 삭제하시겠습니까?')) deleteCoupon(${coupon.cp_id})">삭제</button>
+                                                onclick="if(confirm('정말 삭제하시겠습니까?')) deleteCoupon(${coupon.cp_id})">
+                                            <i class="fas fa-trash"></i> 삭제
+                                        </button>
                                     </td>
                                 </tr>
                             </c:forEach>
