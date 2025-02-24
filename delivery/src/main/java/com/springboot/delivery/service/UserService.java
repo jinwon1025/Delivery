@@ -55,5 +55,9 @@ public class UserService {
     public List<Store> getAllStore(){
     	return this.userMapper.getAllStore();
     }
+    
+    public List<Store> getStoresByCategory(Integer main_category_id){
+    	return this.userMapper.getStoresByCategory(main_category_id);
+    }
 
 }

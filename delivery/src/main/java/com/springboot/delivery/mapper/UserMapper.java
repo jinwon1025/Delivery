@@ -16,4 +16,5 @@ public interface UserMapper {
     void updateUserInfo(User user);
     Integer idcheck(String user_id);
     List<Store> getAllStore();
+    List<Store> getStoresByCategory(Integer main_category_id);
 }	

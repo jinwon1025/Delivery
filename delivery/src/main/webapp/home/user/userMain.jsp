@@ -86,9 +86,9 @@ h1 {
 
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="/user/allStore">전체보기</a> | <a href="">치킨</a> | <a href="">중식</a> | <a href="">돈까스·회</a> |
-			 <a href="">피자</a> | <a href="">패스트푸드</a> | <a href="">찜·탕</a> | <a href="">족발·보쌈</a>
-			  | <a href="">분식</a> | <a href="">카페·디저트</a> | <a href="">한식</a>
+			<a href="/user/allStore">전체보기</a> | <a href="/user/allChicken?main_category_id=1">치킨</a> | <a href="/user/allChina?main_category_id=2">중식</a> | <a href="/user/allJapan?main_category_id=3">돈까스·회</a> |
+			 <a href="/user/allPizza?main_category_id=4">피자</a> | <a href="/user/allFastFood?main_category_id=5">패스트푸드</a> | <a href="/user/allDish?main_category_id=6">찜·탕</a> | <a href="/user/allJokBo?main_category_id=7">족발·보쌈</a>
+			  | <a href="/user/allSnackFood?main_category_id=8">분식</a> | <a href="/user/allDessert?main_category_id=9">카페·디저트</a> | <a href="/user/allKorea?main_category_id=10">한식</a>
 		</h2>
 
 		<hr>

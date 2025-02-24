@@ -193,7 +193,7 @@ body {
 
 <div class="container">
     <div class="store-grid">
-        <c:forEach items="${StoreList}" var="store" varStatus="status">
+        <c:forEach items="${SnackFoodList}" var="store" varStatus="status">
             <div class="store-item">
                 <div class="store-logo">
                     <c:choose>
