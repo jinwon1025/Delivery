@@ -47,7 +47,14 @@
       color: #333;
     }
 
+    .category-header .button-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
     .category-header .toggle-icon {
+      margin-left: 10px;
       font-size: 18px;
       transition: transform 0.3s;
     }
@@ -114,10 +121,11 @@
     .admin-controls {
       display: flex;
       margin-top: 10px;
+      gap: 5px;
     }
     
     .admin-controls form {
-      margin-right: 5px;
+      margin: 0;
     }
     
     .btn {
@@ -136,6 +144,12 @@
     
     .btn-danger {
       background-color: #f44336;
+      color: white;
+      border: none;
+    }
+    
+    .btn-info {
+      background-color: #2196F3;
       color: white;
       border: none;
     }
@@ -180,7 +194,17 @@
         <div class="category ${status.first ? 'active' : ''}">
             <div class="category-header">
                 <h3>${category.menu_category_name}</h3>
-                <span class="toggle-icon">▼</span>
+                <div class="button-group">
+                    <form action="/store/categoryUpdate" method="post" style="margin: 0;">
+                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                        <input type="submit" value="수정" class="btn btn-primary"/>
+                    </form>
+                    <form action="/store/categoryDelete" method="post" style="margin: 0;" onsubmit="return confirmCategoryDelete();">
+                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                        <input type="submit" value="삭제" class="btn btn-danger"/>
+                    </form>
+                    <span class="toggle-icon">▼</span>
+                </div>
             </div>
             <div class="menu-items">
                 <c:forEach items="${menuItemList}" var="menuItem">
@@ -212,6 +236,10 @@
                                     <form action="/store/menuDelete" method="post" onsubmit="return confirmDelete();">
                                         <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
                                         <input type="submit" value="삭제" class="btn btn-danger"/>
+                                    </form>
+                                    <form action="/store/optionManage" method="post">
+                                        <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                        <input type="submit" value="옵션 관리" class="btn btn-info"/>
                                     </form>
                                 </div>
                             </div>
@@ -247,21 +275,35 @@
   <script>
     // 카테고리 클릭 시 토글 기능
     document.querySelectorAll('.category-header').forEach(header => {
-      header.addEventListener('click', () => {
+      header.addEventListener('click', (e) => {
+        // 버튼 클릭시 토글 동작 방지
+        if (e.target.classList.contains('btn')) {
+          e.stopPropagation();
+          return;
+        }
         const category = header.parentElement;
         category.classList.toggle('active');
         header.classList.toggle('active');
       });
     });
     
+    // 메뉴 삭제 확인
     function confirmDelete(){
-    	if(confirm("정말로 삭제하시겠습니까?")){
-    		return true;
-    	}else{
-    		return false;
-    	}
+        if(confirm("정말로 삭제하시겠습니까?")){
+            return true;
+        }else{
+            return false;
+        }
     }
     
+    // 카테고리 삭제 확인
+    function confirmCategoryDelete(){
+        if(confirm("이 카테고리와 관련된 모든 메뉴가 삭제됩니다.\n정말로 삭제하시겠습니까?")){
+            return true;
+        }else{
+            return false;
+        }
+    }
   </script>
 </body>
 </html>
