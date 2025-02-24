@@ -224,6 +224,18 @@ public class StoreController {
           mav.addObject("BODY", "menuManager.jsp");
           return mav;
          }
+      List<String> getCategory = this.storeService.getCategory(currentStore.getStore_id());
+      if(getCategory.contains(menu_category_name)) {
+    	  mav.addObject("errorMessage","이미 존재하는 카테고리명입니다.");
+          List<MenuCategory> menuList = this.storeService.getAllMenu(currentStore.getStore_id());
+          List<MenuItem> menuItemList = this.storeService.getMenuList(currentStore.getStore_id());
+          mav.addObject("menuList", menuList);
+          mav.addObject("menuItemList",menuItemList);
+          mav.addObject("BODY", "menuManager.jsp");
+          mav.addObject(new MenuCategory());
+          return mav;
+      }
+    	  
       // MenuCategory 객체 생성 및 설정
       Integer maxCount = this.storeService.getMaxMenuCount();
       MenuCategory mc = new MenuCategory();
@@ -235,19 +247,6 @@ public class StoreController {
       this.storeService.insertMenu(mc);
    
       // 메뉴 관리자 페이지로 리다이렉트
-      return new ModelAndView("redirect:/store/menuManager");
-   }
-   
-   @PostMapping(value="/store/categoryDelete")
-   public ModelAndView menuDelete(String menu_category_name, HttpSession session) {
-      
-      Store currentStore = (Store) session.getAttribute("currentStore");
-      MenuCategory mc = new MenuCategory();
-      System.out.println("메뉴카테고리삭제ID:"+menu_category_name);
-      mc.setMenu_category_name(menu_category_name);
-      mc.setStore_id(currentStore.getStore_id());
-      this.storeService.deleteMenuCategory(mc);
-      
       return new ModelAndView("redirect:/store/menuManager");
    }
    
@@ -301,13 +300,15 @@ public class StoreController {
 			   }
 		   }
 	   }
+	   List<String> menuName = this.storeService.getMenuName(currentStore.getStore_id());
+	   if(menuName.contains(menu.getMenu_name())) {
+		   mav.addObject("errorMessage","같은 이름의 메뉴가 있습니다.");
+		   mav.addObject("BODY","menuRegister.jsp");
+		   return mav;
+	   }
 	   menu.setImage_name(fileName);
 	   Integer menu_category_id = (Integer) session.getAttribute("menu_category_id");
-	   System.out.println("메뉴카테고리 아이디 = "+menu_category_id);
-	   MenuItem menu1 = new MenuItem();
-	   menu1.setMenu_category_id(menu_category_id);
-	   menu1.setStore_id(currentStore.getStore_id());
-	   Integer count = this.storeService.getMenuCount(menu1);
+	   Integer count = this.storeService.getMenuCount();
 	   if(count == null) {
 		   count = 0;
 	   }
@@ -357,10 +358,23 @@ public class StoreController {
    @PostMapping(value="/store/menuModify")
    public ModelAndView menuModify(HttpSession session, Integer menu_item_id, MenuItem menuItem) {
 	   Store currentStore = (Store) session.getAttribute("currentStore");
-	   ModelAndView mav = new ModelAndView("owner/storeMain");
 	   menuItem.setMenu_item_id(menu_item_id);
 	   menuItem.setStore_id(currentStore.getStore_id());
 	   this.storeService.menuModify(menuItem);
+	   return new ModelAndView("redirect:/store/menuManager");
+   }
+   @PostMapping(value="/store/categoryDelete")
+   public ModelAndView categoryDelete(Integer menu_category_id) {
+	   this.storeService.categoryDelete(menu_category_id);
+	   return new ModelAndView("redirect:/store/menuManager");
+   }
+   @PostMapping(value="/store/categoryUpdate")
+   public ModelAndView categoryUpdate(Integer menu_category_id, String menu_category_name) {
+	   MenuCategory mc = new MenuCategory();
+	   mc.setMenu_category_id(menu_category_id);
+	   mc.setMenu_category_name(menu_category_name);
+	   System.out.println("카테고리ID"+menu_category_id+"카테고리이름"+menu_category_name);
+	   this.storeService.categoryNameUpdate(mc);
 	   return new ModelAndView("redirect:/store/menuManager");
    }
    

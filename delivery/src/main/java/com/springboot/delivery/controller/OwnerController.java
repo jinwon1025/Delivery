@@ -242,8 +242,5 @@ public class OwnerController {
 	    return new ModelAndView("redirect:../owner/myPage");
 	}
 
-	
-
-	
-	
+			
 }

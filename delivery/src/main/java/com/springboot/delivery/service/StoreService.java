@@ -13,6 +13,8 @@ import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class StoreService {
 
@@ -57,15 +59,11 @@ public class StoreService {
 		this.storeMapper.insertMenu(mc);
 	}
 	
-	public void deleteMenuCategory(MenuCategory mc) {
-		this.storeMapper.deleteMenuCategory(mc);
-	}
-	
 	public void menuRegister(MenuItem mi) {
 		this.storeMapper.menuRegister(mi);
 	}
-	public Integer getMenuCount(MenuItem mi) {
-		return this.storeMapper.getMenuCount(mi);
+	public Integer getMenuCount() {
+		return this.storeMapper.getMenuCount();
 	}
 	
 	public List<MenuItem> getMenuList(String store_id){
@@ -82,6 +80,23 @@ public class StoreService {
 	
 	public void menuModify(MenuItem mi) {
 		this.storeMapper.menuModify(mi);
+	}
+	@Transactional
+	public void categoryDelete(Integer menu_category_id) {
+		this.storeMapper.categoryMenuDelete(menu_category_id);
+		this.storeMapper.categoryDelete(menu_category_id);
+	}
+	
+	public void categoryNameUpdate(MenuCategory mc) {
+		this.storeMapper.categoryNameUpdate(mc);
+	}
+	
+	public List<String> getCategory(String store_id){
+		return this.storeMapper.getCategory(store_id);
+	}
+	
+	public List<String> getMenuName(String store_id){
+		return this.storeMapper.getMenuName(store_id);
 	}
 	
 	public void addOption(OptionCategory oc) {

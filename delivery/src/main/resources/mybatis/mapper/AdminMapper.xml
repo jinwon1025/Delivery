@@ -22,6 +22,23 @@
         #{store_id, jdbcType=VARCHAR}
     )
 </insert>
+
+<insert id="createMaincategory" parameterType="com.springboot.delivery.model.Maincategory">
+    INSERT INTO b_main_category_tbl (
+        main_category_id,
+        main_category_name
+    ) VALUES (
+        main_category_seq.NEXTVAL,
+        #{main_category_name}
+    )
+</insert>
+
+
+    <select id="getAllMaincategory" resultType="com.springboot.delivery.model.Maincategory">
+        SELECT * FROM b_main_category_tbl ORDER BY main_category_id DESC
+    </select>
+    
+    
     <!-- 전체 유저 조회 -->
 <select id="getAllUsers" resultType="com.springboot.delivery.model.User">
     SELECT 
@@ -42,17 +59,24 @@
         SELECT * FROM b_coupon_tbl ORDER BY cp_id DESC
     </select>
     
+   
     <!-- 쿠폰 삭제 -->
-    <delete id="deleteCoupon" parameterType="Integer">
-    DELETE FROM b_coupon_tbl WHERE cp_id = #{cp_id}
-	</delete>
-    
+    <delete id="deleteMaincategory" parameterType="Integer">
+    DELETE FROM b_main_category_tbl 
+    WHERE main_category_id = #{main_category_id}
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM user_constraints uc
+        JOIN user_cons_columns ucc ON uc.constraint_name = ucc.constraint_name
+        WHERE uc.r_constraint_name IN (
+            SELECT constraint_name 
+            FROM user_constraints 
+            WHERE table_name = 'B_MAIN_CATEGORY_TBL'
+        )
+        AND ucc.table_name = 'B_MAIN_CATEGORY_TBL'
+        AND ucc.column_name = 'MAIN_CATEGORY_ID'
+    )
+</delete>
 
-    <!-- 유저 삭제 -->
-    <delete id="deleteUser">
-        DELETE FROM b_user_info WHERE user_id = #{userId}
-    </delete>
-
-    
-    
+ 
 </mapper>

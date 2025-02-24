@@ -77,28 +77,19 @@
 
 	</select>
 
-	<delete id="deleteMenuCategory"
-		parameterType="com.springboot.delivery.model.MenuCategory">
-
-		delete from b_menu_category_tbl where
-		menu_category_name=#{menu_category_name} and store_id=#{store_id}
-
-	</delete>
-
 	<insert id="menuRegister"
 		parameterType="com.springboot.delivery.model.MenuItem">
 
 		insert into b_menu_item_tbl
 		values(#{menu_item_id},#{menu_name},#{menu_category_id},#{store_id},#{price},#{image_name},#{content})
 
-	</insert>
+</insert>
 
-	<select id="getMenuCount" resultType="Integer"
-		parameterType="com.springboot.delivery.model.MenuItem">
+	<select id="getMenuCount" resultType="Integer">
 
 		select max(menu_item_id) from b_menu_item_tbl
 
-	</select>
+</select>
 
 	<select id="getMenuList"
 		resultType="com.springboot.delivery.model.MenuItem">
@@ -182,6 +173,27 @@
 
 	</select>
 
+   <delete id="categoryDelete" parameterType="Integer">
+   delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
+   </delete>
+   
+   <delete id="categoryMenuDelete" parameterType="Integer">
+   delete from b_menu_Item_tbl where menu_category_id=#{menu_category_id}
+   </delete>
+   
+   <update id="categoryNameUpdate" parameterType="com.springboot.delivery.model.MenuCategory">
+   update b_menu_category_tbl set menu_category_name=#{menu_category_name} where menu_category_id=#{menu_category_id}
+   </update>
+   
+   <select id="getCategory" parameterType="String" resultType="String">
+   select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
+   </select>
+   
+   <select id="getMenuName" parameterType="String" resultType="String">
+   select menu_name from b_menu_item_tbl where store_id=#{store_id}
+   </select>
+   
+   
 </mapper>
 
 

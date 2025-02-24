@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>메뉴 등록</title>
 </head>
 <body>
 <h2>메뉴 등록</h2>
@@ -32,6 +32,11 @@
         <form:input path="content" id="content" type="text" />
     </div>
     <br/>
+    <c:if test="${not empty errorMessage }">
+    	<div class="alert alert-danger">
+    		<font color="red"> ${errorMessage } </font>
+    	</div>
+    </c:if>
     <input type="submit" value="등록하기">
 </form:form>
 </body>
