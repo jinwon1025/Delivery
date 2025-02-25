@@ -35,7 +35,7 @@
 
 
     <select id="getAllMaincategory" resultType="com.springboot.delivery.model.Maincategory">
-        SELECT * FROM b_main_category_tbl ORDER BY main_category_id DESC
+        SELECT * FROM b_main_category_tbl ORDER BY main_category_id
     </select>
     
     
@@ -56,7 +56,7 @@
     
     <!-- 전체 쿠폰 조회 -->
     <select id="getAllCoupons" resultType="com.springboot.delivery.model.Coupon">
-        SELECT * FROM b_coupon_tbl ORDER BY cp_id DESC
+        SELECT * FROM b_coupon_tbl ORDER BY cp_id 
     </select>
     
    
