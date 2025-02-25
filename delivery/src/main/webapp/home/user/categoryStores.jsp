@@ -278,8 +278,7 @@ body {
 	</div>
 
 	<!-- 가게 상세 페이지로 이동하기 위한 숨겨진 폼 -->
-	<form id="storeDetailForm" action="<c:url value='/userstore/detail'/>"
-		method="post">
+	<form id="storeDetailForm" action="<c:url value='/userstore/detail'/>">
 		<input type="hidden" id="store_id" name="store_id" value="">
 	</form>
 
