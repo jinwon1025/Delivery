@@ -90,7 +90,7 @@
 		<br />
 
 
-		<input type="submit" value="매장 정보 수정" />
+		<input type="submit" value="매장정보 수정" />
 
 		<script type="text/javascript">
 
