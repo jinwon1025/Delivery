@@ -194,7 +194,7 @@ body {
 <div class="container">
     <div class="store-grid">
         <c:forEach items="${StoreList}" var="store" varStatus="status">
-            <div class="store-item">
+            <div class="store-item" onclick="submitForm('${store.store_id}')" style="cursor: pointer">
                 <div class="store-logo">
                     <c:choose>
                         <c:when test="${not empty store.store_image_name}">
@@ -213,7 +213,7 @@ body {
                     <div class="store-details">
                         <div class="min-order">
                             <span class="min-order-label">최소주문금액:</span> 
-                            <span class="min-order-value">${store.last_price}원</span> 이상 배달
+                            <span class="min-order-value">${store.last_price}원</span>이상 배달
                             <c:if test="${store.last_price > 12000}">
                                 <span class="coupon-tag">쿠폰할인</span>
                             </c:if>
@@ -230,11 +230,21 @@ body {
         </c:forEach>
     </div>
 
+	<form id="storeForm" method="post" action="/userStore/detail">
+    	<input type="hidden" id="store_id" name="store_id" >
+	</form>
     <div class="btn-group">
         <a href="<c:url value='/store/list'/>" class="edit-btn">전체보기</a>
         <a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
     </div>
 </div>
 
+<script type="text/javascript">
+	function submitForm(storeId){
+		document.getElementById("store_id").value = storeId;
+		document.getElementById("storeForm").submit();
+	}
+</script>
 </body>
+
 </html>
