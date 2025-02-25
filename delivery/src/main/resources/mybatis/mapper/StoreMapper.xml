@@ -35,8 +35,9 @@
         #{made_in},
         #{store_image_name}
     )
+    
+    
 </insert>
-   
    <select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
       select store_id, store_name, last_price, delivery_fee, delivery_time, store_image_name from b_store_tbl where owner_id=#{owner_id}
