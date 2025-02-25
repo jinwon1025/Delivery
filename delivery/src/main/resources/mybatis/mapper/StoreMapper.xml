@@ -31,7 +31,7 @@
           #{store_phone},
           #{store_openHour},
           #{delivery_fee},
-          #{delivery_time},
+          #{delivery_time,jdbcType=VARCHAR},
           #{made_in},
           #{store_image_name}
       )
@@ -61,7 +61,7 @@
           store_phone=#{store_phone}, 
           store_openHour=#{store_openHour}, 
           delivery_fee=#{delivery_fee},
-          delivery_time=#{delivery_time},
+          delivery_time=#{delivery_time,jdbcType=VARCHAR},
           made_in=#{made_in}, 
           store_image_name=#{store_image_name} 
       where store_id=#{store_id}
