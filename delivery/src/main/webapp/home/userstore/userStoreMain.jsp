@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>금베달리스트 메인</title>
+<title>금베달리스트 메인화면</title>
 <style>
 /* 로그아웃 링크와 사용자 이름을 우측 상단에 배치 */
 .logout-container {
