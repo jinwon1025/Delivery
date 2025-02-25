@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import com.springboot.delivery.mapper.StoreMapper;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
+import com.springboot.delivery.model.OptionCategory;
+import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.SubOption;
 
 import jakarta.transaction.Transactional;
 
@@ -94,5 +97,29 @@ public class StoreService {
 	
 	public List<String> getMenuName(String store_id){
 		return this.storeMapper.getMenuName(store_id);
+	}
+	
+	public void addOption(OptionCategory oc) {
+		this.storeMapper.addOption(oc);
+	}
+	
+	public Integer getOptionGroupMax() {
+		return this.storeMapper.getOptionGroupMax();
+	}
+	
+	public List<OptionCategory> getMenuItemOptionList(OptionCategory oc) {
+		return this.storeMapper.getMenuItemOptionList(oc);
+	}
+	
+	public void addSubOption(SubOption so) {
+		this.storeMapper.addSubOption(so);
+	}
+	
+	public Integer getSubOptionMax() {
+		return this.storeMapper.getSubOptionMax();
+	}
+	
+	public List<OptionSet> getSubOptionList(OptionSet os){
+		return this.storeMapper.getSubOptionList(os);
 	}
 }

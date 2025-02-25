@@ -36,8 +36,91 @@
         #{store_image_name}
     )
     
-    
+ 
+
+	<select id="idcheck" parameterType="String" resultType="Integer">
+
+		select count(*) from b_store_tbl where store_id=#{store_id}
+
+	</select>
+
+	<insert id="storeRegister"
+		parameterType="com.springboot.delivery.model.Store">
+
+		insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address},
+		#{last_price},
+		#{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour},
+		#{delivery_fee}, #{made_in}, #{store_image_name} )
+
+	</insert>
+
+	<select id="storeList" parameterType="String"
+		resultType="com.springboot.delivery.model.Store">
+
+		select store_id, store_name, last_price, delivery_fee, store_image_name from
+		b_store_tbl where owner_id=#{owner_id}
+
+	</select>
+
+	<delete id="deleteStore"
+		parameterType="com.springboot.delivery.model.Store">
+
+		delete from b_store_tbl where store_id=#{store_id}
+
+	</delete>
+
+	<select id="getStore" parameterType="String"
+		resultType="com.springboot.delivery.model.Store">
+
+		select store_id, store_name, store_address, last_price, main_category_id,
+		store_phone, store_openhour, delivery_fee, made_in, store_image_name
+		from b_store_tbl where store_id=#{store_id}
+
+	</select>
+
+	<update id="updateStore"
+		parameterType="com.springboot.delivery.model.Store">
+
+		update b_store_tbl set store_name=#{store_name},
+		store_address=#{store_address}, last_price=#{last_price},
+		main_category_Id=#{main_category_Id}, store_phone=#{store_phone},
+		store_openHour=#{store_openHour}, delivery_fee=#{delivery_fee},
+		made_in=#{made_in}, store_image_name=#{store_image_name} where
+		store_id=#{store_id}
+
+	</update>
+
+	<select id="getAllMenu" parameterType="String"
+		resultType="com.springboot.delivery.model.MenuCategory">
+
+		select menu_category_id,menu_category_name from b_menu_category_tbl where
+		store_id=#{store_id}
+
+	</select>
+
+	<insert id="insertMenu"
+		parameterType="com.springboot.delivery.model.MenuCategory">
+
+		insert into b_menu_category_tbl values(#{menu_category_id},
+		#{menu_category_name}, #{store_id})
+
+	</insert>
+
+	<select id="getMaxMenuCount" resultType="Integer">
+
+		select count(*) from b_menu_category_tbl
+
+	</select>
+
+	<insert id="menuRegister"
+		parameterType="com.springboot.delivery.model.MenuItem">
+
+		insert into b_menu_item_tbl
+		values(#{menu_item_id},#{menu_name},#{menu_category_id},#{store_id},#{price},#{image_name},#{content})
+
+>>>>>>> branch 'master' of https://github.com/jinwon1025/Delivery.git
 </insert>
+<<<<<<< HEAD
    <select id="storeList" parameterType="String" resultType="com.springboot.delivery.model.Store">
    
       select store_id, store_name, last_price, delivery_fee, delivery_time, store_image_name from b_store_tbl where owner_id=#{owner_id}
@@ -118,6 +201,97 @@
    			image_name=#{image_name} where store_id=#{store_id} and menu_item_id=#{menu_item_id}
    </update>
    
+=======
+
+	<select id="getMenuCount" resultType="Integer">
+
+		select max(menu_item_id) from b_menu_item_tbl
+
+</select>
+
+	<select id="getMenuList"
+		resultType="com.springboot.delivery.model.MenuItem">
+
+		select * from b_menu_item_tbl where store_id=#{store_id}
+
+	</select>
+
+	<delete id="deleteMenu"
+		parameterType="com.springboot.delivery.model.MenuItem">
+
+		delete from b_menu_item_tbl where store_id=#{store_id} and
+		menu_item_id=#{menu_item_id}
+
+	</delete>
+
+	<select id="menuDetail"
+		resultType="com.springboot.delivery.model.MenuItem"
+		parameterType="com.springboot.delivery.model.MenuItem">
+
+		select * from b_menu_item_tbl where store_id=#{store_id} and
+		menu_item_id=#{menu_item_id}
+
+	</select>
+
+	<update id="menuModify"
+		parameterType="com.springboot.delivery.model.MenuItem">
+		update b_menu_item_tbl set menu_name=#{menu_name}, price=#{price},
+		content=#{content},
+		image_name=#{image_name} where store_id=#{store_id} and menu_item_id=#{menu_item_id}
+	</update>
+
+	<insert id="addOption"
+		parameterType="com.springboot.delivery.model.OptionCategory">
+
+		insert into b_option_group_tbl values(#{option_group_id},
+		#{option_group_name}, #{store_id}, #{menu_item_id})
+
+	</insert>
+
+	<select id="getOptionGroupMax" resultType="Integer">
+
+		select max(option_group_id) from b_option_group_tbl
+
+	</select>
+
+	<select id="getMenuItemOptionList"
+		parameterType="com.springboot.delivery.model.OptionCategory"
+		resultType="com.springboot.delivery.model.OptionCategory">
+
+		select option_group_id, option_group_name, store_id, menu_item_id from
+		b_option_group_tbl where store_id=#{store_id} and
+		menu_item_id=#{menu_item_id}
+
+	</select>
+
+	<insert id="addSubOption"
+		parameterType="com.springboot.delivery.model.SubOption">
+
+		insert into b_option_tbl values(#{option_id}, #{option_name},
+		#{option_price}, #{option_group_id}, #{store_id}, #{menu_item_id})
+
+	</insert>
+
+	<select id="getSubOptionMax" resultType="Integer">
+
+		select max(option_id) from b_option_tbl
+
+	</select>
+
+	<select id="getSubOptionList"
+		resultType="com.springboot.delivery.model.OptionSet">
+
+		SELECT o.option_id, o.option_name, o.option_price, o.store_id,
+		o.menu_item_id, g.option_group_id, g.option_group_name
+		FROM b_option_group_tbl g
+		INNER JOIN b_option_tbl o ON g.option_group_id = o.option_group_id
+		AND g.store_id = o.store_id
+		AND g.menu_item_id = o.menu_item_id
+
+
+	</select>
+
+>>>>>>> branch 'master' of https://github.com/jinwon1025/Delivery.git
    <delete id="categoryDelete" parameterType="Integer">
    delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
    </delete>

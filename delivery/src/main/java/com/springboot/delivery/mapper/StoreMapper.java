@@ -6,7 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
+import com.springboot.delivery.model.OptionCategory;
+import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.SubOption;
 
 @Mapper
 public interface StoreMapper {
@@ -32,4 +35,10 @@ public interface StoreMapper {
 	void categoryNameUpdate(MenuCategory mc);
 	List<String> getCategory(String store_id);
 	List<String> getMenuName(String store_id);
+	void addOption(OptionCategory oc);
+	Integer getOptionGroupMax();
+	List<OptionCategory> getMenuItemOptionList(OptionCategory oc);
+	void addSubOption(SubOption so);
+	Integer getSubOptionMax();
+	List<OptionSet> getSubOptionList(OptionSet os);
 }

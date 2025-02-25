@@ -17,7 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
+import com.springboot.delivery.model.OptionCategory;
+import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.SubOption;
 import com.springboot.delivery.service.StoreService;
 
 import jakarta.servlet.ServletContext;
@@ -306,6 +309,9 @@ public class StoreController {
 	   menu.setImage_name(fileName);
 	   Integer menu_category_id = (Integer) session.getAttribute("menu_category_id");
 	   Integer count = this.storeService.getMenuCount();
+	   if(count == null) {
+		   count = 0;
+	   }
 	   menu.setMenu_category_id(menu_category_id);
 	   menu.setStore_id(currentStore.getStore_id());
 	   menu.setMenu_item_id(count+1);
@@ -371,4 +377,82 @@ public class StoreController {
 	   this.storeService.categoryNameUpdate(mc);
 	   return new ModelAndView("redirect:/store/menuManager");
    }
+   
+   @GetMapping(value="/store/optionManage")
+   public ModelAndView optionManage(HttpSession session, Integer menu_item_id) {
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(menu_item_id);
+	   MenuItem menuInfo = this.storeService.menuDetail(mi);
+	   OptionCategory oc = new OptionCategory();
+	   oc.setStore_id(currentStore.getStore_id());
+	   oc.setMenu_item_id(menu_item_id);
+	   List<OptionCategory> optionList = this.storeService.getMenuItemOptionList(oc);
+	   OptionSet os = new OptionSet();
+	   os.setStore_id(currentStore.getStore_id());
+	   os.setMenu_item_id(menu_item_id);
+	   
+	   List<OptionSet> subOptionList = this.storeService.getSubOptionList(os);
+	   session.setAttribute("currentMenu", menuInfo);
+	   mav.addObject("menuInfo", menuInfo);
+	   mav.addObject("optionList", optionList);
+	   mav.addObject("subOptionList", subOptionList);
+	   mav.addObject("BODY", "optionRegister.jsp");
+	   return mav;
+   }
+   
+   @PostMapping(value="/store/addOption")
+   public ModelAndView addOption(HttpSession session, String category_name) {
+       Store currentStore = (Store)session.getAttribute("currentStore");
+       MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");  // 세션에서 메뉴 정보 가져오기
+       
+       ModelAndView mav = new ModelAndView("owner/storeMain");
+       OptionCategory oc = new OptionCategory();
+       Integer maxCount = this.storeService.getOptionGroupMax();
+       System.out.println("최대 카운트" +maxCount);
+       if (maxCount == null) {  // 값이 없으면 0을 설정
+    	    maxCount = 0;
+    	}
+       
+       oc.setOption_group_id(maxCount+1);
+       oc.setOption_group_name(category_name);
+       oc.setMenu_item_id(currentMenu.getMenu_item_id());
+       System.out.println("카테고리 이름"+category_name);
+       oc.setStore_id(currentStore.getStore_id());
+       this.storeService.addOption(oc);
+       
+       return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
+   }
+   
+   @PostMapping(value="/store/addSubOption")
+   public ModelAndView addSubOption(Integer option_group_id, String option_name, Integer option_price, HttpSession session) {
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   Integer maxCount = this.storeService.getSubOptionMax();
+	   if(maxCount == null) {
+		   maxCount =0;
+	   }
+	   SubOption so= new SubOption();
+	   so.setOption_id(maxCount+1);
+	   so.setOption_name(option_name);
+	   so.setOption_price(option_price);
+	   so.setOption_group_id(option_group_id);
+	   so.setStore_id(currentStore.getStore_id());
+	   so.setMenu_item_id(currentMenu.getMenu_item_id());
+	   
+	   this.storeService.addSubOption(so);
+	   
+	   return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
+   }
+   
+   
+   
+   
+   
+   
+   
 }
