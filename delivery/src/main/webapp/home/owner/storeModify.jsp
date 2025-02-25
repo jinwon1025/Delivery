@@ -65,7 +65,7 @@
 		<font color="red"><form:errors path="store_phone" /></font>
 		<br /><br/>
 		
-		배달시간 : <br />
+		배달 시간 : <br />
 		<form:input path="delivery_time" />
 		<br />
 		<font color="red"><form:errors path="delivery_time" /></font>
@@ -90,7 +90,7 @@
 		<br />
 
 
-		<input type="submit" value="매장 정보 수정" />
+		<input type="submit" value="매장정보 수정" />
 
 		<script type="text/javascript">
 

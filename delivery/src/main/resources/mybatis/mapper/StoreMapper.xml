@@ -194,23 +194,25 @@
 	</select>
 
    <delete id="categoryDelete" parameterType="Integer">
-   delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
+      delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
    </delete>
    
    <delete id="categoryMenuDelete" parameterType="Integer">
-   delete from b_menu_Item_tbl where menu_category_id=#{menu_category_id}
+      delete from b_menu_Item_tbl where menu_category_id=#{menu_category_id}
    </delete>
    
    <update id="categoryNameUpdate" parameterType="com.springboot.delivery.model.MenuCategory">
-   update b_menu_category_tbl set menu_category_name=#{menu_category_name} where menu_category_id=#{menu_category_id}
+      update b_menu_category_tbl 
+      set menu_category_name=#{menu_category_name} 
+      where menu_category_id=#{menu_category_id}
    </update>
    
    <select id="getCategory" parameterType="String" resultType="String">
-   select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
+      select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
    </select>
    
    <select id="getMenuName" parameterType="String" resultType="String">
-   select menu_name from b_menu_item_tbl where store_id=#{store_id}
+      select menu_name from b_menu_item_tbl where store_id=#{store_id}
    </select>
    
    <delete id="deleteSubOption" parameterType="com.springboot.delivery.model.OptionSet">
@@ -257,14 +259,4 @@
    delete from b_option_group_tbl where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
    
    </delete>
-   
 </mapper>
-
-
-
-
-
-
-
-
-
