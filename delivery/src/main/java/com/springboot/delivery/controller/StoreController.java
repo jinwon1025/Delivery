@@ -95,6 +95,11 @@ public class StoreController {
          store.setStore_image_name("");
       }
 
+      // delivery_time 기본값 설정 (null이거나 빈 문자열인 경우)
+      if (store.getDelivery_time() == null || store.getDelivery_time().trim().isEmpty()) {
+         store.setDelivery_time("20~30분");
+      }
+
       LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
       store.setOwner_id(loginOwner.getId());
       this.storeService.storeRegister(store);
@@ -171,14 +176,13 @@ public class StoreController {
             System.out.println("새 이미지 업로드 중 문제 발생: " + e.getMessage());
          }
       } else {
-         if (existingImageName != null && !existingImageName.isEmpty()) {
-            String existingPath = ctx.getRealPath("/upload/storeProfile/" + existingImageName);
-            File existingFile = new File(existingPath);
-            if (existingFile.exists()) {
-               existingFile.delete();
-            }
-         }
-         store.setStore_image_name("");
+         // 이미지를 변경하지 않는 경우 기존 이미지 이름 유지
+         store.setStore_image_name(existingImageName);
+      }
+
+      // delivery_time 기본값 설정 (null이거나 빈 문자열인 경우)
+      if (store.getDelivery_time() == null || store.getDelivery_time().trim().isEmpty()) {
+         store.setDelivery_time("20~30분");
       }
 
       this.storeService.updateStore(store);
@@ -186,7 +190,6 @@ public class StoreController {
       session.setAttribute("currentStore", store);
       return new ModelAndView("redirect:../store/storeList");
    }
-
    @PostMapping(value = "/store/delete")
    public ModelAndView deleteStore(String store_id, HttpSession session) {
       // store_id로 스토어 정보 조회
