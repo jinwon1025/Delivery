@@ -11,12 +11,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.UserService;
 
 import jakarta.servlet.ServletContext;
@@ -29,10 +32,18 @@ import jakarta.validation.Valid;
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private AdminService adminService;
+	
 	@GetMapping(value = "/user/index")
 	public ModelAndView userIndex(HttpSession session) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    
+	    
 	    //로그인이 되어있다면 로그인상태 페이지 유지
 	    if(loginUser != null) {
 	    	if("ADMIN".equals(loginUser.getRole())) {
@@ -292,6 +303,46 @@ public class UserController {
 		mav.setViewName("redirect:/user/index");
 		return mav;
 	}
+	
+	
+	
+	
+	@GetMapping(value="/user/categoryStores")
+	public ModelAndView categoryStores(@RequestParam(required=false) Integer categoryId) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
+	    // 메인 카테고리 목록 가져오기 (메뉴 표시용)
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    
+	    List<Store> storeList;
+	    String categoryName = "전체 가게";
+	    
+	    if (categoryId == null) {
+	        // 카테고리 ID가 지정되지 않으면 모든 가게 표시
+	        storeList = userService.getAllStore();
+	    } else {
+	        // 지정된 카테고리의 가게만 표시
+	        storeList = userService.getStoresByCategory(categoryId);
+	        
+	        // 카테고리 이름 찾기
+	        for (Maincategory category : maincategoryList) {
+	            if (category.getMain_category_id().equals(categoryId)) {
+	                categoryName = category.getMain_category_name();
+	                break;
+	            }
+	        }
+	    }
+	    
+	    mav.addObject("storeList", storeList);
+	    mav.addObject("categoryName", categoryName);
+	    mav.addObject("BODY", "categoryStores.jsp");
+	    return mav;
+	}
+	
+	
+	
+	
 	
 	@GetMapping(value="/user/allStore") //모든 가맹점 목록 가져오기
 	public ModelAndView allStore() {

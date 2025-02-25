@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -35,6 +35,7 @@ body {
 	position: relative;
 	align-items: center;
 	transition: all 0.2s ease;
+	cursor: pointer;
 }
 
 .store-logo {
@@ -176,9 +177,37 @@ body {
 }
 
 .store-item:hover {
-    background-color: #f8f9fa ;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) ;
-    transform: translateY(-2px) ;
+	background-color: #f8f9fa;
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.category-title {
+	text-align: center;
+	margin-bottom: 25px;
+	color: #333;
+	font-size: 28px;
+	font-weight: bold;
+	position: relative;
+}
+
+.category-title:after {
+	content: '';
+	display: block;
+	width: 50px;
+	height: 3px;
+	background-color: #ff6b6b;
+	margin: 10px auto 0;
+}
+
+.no-stores {
+	text-align: center;
+	padding: 50px 0;
+	color: #666;
+	font-size: 18px;
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 반응형 디자인 */
@@ -188,53 +217,79 @@ body {
 	}
 }
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <div class="store-grid">
-        <c:forEach items="${KoreaList}" var="store" varStatus="status">
-            <div class="store-item">
-                <div class="store-logo">
-                    <c:choose>
-                        <c:when test="${not empty store.store_image_name}">
-                            <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="${store.store_name}">
-                        </c:when>
-                        <c:otherwise>
-                            <img src="${pageContext.request.contextPath}/image/noStoreProfile.png" alt="기본 이미지">
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-                <div class="store-info">
-                    <div class="store-name">
-                        ${store.store_name}
-                        <span class="store-type">배달</span>
-                    </div>
-                    <div class="store-details">
-                        <div class="min-order">
-                            <span class="min-order-label">최소주문금액:</span> 
-                            <span class="min-order-value">${store.last_price}원</span> 이상 배달
-                            <c:if test="${store.last_price > 12000}">
-                                <span class="coupon-tag">쿠폰할인</span>
-                            </c:if>
-                        </div>
-                        <div class="delivery-time">
-                            20-30분
-                        </div>
-                    </div>
-                </div>
-                <div class="location">
-                    지구
-                </div>
-            </div>
-        </c:forEach>
-    </div>
+	<div class="container">
+		<h1 class="category-title">${categoryName}</h1>
 
-    <div class="btn-group">
-        <a href="<c:url value='/store/list'/>" class="edit-btn">전체보기</a>
-        <a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
-    </div>
-</div>
+		<c:choose>
+			<c:when test="${not empty storeList}">
+				<div class="store-grid">
+					<c:forEach items="${storeList}" var="store" varStatus="status">
+						<div class="store-item"
+							onclick="goToStoreDetail('${store.store_id}')">
+							<div class="store-logo">
+								<c:choose>
+									<c:when test="${not empty store.store_image_name}">
+										<img
+											src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}"
+											alt="${store.store_name}">
+									</c:when>
+									<c:otherwise>
+										<img
+											src="${pageContext.request.contextPath}/image/noStoreProfile.png"
+											alt="기본 이미지">
+									</c:otherwise>
+								</c:choose>
+							</div>
+							<div class="store-info">
+								<div class="store-name">
+									${store.store_name} <span class="store-type">배달</span>
+								</div>
+								<div class="store-details">
+									<div class="min-order">
+										<span class="min-order-label">최소주문금액:</span> <span
+											class="min-order-value">${store.last_price}원</span> 이상 배달
+										<c:if test="${store.last_price > 12000}">
+											<span class="coupon-tag">쿠폰할인</span>
+										</c:if>
+									</div>
+									<div class="delivery-time">${empty store.delivery_time ? '20-30분' : store.delivery_time}
+									</div>
+								</div>
+							</div>
+							<div class="location">${empty store.store_address ? '지구' : store.store_address}
+							</div>
+						</div>
+					</c:forEach>
+				</div>
+			</c:when>
+			<c:otherwise>
+				<div class="no-stores">해당 카테고리에 등록된 가게가 없습니다.</div>
+			</c:otherwise>
+		</c:choose>
+
+		<div class="btn-group">
+			<a href="<c:url value='/user/categoryStores'/>" class="edit-btn">전체보기</a>
+			<a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
+		</div>
+	</div>
+
+	<!-- 가게 상세 페이지로 이동하기 위한 숨겨진 폼 -->
+	<form id="storeDetailForm" action="<c:url value='/userstore/detail'/>"
+		method="post">
+		<input type="hidden" id="store_id" name="store_id" value="">
+	</form>
+
+	<script>
+function goToStoreDetail(storeId) {
+    // 폼의 store_id 값을 설정하고 제출
+    document.getElementById('store_id').value = storeId;
+    document.getElementById('storeDetailForm').submit();
+}
+</script>
 
 </body>
 </html>

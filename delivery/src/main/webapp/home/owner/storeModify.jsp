@@ -39,18 +39,10 @@
 		<br /><br/>
         
         메인 카테고리 :
-        <form:select path="main_category_Id">
-			<form:option value="1">치킨</form:option>
-			<form:option value="2">중식</form:option>
-			<form:option value="3">돈까스·회</form:option>
-			<form:option value="4">피자</form:option>
-			<form:option value="5">패스트푸드</form:option>
-			<form:option value="6">찜·탕</form:option>
-			<form:option value="7">족발·보쌈</form:option>
-			<form:option value="8">분식</form:option>
-			<form:option value="9">카페·디저트</form:option>
-			<form:option value="10">한식</form:option>
-
+		<form:select path="main_category_Id">
+    		<c:forEach var="category" items="${maincategoryList}">
+        	<form:option value="${category.main_category_id}">${category.main_category_name}</form:option>
+    		</c:forEach>
 		</form:select><br/><br/>
         
         가게 전화번호 : <br />
@@ -70,7 +62,7 @@
 		<br />
 		<font color="red"><form:errors path="delivery_time" /></font>
 		<br /><br/>
-        
+		
         배달요금 : <br />
 		<form:input path="delivery_fee" />
 		<br />

@@ -15,12 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginOwner;
+import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionCategory;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
+import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
 
 import jakarta.servlet.ServletContext;
@@ -33,11 +35,19 @@ public class StoreController {
 
    @Autowired
    private StoreService storeService;
+   
+   @Autowired
+   private AdminService adminService;
+   
 
    @GetMapping(value = "/store/goRegister")
    public ModelAndView storeRegister() {
       ModelAndView mav = new ModelAndView("owner/ownerMain");
+      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+      
+      
       mav.addObject("BODY", "storeRegister.jsp");
+      mav.addObject("maincategoryList", maincategoryList); 
       mav.addObject(new Store());
       return mav;
    }
@@ -136,13 +146,19 @@ public class StoreController {
 
    @GetMapping(value = "/store/goStoreModify")
    public ModelAndView goStoreModify(HttpSession session) {
-      ModelAndView mav = new ModelAndView("owner/storeMain");
-      // 세션에서 현재 가게 정보 가져오기
-      Store store = (Store) session.getAttribute("currentStore");
-      System.out.println(store.getDelivery_time());
-      mav.addObject("store", store);
-      mav.addObject("BODY", "storeModify.jsp");
-      return mav;
+       ModelAndView mav = new ModelAndView("owner/storeMain");
+       
+       // 세션에서 현재 가게 정보 가져오기
+       Store store = (Store) session.getAttribute("currentStore");
+       System.out.println(store.getDelivery_time());
+       
+       // 메인 카테고리 목록 가져오기
+       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+       
+       mav.addObject("store", store);
+       mav.addObject("maincategoryList", maincategoryList); // 카테고리 목록 추가
+       mav.addObject("BODY", "storeModify.jsp");
+       return mav;
    }
 
    @PostMapping(value = "/store/modify")
