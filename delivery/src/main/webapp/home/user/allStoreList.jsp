@@ -230,7 +230,7 @@ body {
         </c:forEach>
     </div>
 
-	<form id="storeForm" method="post" action="/userStore/detail">
+	<form id="storeForm" method="post" action="/userstore/detail">
     	<input type="hidden" id="store_id" name="store_id" >
 	</form>
     <div class="btn-group">

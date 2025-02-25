@@ -16,12 +16,12 @@ import jakarta.servlet.http.HttpSession;
 public class UserStoreController {
 	@Autowired
 	private UserStoreService userStoreService;
-	@PostMapping(value="/userStore/detail")
+	@PostMapping(value="/userstore/detail")
 	public ModelAndView storeDetial(HttpSession session, String store_id) {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
 		mav.addObject("storeCategory", mc);
-		mav.addObject("BODY","storeDetail");
+		mav.addObject("BODY","../userstore/userStoreMain.jsp");
 		return mav;
 	}
 }
