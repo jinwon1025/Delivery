@@ -139,6 +139,7 @@ public class StoreController {
       ModelAndView mav = new ModelAndView("owner/storeMain");
       // 세션에서 현재 가게 정보 가져오기
       Store store = (Store) session.getAttribute("currentStore");
+      System.out.println(store.getDelivery_time());
       mav.addObject("store", store);
       mav.addObject("BODY", "storeModify.jsp");
       return mav;
@@ -184,7 +185,6 @@ public class StoreController {
       if (store.getDelivery_time() == null || store.getDelivery_time().trim().isEmpty()) {
          store.setDelivery_time("20~30분");
       }
-
       this.storeService.updateStore(store);
       // 세션의 현재 가게 정보 업데이트
       session.setAttribute("currentStore", store);

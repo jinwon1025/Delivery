@@ -58,7 +58,7 @@
 		resultType="com.springboot.delivery.model.Store">
 
 		select store_id, store_name, store_address, last_price, main_category_id,
-		store_phone, store_openhour, delivery_fee, made_in, store_image_name
+		store_phone, store_openhour, delivery_fee, made_in, store_image_name, delivery_time
 		from b_store_tbl where store_id=#{store_id}
 
 	</select>
