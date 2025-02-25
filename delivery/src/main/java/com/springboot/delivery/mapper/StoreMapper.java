@@ -40,5 +40,11 @@ public interface StoreMapper {
 	List<OptionCategory> getMenuItemOptionList(OptionCategory oc);
 	void addSubOption(SubOption so);
 	Integer getSubOptionMax();
-	List<OptionSet> getSubOptionList(OptionSet os);
+	List<OptionSet> getSubOptionList();
+	void deleteSubOption(OptionSet os);
+	OptionSet getUpdateSubOptionTarget(OptionSet os);
+	void updateSubOption(OptionSet os);
+	void updateOptionCategory(OptionCategory oc);
+	void deleteSubOptionByGroupId(OptionCategory oc);
+	void deleteOptionCategory(OptionCategory oc);
 }

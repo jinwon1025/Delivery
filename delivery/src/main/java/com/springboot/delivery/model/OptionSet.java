@@ -13,7 +13,7 @@ public class OptionSet {
 	private String store_id;
 	private Integer menu_item_id;  //b_option_tbl;
 	private Integer option_group_id; // 조인
-	private String option_groupt_name; //b_option_group_tbl;
+	private String option_group_name; //b_option_group_tbl;
 	
 	
 	

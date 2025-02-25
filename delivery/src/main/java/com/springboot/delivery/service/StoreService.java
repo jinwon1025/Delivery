@@ -119,7 +119,31 @@ public class StoreService {
 		return this.storeMapper.getSubOptionMax();
 	}
 	
-	public List<OptionSet> getSubOptionList(OptionSet os){
-		return this.storeMapper.getSubOptionList(os);
+	public List<OptionSet> getSubOptionList(){
+		return this.storeMapper.getSubOptionList();
+	}
+	
+	public void deleteSubOption(OptionSet os) {
+		this.storeMapper.deleteSubOption(os);
+	}
+	
+	public OptionSet getUpdateSubOptionTarget(OptionSet os) {
+		return this.storeMapper.getUpdateSubOptionTarget(os);
+	}
+	
+	public void updateSubOption(OptionSet os) {
+		this.storeMapper.updateSubOption(os);
+	}
+	
+	public void updateOptionCategory(OptionCategory oc) {
+		this.storeMapper.updateOptionCategory(oc);
+	}
+	
+	public void deleteSubOptionByGroupId(OptionCategory oc) {
+		this.storeMapper.deleteSubOptionByGroupId(oc);
+	}
+	
+	public void deleteOptionCategory(OptionCategory oc) {
+		this.storeMapper.deleteOptionCategory(oc);
 	}
 }

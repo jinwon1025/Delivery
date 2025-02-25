@@ -159,11 +159,6 @@
     .sub-option-row input[name="option_price"] {
       width: 120px;
     }
-    
-    .btn-container {
-      display: flex;
-      gap: 4px;
-    }
   </style>
 </head>
 <body>
@@ -199,50 +194,34 @@
       <div class="option-group">
         <div class="option-item">
           <div><strong>${category.option_group_name}</strong></div>
-          <div class="btn-container">
-            <form action="/store/updateOptionCategory" method="post" style="display: inline-block; margin-right: 4px;"
-            	onsubmit="return updateOptionCategory()">
-              <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-              <input type="hidden" id="newOptionName" name="newOptionName"/>
-              <button type="submit" class="btn btn-edit">수정</button>
-            </form>
-            <form action="/store/deleteOptionCategory" method="post" style="display: inline-block;"
-            	onsubmit="return deleteOptionCategory()">
-              <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-              <button type="submit" class="btn btn-delete">삭제</button>
-            </form>
-          </div>
         </div>
         <div class="sub-options">
           <c:forEach var="optionSet" items="${subOptionList}">
-            <c:if test="${category.option_group_id == optionSet.option_group_id}">
+            <c:if test="${category.option_group_id eq optionSet.option_group_id}">
               <div class="sub-option-row">
+              <c:choose>
+              	<c:when test="${target != null && optionSet.option_id eq target.option_id}">
+              	  <form action="/store/updateSubOption" method="post" style="display: inline-block; margin-right: 4px;"
+              	   onsubmit="return updateCheck()">
+              		<input type="text" name="option_name" value="${optionSet.option_name}" />
+                	<input type="text" name="option_price" value="${optionSet.option_price}" />
+                  <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
+                  <input type="hidden" name="option_id" value="${optionSet.option_id}"/>
+                  <button type="submit" class="btn btn-edit">수정하기</button>
+                   </form>
+              	</c:when>
+              	<c:otherwise>
                 <input type="text" name="subOption" value="${optionSet.option_name}" readonly="readonly"/>
                 <input type="text" name="subOption" value="${optionSet.option_price}" readonly="readonly"/>
-                <div class="btn-container">
-                  <form action="/store/goUpdateSubOption" method="get" style="display: inline-block; margin-right: 4px;">
-                    <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-                    <input type="hidden" name="option_id" value="${optionSet.option_id}"/>
-                    <button type="submit" class="btn btn-edit">수정</button>
-                  </form>
-                  <form action="/store/deleteSubOption" method="post" style="display: inline-block;"
-                      onsubmit="return deleteCheck()">
-                    <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-                    <input type="hidden" name="option_id" value="${optionSet.option_id}"/>
-                    <button type="submit" class="btn btn-delete">삭제</button>
-                  </form>
-                </div>
+                  <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
+                  <input type="hidden" name="option_id" value="${optionSet.option_id}"/>
+
+                 </c:otherwise>
+                  </c:choose>
+
               </div>
             </c:if>
           </c:forEach>
-          <form action="/store/addSubOption" method="post">
-            <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-            <div class="sub-option-row">
-              <input type="text" name="option_name" placeholder="하위 옵션 이름">
-              <input type="text" name="option_price" placeholder="추가 가격">
-              <button type="submit" class="btn btn-primary">하위 옵션 추가</button>
-            </div>
-          </form>
         </div>
       </div>
     </c:forEach>
@@ -250,28 +229,8 @@
 </div>
   </div>
  <script type="text/javascript">
- function deleteCheck(){
-	 if(confirm("정말로 옵션을 삭제하시겠습니까?")){
-		 return true;
-	 } else {
-		 return false;
-	 }
- }
- 
- function updateOptionCategory(){
-	 const 	 newOption = prompt("수정할 옵션명을 입력하세요.");
-	 if(newOption!== null && newOption !== "" ){
-		 const input = document.getElementById('newOptionName');
-		 input.value = newOption;
-		 return true;
-	 } else {
-		 alert("옵션명을 입력해주세요.");
-		 return false;
-	 }
- }
- 
- function deleteOptionCategory(){
-	 if(confirm("정말로 옵션 카테고리를 삭제하시겠습니까?")){
+ function updateCheck(){
+	 if(confirm("정말로 옵션을 수정하시겠습니까?")){
 		 return true;
 	 } else {
 		 return false;

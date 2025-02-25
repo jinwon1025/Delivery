@@ -9,15 +9,35 @@
 
 	</select>
 
-	<insert id="storeRegister"
-		parameterType="com.springboot.delivery.model.Store">
-
-		insert into b_store_tbl values(#{store_id}, #{store_name}, #{store_address},
-		#{last_price},
-		#{owner_id}, #{main_category_Id}, #{store_phone}, #{store_openHour},
-		#{delivery_fee}, #{made_in}, #{store_image_name} )
-
-	</insert>
+	 <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store">
+      insert into b_store_tbl (
+          store_id,
+          store_name,
+          store_address,
+          last_price,
+          owner_id,
+          main_category_Id,
+          store_phone,
+          store_openHour,
+          delivery_fee,
+          delivery_time,
+          made_in,
+          store_image_name
+      ) values (
+          #{store_id},
+          #{store_name},
+          #{store_address},
+          #{last_price},
+          #{owner_id},
+          #{main_category_Id},
+          #{store_phone},
+          #{store_openHour},
+          #{delivery_fee},
+          #{delivery_time,jdbcType=VARCHAR},
+          #{made_in},
+          #{store_image_name}
+      )
+   </insert>
 
 	<select id="storeList" parameterType="String"
 		resultType="com.springboot.delivery.model.Store">
@@ -193,6 +213,50 @@
    select menu_name from b_menu_item_tbl where store_id=#{store_id}
    </select>
    
+   <delete id="deleteSubOption" parameterType="com.springboot.delivery.model.OptionSet">
+   
+   	delete from b_option_tbl where store_id = #{store_id} 
+   	and menu_item_id = #{menu_item_id} and option_id=#{option_id} 
+   	and option_group_id = #{option_group_id}
+   
+   </delete>
+   
+   <select id="getUpdateSubOptionTarget" parameterType="com.springboot.delivery.model.OptionSet"
+   		resultType="com.springboot.delivery.model.OptionSet">
+   
+   select option_id, option_name, option_price, option_group_id,store_id,menu_item_id from b_option_tbl
+   where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_id = #{option_id} 
+   and option_group_id = #{option_group_id}
+   
+   		
+   </select>
+   
+   <update id="updateSubOption" parameterType="com.springboot.delivery.model.OptionSet">
+   
+   	update b_option_tbl set option_name = #{option_name}, option_price=#{option_price}
+   	where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_id = #{option_id} 
+   and option_group_id = #{option_group_id}
+   
+   </update>
+   
+   <update id="updateOptionCategory" parameterType="com.springboot.delivery.model.OptionCategory">
+   
+   update b_option_group_tbl set option_group_name = #{option_group_name} 
+   where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
+   
+   </update>
+   
+   <delete id="deleteSubOptionByGroupId" parameterType="com.springboot.delivery.model.OptionCategory">
+   
+   delete from b_option_tbl  where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
+   
+   </delete>
+   
+   <delete id="deleteOptionCategory" parameterType="com.springboot.delivery.model.OptionCategory">
+   
+   delete from b_option_group_tbl where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
+   
+   </delete>
    
 </mapper>
 

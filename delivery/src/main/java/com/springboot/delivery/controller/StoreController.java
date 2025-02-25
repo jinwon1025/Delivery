@@ -391,11 +391,9 @@ public class StoreController {
 	   oc.setStore_id(currentStore.getStore_id());
 	   oc.setMenu_item_id(menu_item_id);
 	   List<OptionCategory> optionList = this.storeService.getMenuItemOptionList(oc);
-	   OptionSet os = new OptionSet();
-	   os.setStore_id(currentStore.getStore_id());
-	   os.setMenu_item_id(menu_item_id);
+
 	   
-	   List<OptionSet> subOptionList = this.storeService.getSubOptionList(os);
+	   List<OptionSet> subOptionList = this.storeService.getSubOptionList();
 	   session.setAttribute("currentMenu", menuInfo);
 	   mav.addObject("menuInfo", menuInfo);
 	   mav.addObject("optionList", optionList);
@@ -449,6 +447,108 @@ public class StoreController {
 	   return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
    }
    
+   @PostMapping(value="/store/deleteSubOption")
+   public ModelAndView deleteSubOption(Integer option_group_id,Integer option_id,  HttpSession session) {
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   OptionSet os = new OptionSet();
+	   os.setStore_id(currentStore.getStore_id());
+	   os.setMenu_item_id(currentMenu.getMenu_item_id());
+	   os.setOption_group_id(option_group_id);
+	   os.setOption_id(option_id);
+	   this.storeService.deleteSubOption(os);
+	   
+	   return new ModelAndView("redirect:/store/optionManage?menu_item_id="+currentMenu.getMenu_item_id());
+	   
+	   
+   }
+   
+   @GetMapping(value="/store/goUpdateSubOption")
+   public ModelAndView goUpdateSubOption(Integer option_group_id, Integer option_id, HttpSession session) {
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(currentMenu.getMenu_item_id());
+	   MenuItem menuInfo = this.storeService.menuDetail(mi); //무슨 음식의 옵션 수정창인지 나타내기 위해 정보 가져오기
+	   
+	   OptionCategory oc = new OptionCategory(); 
+	   oc.setStore_id(currentStore.getStore_id());
+	   oc.setMenu_item_id(currentMenu.getMenu_item_id());
+	   List<OptionCategory> optionList = this.storeService.getMenuItemOptionList(oc); // 가맹점의 특정 음식이 가지고 있는 옵션 리스트 가져오기
+	   	   
+	   List<OptionSet> subOptionList = this.storeService.getSubOptionList(); //특정 음식의 옵션의 하위 옵션 리스트 가져오기
+	   OptionSet os = new OptionSet();
+	   os.setStore_id(currentStore.getStore_id());
+	   os.setMenu_item_id(currentMenu.getMenu_item_id());
+	   os.setOption_group_id(option_group_id);
+	   os.setOption_id(option_id);
+	   
+	   OptionSet targetOs = this.storeService.getUpdateSubOptionTarget(os); //사업자가 수정 버튼을 누른 옵션을 가져오기
+	   
+	   mav.addObject("menuInfo", menuInfo);
+	   mav.addObject("optionList", optionList);
+	   mav.addObject("subOptionList", subOptionList);
+	   mav.addObject("target", targetOs);
+	   mav.addObject("BODY", "subOptionUpdate.jsp");
+	   return mav;
+   }
+   
+   @PostMapping(value="/store/updateSubOption")
+   public ModelAndView updateSubOption(String option_name, Integer option_price, Integer option_group_id, Integer option_id,  HttpSession session) {
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   OptionSet os = new OptionSet();
+	   os.setOption_name(option_name);
+	   os.setOption_price(option_price);
+	   os.setStore_id(currentStore.getStore_id());
+	   os.setMenu_item_id(currentMenu.getMenu_item_id());
+	   os.setOption_group_id(option_group_id);
+	   os.setOption_id(option_id);
+	   
+	   this.storeService.updateSubOption(os);
+	   
+	   return new ModelAndView("redirect:/store/optionManage?menu_item_id="+currentMenu.getMenu_item_id());
+	   
+	   
+   }
+   
+   @PostMapping(value="/store/updateOptionCategory")
+   public ModelAndView updateOptionCategory(Integer option_group_id, String newOptionName, HttpSession session) {
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   OptionCategory oc = new OptionCategory();
+	   oc.setStore_id(currentStore.getStore_id());
+	   oc.setMenu_item_id(currentMenu.getMenu_item_id());
+	   oc.setOption_group_id(option_group_id);
+	   oc.setOption_group_name(newOptionName);
+	   
+	   this.storeService.updateOptionCategory(oc);
+	   
+	   return new ModelAndView("redirect:/store/optionManage?menu_item_id="+currentMenu.getMenu_item_id());
+   }
+   
+   @PostMapping(value="/store/deleteOptionCategory")
+   public ModelAndView deleteOptionCategory(Integer option_group_id, HttpSession session) {
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
+	   OptionCategory oc = new OptionCategory();
+	   oc.setStore_id(currentStore.getStore_id());
+	   oc.setMenu_item_id(currentMenu.getMenu_item_id());
+	   oc.setOption_group_id(option_group_id);
+	   
+	   this.storeService.deleteSubOptionByGroupId(oc);
+	   this.storeService.deleteOptionCategory(oc);
+	   
+	   return new ModelAndView("redirect:/store/optionManage?menu_item_id="+currentMenu.getMenu_item_id());
+	   
+   }
+   
+
+  
    
    
    
