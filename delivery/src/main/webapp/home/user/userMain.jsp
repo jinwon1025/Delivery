@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ page session="true"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -69,26 +70,30 @@ h1 {
 				<span>${sessionScope.loginUser.user_name}님</span>
 				<a href="/user/mypage">마이페이지</a>
 				<a href="/user/logout">로그아웃</a>
-			
+
 			</c:when>
 			<c:otherwise>
 				<a href="/user/index">로그인</a>
-			
+
 			</c:otherwise>
 		</c:choose>
 	</div>
 
 	<div class="center-content">
-		<h1>금베달리스트</h1> <!-- 제목을 inline-block으로 변경하고 수직 정렬 -->
+		<h1>금베달리스트</h1>
+		<!-- 제목을 inline-block으로 변경하고 수직 정렬 -->
 		<!-- 제목 크기 작게 조정 -->
 
 		<hr>
-
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="/user/allStore">전체보기</a> | <a href="/user/allChicken?main_category_id=1">치킨</a> | <a href="/user/allChina?main_category_id=2">중식</a> | <a href="/user/allJapan?main_category_id=3">돈까스·회</a> |
-			 <a href="/user/allPizza?main_category_id=4">피자</a> | <a href="/user/allFastFood?main_category_id=5">패스트푸드</a> | <a href="/user/allDish?main_category_id=6">찜·탕</a> | <a href="/user/allJokBo?main_category_id=7">족발·보쌈</a>
-			  | <a href="/user/allSnackFood?main_category_id=8">분식</a> | <a href="/user/allDessert?main_category_id=9">카페·디저트</a> | <a href="/user/allKorea?main_category_id=10">한식</a>
+			<a href="/user/categoryStores">전체보기</a> |
+			<c:forEach var="category" items="${maincategoryList}"
+				varStatus="status">
+				<a
+					href="/user/categoryStores?categoryId=${category.main_category_id}">${category.main_category_name}</a>
+				<c:if test="${!status.last}"> | </c:if>
+			</c:forEach>
 		</h2>
 
 		<hr>
