@@ -5,49 +5,118 @@
 
 	<select id="idcheck" parameterType="String" resultType="Integer">
 
-		select count(*) from b_store_tbl where store_id=#{store_id}
+		select
+		count(*) from b_store_tbl where store_id=#{store_id}
 
 	</select>
 
-	 <insert id="storeRegister" parameterType="com.springboot.delivery.model.Store">
-      insert into b_store_tbl (
-          store_id,
-          store_name,
-          store_address,
-          last_price,
-          owner_id,
-          main_category_Id,
-          store_phone,
-          store_openHour,
-          delivery_fee,
-          delivery_time,
-          made_in,
-          store_image_name
-      ) values (
-          #{store_id},
-          #{store_name},
-          #{store_address},
-          #{last_price},
-          #{owner_id},
-          #{main_category_Id},
-          #{store_phone},
-          #{store_openHour},
-          #{delivery_fee},
-          #{delivery_time,jdbcType=VARCHAR},
-          #{made_in},
-          #{store_image_name}
-      )
-   </insert>
+	<insert id="storeRegister"
+		parameterType="com.springboot.delivery.model.Store">
+		insert into b_store_tbl (
+		store_id,
+		store_name,
+		store_address,
+		last_price,
+		owner_id,
+		main_category_Id,
+		store_phone,
+		store_openHour,
+		delivery_fee,
+		delivery_time,
+		made_in,
+		store_image_name
+		) values (
+		#{store_id},
+		#{store_name},
+		#{store_address},
+		#{last_price},
+		#{owner_id},
+		#{main_category_Id},
+		#{store_phone},
+		#{store_openHour},
+		#{delivery_fee},
+		#{delivery_time,jdbcType=VARCHAR},
+		#{made_in},
+		#{store_image_name}
+		)
+	</insert>
 
 	<select id="storeList" parameterType="String"
 		resultType="com.springboot.delivery.model.Store">
 
-		select store_id, store_name, last_price, delivery_fee, store_image_name from
+		select store_id, store_name, last_price, delivery_fee,
+		store_image_name from
 		b_store_tbl where owner_id=#{owner_id}
 
 	</select>
 
-	<delete id="deleteStore"
+	<delete id="deleteOptionsByStoreId" parameterType="String">
+
+		delete from b_option_tbl where store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteOptionGroupsByStoreId" parameterType="String">
+
+		delete from b_option_group_tbl where store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteMenuItemByStoreId" parameterType="String">
+
+		delete from b_menu_item_tbl where store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteMenuCategoryByStoreId" parameterType="String">
+
+		delete from b_menu_category_tbl where store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteReviewsByStoreId" parameterType="String">
+
+		DELETE FROM b_review_tbl WHERE store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteOrderDetailsByStoreId" parameterType="String">
+		DELETE FROM b_order_detail_tbl WHERE store_id = #{store_id}
+	</delete>
+
+	<!-- 사용한 쿠폰 삭제 -->
+	<delete id="deleteUsedCouponsByStoreId" parameterType="String">
+		DELETE FROM b_used_coupon_tbl
+WHERE USED_CP_ID IN (
+    SELECT USER_CP_ID FROM b_user_coupon_tbl
+    WHERE OWNER_COUPON_ID IN (
+        SELECT OWNER_COUPON_ID FROM b_owner_coupon_tbl
+        WHERE STORE_ID = #{store_id}
+    )
+)
+
+	</delete>
+
+	<!-- 사용자 쿠폰 삭제 -->
+	<delete id="deleteUserCouponsByStoreId" parameterType="String">
+		DELETE FROM b_user_coupon_tbl
+		WHERE owner_coupon_id IN (
+		SELECT owner_coupon_id FROM b_owner_coupon_tbl
+		WHERE store_id = #{store_id}
+		)
+	</delete>
+
+	<!-- 사업자 쿠폰 삭제 -->
+	<delete id="deleteOwnerCouponsByStoreId" parameterType="String">
+		DELETE FROM b_owner_coupon_tbl WHERE store_id = #{store_id}
+	</delete>
+
+	<!-- 즐겨찾기 삭제 -->
+	<delete id="deleteBookmarksByStoreId" parameterType="String">
+		DELETE FROM b_bookmark_tbl WHERE store_id = #{store_id}
+	</delete>
+
+	<delete id="deleteStoreByStoreId"
 		parameterType="com.springboot.delivery.model.Store">
 
 		delete from b_store_tbl where store_id=#{store_id}
@@ -57,9 +126,12 @@
 	<select id="getStore" parameterType="String"
 		resultType="com.springboot.delivery.model.Store">
 
-		select store_id, store_name, store_address, last_price, main_category_id,
-		store_phone, store_openhour, delivery_fee, made_in, store_image_name, delivery_time
-		from b_store_tbl where store_id=#{store_id}
+		select store_id, store_name, store_address, last_price,
+		main_category_id,
+		store_phone, store_openhour, delivery_fee, made_in,
+		store_image_name, delivery_time
+		from b_store_tbl where
+		store_id=#{store_id}
 
 	</select>
 
@@ -78,7 +150,8 @@
 	<select id="getAllMenu" parameterType="String"
 		resultType="com.springboot.delivery.model.MenuCategory">
 
-		select menu_category_id,menu_category_name from b_menu_category_tbl where
+		select menu_category_id,menu_category_name from
+		b_menu_category_tbl where
 		store_id=#{store_id}
 
 	</select>
@@ -86,14 +159,16 @@
 	<insert id="insertMenu"
 		parameterType="com.springboot.delivery.model.MenuCategory">
 
-		insert into b_menu_category_tbl values(#{menu_category_id},
+		insert into b_menu_category_tbl
+		values(#{menu_category_id},
 		#{menu_category_name}, #{store_id})
 
 	</insert>
 
 	<select id="getMaxMenuCount" resultType="Integer">
 
-		select count(*) from b_menu_category_tbl
+		select count(*) from
+		b_menu_category_tbl
 
 	</select>
 
@@ -103,13 +178,14 @@
 		insert into b_menu_item_tbl
 		values(#{menu_item_id},#{menu_name},#{menu_category_id},#{store_id},#{price},#{image_name},#{content})
 
-</insert>
+	</insert>
 
 	<select id="getMenuCount" resultType="Integer">
 
-		select max(menu_item_id) from b_menu_item_tbl
+		select max(menu_item_id)
+		from b_menu_item_tbl
 
-</select>
+	</select>
 
 	<select id="getMenuList"
 		resultType="com.springboot.delivery.model.MenuItem">
@@ -121,7 +197,8 @@
 	<delete id="deleteMenu"
 		parameterType="com.springboot.delivery.model.MenuItem">
 
-		delete from b_menu_item_tbl where store_id=#{store_id} and
+		delete from b_menu_item_tbl where store_id=#{store_id}
+		and
 		menu_item_id=#{menu_item_id}
 
 	</delete>
@@ -130,29 +207,35 @@
 		resultType="com.springboot.delivery.model.MenuItem"
 		parameterType="com.springboot.delivery.model.MenuItem">
 
-		select * from b_menu_item_tbl where store_id=#{store_id} and
+		select * from b_menu_item_tbl where store_id=#{store_id}
+		and
 		menu_item_id=#{menu_item_id}
 
 	</select>
 
 	<update id="menuModify"
 		parameterType="com.springboot.delivery.model.MenuItem">
-		update b_menu_item_tbl set menu_name=#{menu_name}, price=#{price},
+		update b_menu_item_tbl set menu_name=#{menu_name},
+		price=#{price},
 		content=#{content},
-		image_name=#{image_name} where store_id=#{store_id} and menu_item_id=#{menu_item_id}
+		image_name=#{image_name} where
+		store_id=#{store_id} and menu_item_id=#{menu_item_id}
 	</update>
 
 	<insert id="addOption"
 		parameterType="com.springboot.delivery.model.OptionCategory">
 
-		insert into b_option_group_tbl values(#{option_group_id},
-		#{option_group_name}, #{store_id}, #{menu_item_id})
+		insert into b_option_group_tbl
+		values(#{option_group_id},
+		#{option_group_name}, #{store_id},
+		#{menu_item_id})
 
 	</insert>
 
 	<select id="getOptionGroupMax" resultType="Integer">
 
-		select max(option_group_id) from b_option_group_tbl
+		select
+		max(option_group_id) from b_option_group_tbl
 
 	</select>
 
@@ -160,7 +243,8 @@
 		parameterType="com.springboot.delivery.model.OptionCategory"
 		resultType="com.springboot.delivery.model.OptionCategory">
 
-		select option_group_id, option_group_name, store_id, menu_item_id from
+		select option_group_id, option_group_name, store_id,
+		menu_item_id from
 		b_option_group_tbl where store_id=#{store_id} and
 		menu_item_id=#{menu_item_id}
 
@@ -169,94 +253,118 @@
 	<insert id="addSubOption"
 		parameterType="com.springboot.delivery.model.SubOption">
 
-		insert into b_option_tbl values(#{option_id}, #{option_name},
-		#{option_price}, #{option_group_id}, #{store_id}, #{menu_item_id})
+		insert into b_option_tbl values(#{option_id},
+		#{option_name},
+		#{option_price}, #{option_group_id}, #{store_id},
+		#{menu_item_id})
 
 	</insert>
 
 	<select id="getSubOptionMax" resultType="Integer">
 
-		select max(option_id) from b_option_tbl
+		select max(option_id)
+		from b_option_tbl
 
 	</select>
 
 	<select id="getSubOptionList"
 		resultType="com.springboot.delivery.model.OptionSet">
 
-		SELECT o.option_id, o.option_name, o.option_price, o.store_id,
+		SELECT o.option_id, o.option_name, o.option_price,
+		o.store_id,
 		o.menu_item_id, g.option_group_id, g.option_group_name
-		FROM b_option_group_tbl g
-		INNER JOIN b_option_tbl o ON g.option_group_id = o.option_group_id
+		FROM
+		b_option_group_tbl g
+		INNER JOIN b_option_tbl o ON g.option_group_id =
+		o.option_group_id
 		AND g.store_id = o.store_id
-		AND g.menu_item_id = o.menu_item_id
+		AND g.menu_item_id =
+		o.menu_item_id
 
 
 	</select>
 
-   <delete id="categoryDelete" parameterType="Integer">
-      delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
-   </delete>
-   
-   <delete id="categoryMenuDelete" parameterType="Integer">
-      delete from b_menu_Item_tbl where menu_category_id=#{menu_category_id}
-   </delete>
-   
-   <update id="categoryNameUpdate" parameterType="com.springboot.delivery.model.MenuCategory">
-      update b_menu_category_tbl 
-      set menu_category_name=#{menu_category_name} 
-      where menu_category_id=#{menu_category_id}
-   </update>
-   
-   <select id="getCategory" parameterType="String" resultType="String">
-      select menu_category_name from b_menu_category_tbl where store_id=#{store_id}
-   </select>
-   
-   <select id="getMenuName" parameterType="String" resultType="String">
-      select menu_name from b_menu_item_tbl where store_id=#{store_id}
-   </select>
-   
-   <delete id="deleteSubOption" parameterType="com.springboot.delivery.model.OptionSet">
-   
-   	delete from b_option_tbl where store_id = #{store_id} 
-   	and menu_item_id = #{menu_item_id} and option_id=#{option_id} 
-   	and option_group_id = #{option_group_id}
-   
-   </delete>
-   
-   <select id="getUpdateSubOptionTarget" parameterType="com.springboot.delivery.model.OptionSet"
-   		resultType="com.springboot.delivery.model.OptionSet">
-   
-   select option_id, option_name, option_price, option_group_id,store_id,menu_item_id from b_option_tbl
-   where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_id = #{option_id} 
-   and option_group_id = #{option_group_id}
-   
-   		
-   </select>
-   
-   <update id="updateSubOption" parameterType="com.springboot.delivery.model.OptionSet">
-   
-   	update b_option_tbl set option_name = #{option_name}, option_price=#{option_price}
-   	where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_id = #{option_id} 
-   and option_group_id = #{option_group_id}
-   
-   </update>
-   
-   <update id="updateOptionCategory" parameterType="com.springboot.delivery.model.OptionCategory">
-   
-   update b_option_group_tbl set option_group_name = #{option_group_name} 
-   where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
-   
-   </update>
-   
-   <delete id="deleteSubOptionByGroupId" parameterType="com.springboot.delivery.model.OptionCategory">
-   
-   delete from b_option_tbl  where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
-   
-   </delete>
-   
-   <delete id="deleteOptionCategory" parameterType="com.springboot.delivery.model.OptionCategory">
-   
-   delete from b_option_group_tbl where store_id = #{store_id} and menu_item_id = #{menu_item_id} and option_group_id = #{option_group_id}
-   
-   </delete>
+	<delete id="categoryDelete" parameterType="Integer">
+		delete from b_menu_category_tbl where menu_category_id=#{menu_category_id}
+	</delete>
+
+	<delete id="categoryMenuDelete" parameterType="Integer">
+		delete from b_menu_Item_tbl where menu_category_id=#{menu_category_id}
+	</delete>
+
+	<update id="categoryNameUpdate"
+		parameterType="com.springboot.delivery.model.MenuCategory">
+		update b_menu_category_tbl
+		set menu_category_name=#{menu_category_name}
+		where menu_category_id=#{menu_category_id}
+	</update>
+
+	<select id="getCategory" parameterType="String"
+		resultType="String">
+		select menu_category_name from b_menu_category_tbl where
+		store_id=#{store_id}
+	</select>
+
+	<select id="getMenuName" parameterType="String"
+		resultType="String">
+		select menu_name from b_menu_item_tbl where store_id=#{store_id}
+	</select>
+
+	<delete id="deleteSubOption"
+		parameterType="com.springboot.delivery.model.OptionSet">
+
+		delete from b_option_tbl where store_id = #{store_id}
+		and menu_item_id = #{menu_item_id} and option_id=#{option_id}
+		and option_group_id = #{option_group_id}
+
+	</delete>
+
+	<select id="getUpdateSubOptionTarget"
+		parameterType="com.springboot.delivery.model.OptionSet"
+		resultType="com.springboot.delivery.model.OptionSet">
+
+		select option_id, option_name, option_price,
+		option_group_id,store_id,menu_item_id from b_option_tbl
+		where store_id = #{store_id} and menu_item_id = #{menu_item_id} and
+		option_id = #{option_id}
+		and option_group_id = #{option_group_id}
+
+
+	</select>
+
+	<update id="updateSubOption"
+		parameterType="com.springboot.delivery.model.OptionSet">
+
+		update b_option_tbl set option_name = #{option_name},
+		option_price=#{option_price}
+		where store_id = #{store_id} and menu_item_id = #{menu_item_id} and
+		option_id = #{option_id}
+		and option_group_id = #{option_group_id}
+
+	</update>
+
+	<update id="updateOptionCategory"
+		parameterType="com.springboot.delivery.model.OptionCategory">
+
+		update b_option_group_tbl set option_group_name = #{option_group_name}
+		where store_id = #{store_id} and menu_item_id = #{menu_item_id} and
+		option_group_id = #{option_group_id}
+
+	</update>
+
+	<delete id="deleteSubOptionByGroupId"
+		parameterType="com.springboot.delivery.model.OptionCategory">
+
+		delete from b_option_tbl where store_id = #{store_id} and menu_item_id =
+		#{menu_item_id} and option_group_id = #{option_group_id}
+
+	</delete>
+
+	<delete id="deleteOptionCategory"
+		parameterType="com.springboot.delivery.model.OptionCategory">
+
+		delete from b_option_group_tbl where store_id = #{store_id} and menu_item_id
+		= #{menu_item_id} and option_group_id = #{option_group_id}
+
+	</delete>
 </mapper>

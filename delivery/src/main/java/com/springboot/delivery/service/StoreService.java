@@ -29,13 +29,52 @@ public class StoreService {
 	public void storeRegister(Store store) {
 		this.storeMapper.storeRegister(store);
 	}
+	public void deleteOptionsByStoreId(String store_id) { // 가게 삭제할 때 옵션 삭제
+		this.storeMapper.deleteOptionsByStoreId(store_id);
+	}
+	
+	public void deleteOptionGroupsByStoreId(String store_id) {
+		this.storeMapper.deleteOptionGroupsByStoreId(store_id);
+	}
+	
+	public void deleteMenuItemByStoreId(String store_id) {
+		this.storeMapper.deleteMenuItemByStoreId(store_id);
+	}
+	
+	public void deleteMenuCategoryByStoreId(String store_id) {
+		this.storeMapper.deleteMenuCategoryByStoreId(store_id);
+	}
+	
+	public void deleteReviewsByStoreId(String store_id) {
+		this.storeMapper.deleteReviewsByStoreId(store_id);
+	}
+	
+	public void deleteOrderDetailsByStoreId(String store_id) {
+		this.storeMapper.deleteOrderDetailsByStoreId(store_id);
+	}
+	
+	public void deleteUsedCouponsByStoreId(String store_id) {
+		this.storeMapper.deleteUsedCouponsByStoreId(store_id);
+	}
+	
+	public void deleteUserCouponsByStoreId(String store_id) {
+		this.storeMapper.deleteUserCouponsByStoreId(store_id);
+	}
+	
+	public void deleteOwnerCouponsByStoreId(String store_id) {
+		this.storeMapper.deleteOwnerCouponsByStoreId(store_id);
+	}
+	
+	public void deleteBookmarksByStoreId(String store_id) {
+		this.storeMapper.deleteBookmarksByStoreId(store_id);
+	}
+	
+	public void deleteStoreByStoreId(Store store) {
+		this.storeMapper.deleteStoreByStoreId(store);
+	}
 	
 	public List<Store> storeList(String owner_id) {
 		return this.storeMapper.storeList(owner_id);
-	}
-	
-	public void deleteStore(Store store) {
-		this.storeMapper.deleteStore(store);
 	}
 	
 	

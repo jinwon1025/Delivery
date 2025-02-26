@@ -186,7 +186,7 @@
       <div class="option-header">
         <h4>옵션 카테고리 추가</h4>
       </div>
-      <form action="/store/addOption" method="post" class="option-form">
+      <form action="/store/addOption" method="post" class="option-form" onsubmit="return categoryCheck()">
         <input type="hidden" name="menu_category_id" value="${menuInfo.menu_category_id}"/>
         <input type="text" id="category_name" name="category_name" placeholder="카테고리 이름 (예: 소스 선택)">
         <input type="submit" value="카테고리 추가" class="btn btn-primary"/>
@@ -235,12 +235,12 @@
               </div>
             </c:if>
           </c:forEach>
-          <form action="/store/addSubOption" method="post">
+          <form action="/store/addSubOption" method="post" onsubmit="return valueCheck()">
             <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
             <div class="sub-option-row">
-              <input type="text" name="option_name" placeholder="하위 옵션 이름">
-              <input type="text" name="option_price" placeholder="추가 가격">
-              <button type="submit" class="btn btn-primary">하위 옵션 추가</button>
+              <input type="text" name="option_name" id="option_name" placeholder="하위 옵션 이름">
+              <input type="text" name="option_price" id="option_price" placeholder="추가 가격">
+              <button type="submit" class="btn btn-primary" >하위 옵션 추가</button>
             </div>
           </form>
         </div>
@@ -277,6 +277,33 @@
 		 return false;
 	 }
  }
+ 
+ function categoryCheck(){
+	 const newCategoryName = document.getElementById('category_name').value;
+	 if(newCategoryName===''){
+		 alert("카테고리명을 입력해주세요.");
+		 return false;
+	 }
+	 return true;
+	 
+ }
+ 
+ function valueCheck(){
+	 const newOptionName = document.getElementById('option_name').value;
+	 const newOptionPrice = document.getElementById('option_price').value;
+	 
+	 if(newOptionName === ''){
+		 alert("옵션명을 입력해주세요.");
+		 return false;
+	 }
+	 
+	 if(newOptionPrice === ''){
+		 alert("옵션 가격을 입력해주세요.");
+		 return false;
+	 }
+	 return true;
+ }
+
  </script>
 </body>
 </html>

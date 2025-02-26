@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-    <title>메뉴 목록</title>
+    <title>메뉴목록</title>
     <style>
         .menu-container {
             display: flex;
@@ -43,6 +43,10 @@
             color: #e74c3c;
             font-weight: bold;
         }
+        .menu-item {
+		    cursor: pointer;
+		    transition: all 0.2s ease;
+		}
     </style>
 </head>
 <body>
@@ -50,7 +54,7 @@
 <h2>메뉴 목록</h2>
 <div class="menu-container">
     <c:forEach var="menu" items="${menuList}">
-        <div class="menu-item">
+        <div class="menu-item" onclick="location.href='/userstore/menuDetail?menu_item_id=${menu.menu_item_id}'" style="cursor: pointer;">
             <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menu.image_name}" alt="${menu.image_name}">
             <div class="menu-name">${menu.menu_name}</div>
             <div class="menu-content">${menu.content}</div>

@@ -1,24 +1,29 @@
 package com.springboot.delivery.mapper;
-
 import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
-
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionCategory;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
-
 @Mapper
 public interface StoreMapper {
-
 	Integer idcheck(String store_id);
 	void storeRegister(Store store);
 	
 	List<Store> storeList(String owner_id);
-	void deleteStore(Store store);
+	void deleteOptionsByStoreId(String store_id);
+	void deleteOptionGroupsByStoreId(String store_id);
+	void deleteMenuItemByStoreId(String store_id);
+	void deleteMenuCategoryByStoreId(String store_id);
+	void deleteReviewsByStoreId(String store_id);
+	void deleteOrderDetailsByStoreId(String store_id);
+	void deleteUsedCouponsByStoreId(String store_id);
+	void deleteUserCouponsByStoreId(String store_id);
+	void deleteOwnerCouponsByStoreId(String store_id);
+	void deleteBookmarksByStoreId(String store_id);
+	void deleteStoreByStoreId(Store store);
 	Store getStore(String store_id);
 	void updateStore(Store store);
 	List<MenuCategory> getAllMenu(String store_id);
