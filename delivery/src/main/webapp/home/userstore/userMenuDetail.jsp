@@ -91,12 +91,16 @@
         <div class="option-group">
             <ul class="option-list">
                 <c:forEach var="entry" items="${optionGroups}">
+                	<input type="hidden" name="option_group_id" value="${entry.key}">
 				    <h3>[${entry.key}]</h3>
 				    <ul>
 				       <c:forEach var="option" items="${entry.value}">
 				            <li style="">
 				                <input type="checkbox" name="option" value="${option.option_id}">
 				                ${option.option_name} (+${option.option_price} 원)
+				                <input type="hidden" name="option_id" value="${option.option_id }">
+				                <input type="hidden" name="option_name" value="${option.option_name }">
+				                <input type="hidden" name="option_price" value="${option.option_price }">
 				            </li>
 				       </c:forEach>
 				       </ul>     

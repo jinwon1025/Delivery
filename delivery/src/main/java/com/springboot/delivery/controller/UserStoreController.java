@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
@@ -31,6 +33,11 @@ public class UserStoreController {
 	private StoreService storeService;
 	@Autowired
 	private AdminService adminService;
+	
+	public String generateOrderId() {
+	    return UUID.randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "").substring(0, 10);
+	}
+	
 	@GetMapping(value="/userstore/detail")
 	public ModelAndView storeDetial(String store_id, HttpSession session) {
 		Store currentStore = (Store)storeService.getStore(store_id);
@@ -87,14 +94,30 @@ public class UserStoreController {
 		return mav;
 	}
 	@PostMapping(value="/userstore/addCart")
-	public ModelAndView addCart(HttpSession session) {
+	public ModelAndView addCart(HttpSession session,Integer menuId, Integer option_group_id,Integer option_id,String option_name, Integer option_price) {
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-		ModelAndView mav = new ModelAndView("user/userMain");	    
+		
+		Store store = (Store)session.getAttribute("currentStore");
+		System.out.println("스토어 세션"+store.getStore_id());
+		ModelAndView mav = new ModelAndView("user/userMain");	
+		OrderCart oc = new OrderCart();
 	    if (loginUser == null) {
 	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
 	        mav.setViewName("redirect:/user/index");
-	        return mav;
 	    }
-		return mav;
+	    String orderId = generateOrderId();
+	    String storeAddress = this.userStoreService.storeAddress(store.getStore_id());
+	    
+	    oc.setOrder_id(orderId);
+	    oc.setUser_id(loginUser.getUser_id());
+		oc.setStore_id(store.getStore_id());
+		oc.setStore_address(storeAddress);
+		oc.setOrder_status(0);
+		oc.setOption_group_id(option_group_id);
+		oc.setOption_id(option_id);
+		oc.setOption_price(option_price);
+		mav.addObject("CART",oc);
+		return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	}
+	
 }

@@ -9,6 +9,7 @@ import com.springboot.delivery.mapper.UserStoreMapper;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.OrderCart;
 
 @Service
 public class UserStoreService {
@@ -27,5 +28,16 @@ public class UserStoreService {
 	public List<OptionSet> optionDetail(Integer menu_item_id){
 		return this.userStoreMapper.optionDetail(menu_item_id);
 	}
-	
+	public void insertOrder(OrderCart orderCart) {
+		this.userStoreMapper.insertOrder(orderCart);
+	}
+	public void insertOrderDetail(OrderCart orderCart) {
+		this.userStoreMapper.insertOrderDetail(orderCart);
+	}
+	public void insertOrderOption(OrderCart orderCart) {
+		this.userStoreMapper.insertOrderOption(orderCart);
+	}
+	public String storeAddress(String store_id) {
+		return this.userStoreMapper.storeAddress(store_id);
+	}
 }
