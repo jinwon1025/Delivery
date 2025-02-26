@@ -9,6 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <title>금베달리스트 메인</title>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 /* 로그아웃 링크와 사용자 이름을 우측 상단에 배치 */
 .logout-container {
@@ -70,6 +71,7 @@ h1 {
 				<span>${sessionScope.loginUser.user_name}님</span>
 				<a href="/user/mypage">마이페이지</a>
 				<a href="/user/logout">로그아웃</a>
+				<a href="/userstore/viewCart" class="fas fa-shopping-cart"></a>
 
 			</c:when>
 			<c:otherwise>

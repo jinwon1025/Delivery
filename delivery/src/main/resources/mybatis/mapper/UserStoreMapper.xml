@@ -9,5 +9,27 @@
 	<select id="menuList" parameterType="Integer" resultType="com.springboot.delivery.model.MenuItem">
 		select * from b_menu_item_tbl where menu_category_id = #{menu_category_id}
 	</select>
-
+	
+	<select id="menuItemDetail" parameterType="Integer" resultType="com.springboot.delivery.model.MenuItem">
+		select * from b_menu_item_tbl where menu_item_id = #{menu_item_id}
+	</select>
+	
+	<select id="optionDetail" parameterType="Integer" resultType="com.springboot.delivery.model.OptionSet">
+	    SELECT 
+	        o.option_id, 
+	        o.option_name, 
+	        o.option_price, 
+	        o.store_id, 
+	        o.menu_item_id, 
+	        o.option_group_id, 
+	        g.option_group_name
+	    FROM 
+	        b_option_tbl o
+	    LEFT JOIN 
+	        b_option_group_tbl g
+	    ON 
+	        o.option_group_id = g.option_group_id
+	    WHERE 
+	        o.menu_item_id = #{menu_item_id}
+	</select>
 </mapper>
