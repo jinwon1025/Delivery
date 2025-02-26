@@ -206,27 +206,48 @@ public class StoreController {
       session.setAttribute("currentStore", store);
       return new ModelAndView("redirect:../store/storeList");
    }
+   
    @PostMapping(value = "/store/delete")
    public ModelAndView deleteStore(String store_id, HttpSession session) {
-      // store_id로 스토어 정보 조회
-      Store store = this.storeService.getStore(store_id);
+       // store_id로 스토어 정보 조회
+       Store store = this.storeService.getStore(store_id);
 
-      if (store != null) {
-         // 이미지가 있다면 삭제
-         if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
-            ServletContext ctx = session.getServletContext();
-            String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
-            File file = new File(filePath);
-            if (file.exists()) {
-               file.delete();
-            }
-         }
+       if (store != null) {
+           // 이미지가 있다면 삭제
+           if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
+               ServletContext ctx = session.getServletContext();
+               String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
+               File file = new File(filePath);
+               if (file.exists()) {
+                   file.delete();
+               }
+           }
 
-         // store 삭제
-         this.storeService.deleteStore(store);
-      }
+           // 1. 옵션 삭제
+           this.storeService.deleteOptionsByStoreId(store_id);
+           // 2. 옵션 그룹 삭제
+           this.storeService.deleteOptionGroupsByStoreId(store_id);
+           // 3. 메뉴 아이템 삭제
+           this.storeService.deleteMenuItemByStoreId(store_id);
+           // 4. 메뉴 카테고리 삭제
+           this.storeService.deleteMenuCategoryByStoreId(store_id);
+           // 5. 리뷰 삭제
+           this.storeService.deleteReviewsByStoreId(store_id);
+           // 6. 주문 상세 삭제
+           this.storeService.deleteOrderDetailsByStoreId(store_id);
+           // 7. 사용한 쿠폰 삭제
+           this.storeService.deleteUsedCouponsByStoreId(store_id);
+           // 8. 사용자 쿠폰 삭제
+           this.storeService.deleteUserCouponsByStoreId(store_id);
+           // 9. 사업자 쿠폰 삭제
+           this.storeService.deleteOwnerCouponsByStoreId(store_id);
+           // 10. 즐겨찾기 삭제
+           this.storeService.deleteBookmarksByStoreId(store_id);
+           // 11. 가게 정보 삭제
+           this.storeService.deleteStoreByStoreId(store);
+       }
 
-      return new ModelAndView("redirect:../store/storeList");
+       return new ModelAndView("redirect:../store/storeList");
    }
 
   
