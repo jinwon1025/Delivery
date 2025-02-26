@@ -140,7 +140,7 @@ body {
 .location {
 	position: absolute;
 	top: 15px;
-	right: 15px;
+	right: 50px; /* 즐겨찾기 버튼 왼쪽으로 이동 */
 	color: #999;
 	font-size: 13px;
 	background-color: #f9f9f9;
@@ -210,10 +210,40 @@ body {
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* 즐겨찾기 버튼 스타일 */
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px; 
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    z-index: 10;
+    color: #ccc;
+    transition: all 0.3s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    color: #ffdd57;
+}
+
+.favorite-btn.active {
+    color: #FFD700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
 /* 반응형 디자인 */
 @media ( max-width : 768px) {
 	.store-grid {
 		grid-template-columns: 1fr; /* 모바일에서는 한 줄에 하나만 */
+	}
+	
+	.location {
+	    right: 50px; /* 모바일에서 위치 조정 */
 	}
 }
 </style>
@@ -228,8 +258,7 @@ body {
 			<c:when test="${not empty storeList}">
 				<div class="store-grid">
 					<c:forEach items="${storeList}" var="store" varStatus="status">
-						<div class="store-item"
-							onclick="goToStoreDetail('${store.store_id}')">
+						<div class="store-item">
 							<div class="store-logo">
 								<c:choose>
 									<c:when test="${not empty store.store_image_name}">
@@ -244,7 +273,7 @@ body {
 									</c:otherwise>
 								</c:choose>
 							</div>
-							<div class="store-info">
+							<div class="store-info" onclick="goToStoreDetail('${store.store_id}')">
 								<div class="store-name">
 									${store.store_name} <span class="store-type">배달</span>
 								</div>
@@ -260,8 +289,13 @@ body {
 									</div>
 								</div>
 							</div>
-							<div class="location">${empty store.store_address ? '지구' : store.store_address}
+							
+							<div class="location">
+								${empty store.store_address ? '지구' : store.store_address}
 							</div>
+							
+							<!-- 즐겨찾기 버튼 - 가게 컨테이너 오른쪽 상단에 위치 -->
+							<button class="favorite-btn" onclick="bookmarkStore(event, '${store.store_id}');">★</button>
 						</div>
 					</c:forEach>
 				</div>
@@ -282,13 +316,29 @@ body {
 		<input type="hidden" id="store_id" name="store_id" value="">
 	</form>
 
+	<!-- 즐겨찾기 처리를 위한 숨겨진 폼 -->
+	<form id="bookmarkForm" action="<c:url value='/userstore/bookmark'/>" method="post">
+		<input type="hidden" id="bookmark_store_id" name="store_id" value="">
+	</form>
+
 	<script>
-function goToStoreDetail(storeId) {
-    // 폼의 store_id 값을 설정하고 제출
-    document.getElementById('store_id').value = storeId;
-    document.getElementById('storeDetailForm').submit();
-}
-</script>
+	function bookmarkStore(event, storeId) {
+		event.stopPropagation(); // 이벤트 버블링 방지
+		
+		// 버튼 토글 효과 유지
+		event.target.classList.toggle('active');
+		
+		// 폼의 store_id 값을 설정하고 제출
+		document.getElementById('bookmark_store_id').value = storeId;
+		document.getElementById('bookmarkForm').submit();
+	}
+	
+	function goToStoreDetail(storeId) {
+		// 폼의 store_id 값을 설정하고 제출
+		document.getElementById('store_id').value = storeId;
+		document.getElementById('storeDetailForm').submit();
+	}
+	</script>
 
 </body>
 </html>
