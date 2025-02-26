@@ -1,158 +1,234 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<style>
-.admin-dashboard {
-   max-width: 1200px;
-   margin: 2rem auto;
-   padding: 2rem;
-}
+<%-- 공통 CSS 파일 --%>
+<link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/common/layout.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/common/utilities.css'/>">
 
-.dashboard-header {
-   background: linear-gradient(to right, #1a237e, #283593);
-   color: white;
-   padding: 2rem;
-   border-radius: 10px;
-   margin-bottom: 2rem;
-   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+<%-- 관리자 CSS 파일 --%>
+<link rel="stylesheet" href="<c:url value='/css/admin/admin-layout.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/admin/admin-components.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/admin/admin-pages.css'/>">
 
-.header-content {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-}
-
-.welcome-text h1 {
-   font-size: 2.4rem;
-   margin: 0;
-}
-
-.welcome-text p {
-   margin-top: 0.5rem;
-   opacity: 0.9;
-}
-
-.stat-cards {
-   display: grid;
-   grid-template-columns: repeat(3, 1fr);
-   gap: 1.5rem;
-   margin-bottom: 2rem;
-}
-
-.stat-card {
-   background: white;
-   padding: 1.5rem;
-   border-radius: 8px;
-   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-   transition: transform 0.2s;
-}
-
-.stat-card:hover {
-   transform: translateY(-5px);
-}
-
-.stat-title {
-   font-size: 1.1rem;
-   color: #666;
-   margin-bottom: 0.5rem;
-}
-
-.stat-value {
-   font-size: 2rem;
-   font-weight: bold;
-   color: #333;
-}
-
-.admin-actions {
-   display: grid;
-   grid-template-columns: repeat(3, 1fr);
-   gap: 1.5rem;
-   margin-top: 2rem;
-}
-
-.action-card {
-   background: white;
-   padding: 2rem;
-   border-radius: 10px;
-   text-align: center;
-   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-   transition: all 0.3s ease;
-   cursor: pointer;
-   border: 1px solid #eee;
-}
-
-.action-card:hover {
-   transform: translateY(-5px);
-   box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-   border-color: #1a237e;
-}
-
-.action-icon {
-   font-size: 2.5rem;
-   margin-bottom: 1rem;
-   color: #1a237e;
-}
-
-.action-title {
-   font-size: 1.2rem;
-   font-weight: bold;
-   margin-bottom: 0.5rem;
-   color: #333;
-}
-
-.action-description {
-   color: #666;
-   font-size: 0.9rem;
-   line-height: 1.4;
-}
-
-</style>
-
+<%-- Font Awesome --%>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<div class="admin-dashboard">
-   <div class="dashboard-header">
-       <div class="header-content">
-           <div class="welcome-text">
-               <h1>관리자 대시보드</h1>
-               <p>웹사이트 관리 및 모니터링을 위한 중앙 관제 시스템입니다.</p>
-           </div>
-       </div>
-   </div>
+<%-- 관리자 대시보드용 인라인 스타일 --%>
+<style>
+    .admin-container {
+        display: flex;
+        min-height: calc(100vh - 150px); /* 헤더/푸터 영역 고려 */
+        margin-top: 20px;
+    }
+    
+    .admin-sidebar {
+        width: 260px;
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+        padding: 20px 0;
+    }
+    
+    .admin-sidebar-header {
+        padding: 0 20px 20px 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+    }
+    
+    .admin-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+    
+    .admin-logo i {
+        font-size: 24px;
+        color: var(--primary-color);
+    }
+    
+    .admin-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .admin-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .admin-menu-item {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .admin-menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .admin-menu-item.active {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .admin-menu-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background-color: white;
+    }
+    
+    .admin-menu-item i {
+        margin-right: 15px;
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+    }
+    
+    .admin-content {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    /* 대시보드 통계 카드 */
+    .stat-cards {
+        margin-top: 20px;
+    }
+    
+    .frame-container {
+        display: none;
+        width: 100%;
+        height: 100%;
+        border: none;
+        min-height: 500px;
+    }
+    
+    .frame-container.active {
+        display: block;
+    }
+    
+    #dashboardContent {
+        display: block;
+    }
+</style>
 
-   <div class="admin-actions">
-       <div class="action-card" onclick="location.href='/admin/couponManagement'">
-           <div class="action-icon">
-               <i class="fas fa-ticket"></i>
-           </div>
-           <div class="action-title">쿠폰 관리</div>
-           <div class="action-description">
-               할인 쿠폰 생성 및 관리<br>
-               사용자별 쿠폰 발급 현황 확인
-           </div>
-       </div>
-
-       <div class="action-card" onclick="location.href='/admin/userManagement'">
-           <div class="action-icon">
-               <i class="fas fa-users"></i>
-           </div>
-           <div class="action-title">사용자 관리</div>
-           <div class="action-description">
-               회원 정보 관리<br>
-               사용자 권한 및 활동 모니터링
-           </div>
-       </div>
-
-       <div class="action-card" onclick="location.href='/admin/categoryManagement'">
-           <div class="action-icon">
-               <i class="fas fa-list"></i>
-           </div>
-           <div class="action-title">카테고리 관리</div>
-           <div class="action-description">
-               메뉴 카테고리 설정<br>
-               카테고리별 상품 구성 관리
-           </div>
-       </div>
-   </div>
+<div class="admin-container">
+    <%-- 관리자 사이드바 --%>
+    <div class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <div class="admin-logo">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="admin-title">관리자 페이지</div>
+        </div>
+        
+        <ul class="admin-menu">
+            <li class="admin-menu-item active" onclick="showSection('dashboardContent')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>대시보드</span>
+            </li>
+            <li class="admin-menu-item" onclick="location.href='<c:url value='/admin/userManagement'/>'">
+                <i class="fas fa-users"></i>
+                <span>회원관리</span>
+            </li>
+            <li class="admin-menu-item" onclick="location.href='<c:url value='/admin/categoryManagement'/>'">
+                <i class="fas fa-list"></i>
+                <span>카테고리관리</span>
+            </li>
+            <li class="admin-menu-item" onclick="location.href='<c:url value='/admin/couponManagement'/>'">
+                <i class="fas fa-ticket-alt"></i>
+                <span>쿠폰관리</span>
+            </li>
+        </ul>
+    </div>
+    
+    <%-- 관리자 컨텐츠 영역 --%>
+    <div class="admin-content">
+        <%-- 대시보드 컨텐츠 --%>
+        <div id="dashboardContent">
+            <div class="section-title">관리자 대시보드</div>
+            <p class="text-muted mb-4">웹사이트 관리 및 모니터링을 위한 중앙 관제 시스템입니다.</p>
+            
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title"><i class="fas fa-user"></i> 전체 회원</div>
+                        <div class="stat-value">1,234</div>
+                        <div class="stat-description">지난 달 대비</div>
+                        <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 5.3%</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title"><i class="fas fa-shopping-bag"></i> 주문 건수</div>
+                        <div class="stat-value">857</div>
+                        <div class="stat-description">지난 달 대비</div>
+                        <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 2.7%</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title"><i class="fas fa-ticket-alt"></i> 쿠폰 사용</div>
+                        <div class="stat-value">432</div>
+                        <div class="stat-description">지난 달 대비</div>
+                        <div class="stat-change negative"><i class="fas fa-arrow-down"></i> 1.2%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> 최근 활동</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">최근 7일간의 활동 데이터를 표시합니다.</p>
+                            <p>데이터 준비 중입니다...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+function showSection(sectionId) {
+    // 모든 메뉴 항목에서 active 클래스 제거
+    document.querySelectorAll('.admin-menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 클릭된 메뉴 항목에 active 클래스 추가 
+    if (sectionId === 'dashboardContent') {
+        document.querySelector('.admin-menu-item').classList.add('active');
+    }
+}
+</script>

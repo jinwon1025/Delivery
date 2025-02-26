@@ -1,0 +1,302 @@
+@charset "UTF-8";
+
+/* admin-components.css - 관리자 컴포넌트 스타일 */
+
+/* 카드 컴포넌트 */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08), 0 6px 6px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  background: linear-gradient(to right, #f8f9fa, #f1f3f5);
+  padding: 1.5rem;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--gray-800);
+  display: flex;
+  align-items: center;
+}
+
+.card-icon {
+  margin-right: 0.75rem;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* 버튼 스타일 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 8px;
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+.btn:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(26, 35, 126, 0.25);
+}
+
+.btn i {
+  margin-right: 0.5rem;
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  border: none;
+  box-shadow: 0 4px 6px rgba(26, 35, 126, 0.2);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(135deg, var(--secondary-light), var(--secondary-color));
+  box-shadow: 0 6px 8px rgba(26, 35, 126, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+  box-shadow: 0 2px 4px rgba(26, 35, 126, 0.3);
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  color: white;
+  background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+  border: none;
+  box-shadow: 0 4px 6px rgba(73, 80, 87, 0.2);
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+  box-shadow: 0 6px 8px rgba(73, 80, 87, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  background: linear-gradient(135deg, var(--gray-800), var(--gray-700));
+  box-shadow: 0 2px 4px rgba(73, 80, 87, 0.3);
+  transform: translateY(0);
+}
+
+.btn-danger {
+  color: white;
+  background: linear-gradient(135deg, #ff4d4d, #e53935);
+  border: none;
+  box-shadow: 0 4px 6px rgba(229, 57, 53, 0.2);
+}
+
+.btn-danger:hover, .btn-danger:focus {
+  background: linear-gradient(135deg, #ff6b6b, #ff4d4d);
+  box-shadow: 0 6px 8px rgba(229, 57, 53, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-danger:active {
+  background: linear-gradient(135deg, #d32f2f, #e53935);
+  box-shadow: 0 2px 4px rgba(229, 57, 53, 0.3);
+  transform: translateY(0);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+}
+
+/* 폼 컨트롤 */
+.form-label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--gray-800);
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  transition: border-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+.form-control:focus {
+  color: var(--gray-900);
+  background-color: #fff;
+  border-color: var(--secondary-color);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--gray-500);
+  opacity: 1;
+}
+
+/* 테이블 스타일 */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  color: var(--gray-800);
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+}
+
+.table th,
+.table td {
+  padding: 1.2rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid var(--gray-200);
+}
+
+.table thead th {
+  vertical-align: bottom;
+  background-color: var(--gray-100);
+  color: var(--gray-700);
+  border-bottom: 2px solid var(--gray-300);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: var(--gray-100);
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 1.5rem;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 1.5rem;
+}
+
+.table th i,
+.table td i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+/* 배지 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3em 0.85em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 50rem;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bg-success {
+  background: linear-gradient(to right, #2ecc71, #27ae60);
+}
+
+.bg-danger {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+}
+
+.bg-warning {
+  background: linear-gradient(to right, #f39c12, #d35400);
+}
+
+.bg-info {
+  background: linear-gradient(to right, #3498db, #2980b9);
+}
