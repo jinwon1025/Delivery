@@ -97,7 +97,7 @@
             </c:choose>
             <input type="file" name="image" />
         </div>
-        <button type="submit" class="save-btn">저장</button>
+        <button type="submit" class="save-btn">수정</button>
     </form:form>
 </div>
 

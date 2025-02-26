@@ -22,8 +22,7 @@
         .store-container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+            justify-content: space-between; /* 두 열 사이에 공간을 균등하게 분배 */
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -33,11 +32,19 @@
             align-items: flex-start;
             border: 1px solid #ddd;
             padding: 15px;
-            width: calc(50% - 30px); /* 두 개의 박스가 한 줄에 맞도록 너비 조정 */
+            width: calc(50% - 10px); /* 두 개의 박스가 한 줄에 맞도록 너비 조정 */
             background-color: white;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
+            margin-bottom: 20px; /* 행간 간격을 위해 아래 마진 추가 */
+        }
+        
+        /* 홀수 항목일 때 마지막 항목 스타일 */
+        .store-container::after {
+            content: "";
+            width: calc(50% - 10px); /* 빈 공간을 차지할 요소 너비 */
+            display: block;
         }
 
         .store-image {
@@ -114,6 +121,7 @@
         @media (max-width: 768px) {
             .store-box {
                 width: 100%; /* 모바일에서는 한 줄에 하나만 */
+                margin-left: 0; /* 모바일에서는 여백 제거 */
             }
         }
     </style>
@@ -122,7 +130,7 @@
     <h2>가게 리스트</h2>
 
     <div class="store-container">
-        <c:forEach var="store" items="${storeList}">
+        <c:forEach var="store" items="${storeList}" varStatus="status">
             <div class="store-box">
                 <!-- 가게 프로필 사진 -->
                 <c:choose>
