@@ -120,4 +120,14 @@ public class UserStoreController {
 		return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	}
 	
+	@PostMapping(value="/userstore/bookmark")
+	public ModelAndView bookmark(HttpSession session, String loginStatus) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		if(loginStatus.equals("no")) {
+			 mav.setViewName("redirect:/user/index");
+		        return mav;
+		}
+		return null;
+	}
+	
 }
