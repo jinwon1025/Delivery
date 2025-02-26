@@ -120,6 +120,7 @@ public class UserController {
 	}
 	
 	
+	// UserController.java의 loginUser 메소드에서 관리자 리다이렉트 부분 수정
 	@PostMapping(value="/user/login")
 	public ModelAndView loginUser(@Valid LoginUser loginuser, BindingResult br, HttpSession session) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
@@ -142,10 +143,10 @@ public class UserController {
 
 	        // role이 있고 ADMIN인 경우에만 관리자 페이지로
 	        if(user.getRole() != null && user.getRole().toUpperCase().equals("ADMIN")) {
-	            mav.setViewName("user/userMain");
-	            mav.addObject("BODY", "../admin/adminHome.jsp");  // 절대 경로로 시작
+	            // 관리자 홈으로 리다이렉트
+	            mav.setViewName("redirect:/admin/home");
 	        } else {
-	            mav.addObject("BODY", "loginUser.jsp");  // 동일하게 절대 경로 사용
+	            mav.addObject("BODY", "loginUser.jsp");
 	        }
 	    }
 	    return mav;

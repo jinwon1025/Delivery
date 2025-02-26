@@ -1,0 +1,365 @@
+@charset "UTF-8";
+
+/* admin-pages.css - 관리자 페이지별 스타일 */
+
+/* 관리자 홈 대시보드 */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(30, 136, 229, 0.03), rgba(26, 35, 126, 0.06));
+  z-index: 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-size: 2.5rem;
+  color: rgba(26, 35, 126, 0.08);
+  z-index: 0;
+}
+
+.stat-content {
+  position: relative;
+  z-index: 1;
+}
+
+.stat-title {
+  font-size: 1.05rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.stat-title i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.stat-value {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.stat-description {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.stat-change {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 50rem;
+}
+
+.stat-change.positive {
+  color: #27ae60;
+  background-color: rgba(46, 204, 113, 0.1);
+}
+
+.stat-change.negative {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.stat-change i {
+  margin-right: 0.25rem;
+}
+
+/* 관리자 액션 카드 */
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin-top: 2.5rem;
+}
+
+.action-card {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #eee;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 120%;
+  height: 120%;
+  background: linear-gradient(135deg, rgba(30, 136, 229, 0.03), rgba(26, 35, 126, 0.07));
+  transform: rotate(-3deg);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.action-card:hover::before {
+  opacity: 1;
+}
+
+.action-icon {
+  font-size: 2.75rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  transition: transform 0.3s ease;
+}
+
+.action-card:hover .action-icon {
+  transform: scale(1.15);
+}
+
+.action-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--gray-800);
+}
+
+.action-description {
+  color: var(--gray-600);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+/* 카테고리 관리 페이지 */
+.category-icon {
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+}
+
+.category-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.75em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 50rem;
+  background-color: var(--primary-light);
+}
+
+/* 사용자 관리 페이지 */
+.user-info-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-info-row:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.user-filter {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-filter label {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.user-filter select,
+.user-filter input {
+  width: auto;
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.user-search {
+  margin-left: auto;
+  position: relative;
+}
+
+.user-search input {
+  padding-left: 2.5rem;
+}
+
+.user-search i {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-500);
+}
+
+/* 쿠폰 관리 페이지 */
+.coupon-status {
+  display: flex;
+  align-items: center;
+}
+
+.coupon-preview {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa, #e4e7eb);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.coupon-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  max-width: 550px;
+  height: 180px;
+  margin: 0 auto;
+}
+
+.coupon-left {
+  flex: 2;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.coupon-right {
+  flex: 1;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.coupon-right::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url('/images/pattern-light.svg');
+  background-size: cover;
+  opacity: 0.1;
+}
+
+.coupon-amount {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.coupon-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--gray-800);
+}
+
+.coupon-code {
+  font-family: monospace;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--gray-100);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+.coupon-expires {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+}
+
+/* 반응형 조정 */
+@media (max-width: 992px) {
+  .stat-cards, .admin-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-cards, .admin-actions {
+    grid-template-columns: 1fr;
+  }
+  
+  .user-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .user-search {
+    width: 100%;
+    margin-top: 1rem;
+    margin-left: 0;
+  }
+  
+  .coupon-card {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .coupon-right {
+    padding: 1.5rem;
+  }
+}
