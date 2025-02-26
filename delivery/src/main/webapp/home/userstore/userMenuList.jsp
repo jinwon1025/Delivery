@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-    <title>메뉴 목록</title>
+    <title>메뉴목록</title>
     <style>
         .menu-container {
             display: flex;
