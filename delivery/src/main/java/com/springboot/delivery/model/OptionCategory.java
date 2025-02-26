@@ -11,4 +11,5 @@ public class OptionCategory {
 	private String option_group_name;
 	private String store_id;
 	private Integer menu_item_id;
+	private String selection_type;
 }

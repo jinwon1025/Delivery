@@ -228,7 +228,7 @@ WHERE USED_CP_ID IN (
 		insert into b_option_group_tbl
 		values(#{option_group_id},
 		#{option_group_name}, #{store_id},
-		#{menu_item_id})
+		#{menu_item_id}, #{selection_type})
 
 	</insert>
 
@@ -244,7 +244,7 @@ WHERE USED_CP_ID IN (
 		resultType="com.springboot.delivery.model.OptionCategory">
 
 		select option_group_id, option_group_name, store_id,
-		menu_item_id from
+		menu_item_id, selection_type from
 		b_option_group_tbl where store_id=#{store_id} and
 		menu_item_id=#{menu_item_id}
 
@@ -346,7 +346,8 @@ WHERE USED_CP_ID IN (
 	<update id="updateOptionCategory"
 		parameterType="com.springboot.delivery.model.OptionCategory">
 
-		update b_option_group_tbl set option_group_name = #{option_group_name}
+		update b_option_group_tbl set option_group_name = #{option_group_name},
+		selection_type = #{selection_type}
 		where store_id = #{store_id} and menu_item_id = #{menu_item_id} and
 		option_group_id = #{option_group_id}
 

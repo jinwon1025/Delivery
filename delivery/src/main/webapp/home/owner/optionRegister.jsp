@@ -164,6 +164,17 @@
       display: flex;
       gap: 4px;
     }
+    
+    .selection-type-badge {
+  display: inline-block;
+  font-size: 12px;
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 10px;
+  font-weight: normal;
+}
   </style>
 </head>
 <body>
@@ -190,6 +201,8 @@
         <input type="hidden" name="menu_category_id" value="${menuInfo.menu_category_id}"/>
         <input type="text" id="category_name" name="category_name" placeholder="카테고리 이름 (예: 소스 선택)">
         <input type="submit" value="카테고리 추가" class="btn btn-primary"/>
+        <input type="radio" name="selection_type" value="single"> 단일 선택
+        <input type="radio" name="selection_type" value="duplicate"> 중복 선택
       </form>
     </div>
 
@@ -198,21 +211,24 @@
     <c:forEach var="category" items="${optionList}">
       <div class="option-group">
         <div class="option-item">
-          <div><strong>${category.option_group_name}</strong></div>
-          <div class="btn-container">
-            <form action="/store/updateOptionCategory" method="post" style="display: inline-block; margin-right: 4px;"
-            	onsubmit="return updateOptionCategory()">
-              <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-              <input type="hidden" id="newOptionName" name="newOptionName"/>
-              <button type="submit" class="btn btn-edit">수정</button>
-            </form>
-            <form action="/store/deleteOptionCategory" method="post" style="display: inline-block;"
-            	onsubmit="return deleteOptionCategory()">
-              <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
-              <button type="submit" class="btn btn-delete">삭제</button>
-            </form>
-          </div>
-        </div>
+  <div>
+    <strong>${category.option_group_name}</strong>
+    <span class="selection-type-badge">
+      ${category.selection_type eq 'single' ? '단일 선택' : '중복 선택'}
+    </span>
+  </div>
+  <div class="btn-container">
+    <form action="/store/goUpdateOptionCategory" style="display: inline-block; margin-right: 4px;">
+      <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
+      <button type="submit" class="btn btn-edit">수정</button>
+    </form>
+    <form action="/store/deleteOptionCategory" method="post" style="display: inline-block;"
+      onsubmit="return deleteOptionCategory()">
+      <input type="hidden" name="option_group_id" value="${category.option_group_id}"/>
+      <button type="submit" class="btn btn-delete">삭제</button>
+    </form>
+  </div>
+</div>
         <div class="sub-options">
           <c:forEach var="optionSet" items="${subOptionList}">
             <c:if test="${category.option_group_id == optionSet.option_group_id}">
@@ -257,19 +273,7 @@
 		 return false;
 	 }
  }
- 
- function updateOptionCategory(){
-	 const 	 newOption = prompt("수정할 옵션명을 입력하세요.");
-	 if(newOption!== null && newOption !== "" ){
-		 const input = document.getElementById('newOptionName');
-		 input.value = newOption;
-		 return true;
-	 } else {
-		 alert("옵션명을 입력해주세요.");
-		 return false;
-	 }
- }
- 
+
  function deleteOptionCategory(){
 	 if(confirm("정말로 옵션 카테고리를 삭제하시겠습니까?")){
 		 return true;

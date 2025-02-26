@@ -443,7 +443,7 @@ public class StoreController {
    }
    
    @PostMapping(value="/store/addOption")
-   public ModelAndView addOption(HttpSession session, String category_name) {
+   public ModelAndView addOption(HttpSession session, String category_name, String selection_type ) {
        Store currentStore = (Store)session.getAttribute("currentStore");
        MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");  // 세션에서 메뉴 정보 가져오기
        
@@ -460,6 +460,7 @@ public class StoreController {
        oc.setMenu_item_id(currentMenu.getMenu_item_id());
        System.out.println("카테고리 이름"+category_name);
        oc.setStore_id(currentStore.getStore_id());
+       oc.setSelection_type(selection_type);
        this.storeService.addOption(oc);
        
        return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
@@ -556,15 +557,43 @@ public class StoreController {
 	   
    }
    
+   @GetMapping(value="/store/goUpdateOptionCategory")
+   public ModelAndView goUpdateOptinoCategory(HttpSession session, Integer option_group_id) {
+	   
+	   Store currentStore = (Store)session.getAttribute("currentStore");
+	   MenuItem currentMenu =(MenuItem)session.getAttribute("currentMenu");
+	   
+	   ModelAndView mav = new ModelAndView("owner/storeMain");
+	   MenuItem mi = new MenuItem();
+	   mi.setStore_id(currentStore.getStore_id());
+	   mi.setMenu_item_id(currentMenu.getMenu_item_id());
+	   MenuItem menuInfo = this.storeService.menuDetail(mi);
+	   OptionCategory oc = new OptionCategory();
+	   oc.setStore_id(currentStore.getStore_id());
+	   oc.setMenu_item_id(currentMenu.getMenu_item_id());
+	   List<OptionCategory> optionList = this.storeService.getMenuItemOptionList(oc);
+
+	   
+	   List<OptionSet> subOptionList = this.storeService.getSubOptionList();
+	   session.setAttribute("currentMenu", menuInfo);
+	   mav.addObject("menuInfo", menuInfo);
+	   mav.addObject("optionList", optionList);
+	   mav.addObject("subOptionList", subOptionList);
+	   mav.addObject("target", option_group_id);
+	   mav.addObject("BODY", "updateOptionCategory.jsp");
+	   return mav;
+   }
+   
    @PostMapping(value="/store/updateOptionCategory")
-   public ModelAndView updateOptionCategory(Integer option_group_id, String newOptionName, HttpSession session) {
+   public ModelAndView updateOptionCategory(Integer option_group_id, String option_group_name, String selection_type, HttpSession session) {
 	   Store currentStore = (Store)session.getAttribute("currentStore");
 	   MenuItem currentMenu = (MenuItem)session.getAttribute("currentMenu");
 	   OptionCategory oc = new OptionCategory();
 	   oc.setStore_id(currentStore.getStore_id());
 	   oc.setMenu_item_id(currentMenu.getMenu_item_id());
 	   oc.setOption_group_id(option_group_id);
-	   oc.setOption_group_name(newOptionName);
+	   oc.setOption_group_name(option_group_name);
+	   oc.setSelection_type(selection_type);
 	   
 	   this.storeService.updateOptionCategory(oc);
 	   
