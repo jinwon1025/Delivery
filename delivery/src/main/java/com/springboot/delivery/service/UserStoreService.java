@@ -1,6 +1,7 @@
 package com.springboot.delivery.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,18 @@ public class UserStoreService {
 	}
 	public String storeAddress(String store_id) {
 		return this.userStoreMapper.storeAddress(store_id);
+	}
+	
+	public OrderCart getOrderByUserId(String user_id) {
+		return this.userStoreMapper.getOrderByUserId(user_id);
+	}
+	
+	public OrderCart getOrderStatusByOrderId(String order_id) {
+		return this.userStoreMapper.getOrderByUserId(order_id);
+	}
+	
+	public List<Map<String, Object>> getCartMenuDetails(String user_id){
+		return this.userStoreMapper.getCartMenuDetails(user_id);
 	}
 	
 }

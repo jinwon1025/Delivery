@@ -1,60 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.springboot.delivery.mapper.UserStoreMapper">
-	<select id="storeCategory" parameterType="String" resultType="com.springboot.delivery.model.MenuCategory">
-		select * from b_menu_category_tbl where store_id = #{store_id}
+<mapper
+	namespace="com.springboot.delivery.mapper.UserStoreMapper">
+	<select id="storeCategory" parameterType="String"
+		resultType="com.springboot.delivery.model.MenuCategory">
+		select * from b_menu_category_tbl where store_id =
+		#{store_id}
 	</select>
-	
-	<select id="menuList" parameterType="Integer" resultType="com.springboot.delivery.model.MenuItem">
-		select * from b_menu_item_tbl where menu_category_id = #{menu_category_id}
+
+	<select id="menuList" parameterType="Integer"
+		resultType="com.springboot.delivery.model.MenuItem">
+		select * from b_menu_item_tbl where menu_category_id =
+		#{menu_category_id}
 	</select>
-	
-	<select id="menuItemDetail" parameterType="Integer" resultType="com.springboot.delivery.model.MenuItem">
-		select * from b_menu_item_tbl where menu_item_id = #{menu_item_id}
+
+	<select id="menuItemDetail" parameterType="Integer"
+		resultType="com.springboot.delivery.model.MenuItem">
+		select * from b_menu_item_tbl where menu_item_id =
+		#{menu_item_id}
 	</select>
-	
-	<select id="optionDetail" parameterType="Integer" resultType="com.springboot.delivery.model.OptionSet">
-	    SELECT 
-	        o.option_id, 
-	        o.option_name, 
-	        o.option_price, 
-	        o.store_id, 
-	        o.menu_item_id, 
-	        o.option_group_id, 
-	        g.option_group_name
-	    FROM 
-	        b_option_tbl o
-	    LEFT JOIN 
-	        b_option_group_tbl g
-	    ON 
-	        o.option_group_id = g.option_group_id
-	    WHERE 
-	        o.menu_item_id = #{menu_item_id}
+
+	<select id="optionDetail" parameterType="Integer"
+		resultType="com.springboot.delivery.model.OptionSet">
+		SELECT
+		o.option_id,
+		o.option_name,
+		o.option_price,
+		o.store_id,
+		o.menu_item_id,
+		o.option_group_id,
+		g.option_group_name
+		FROM
+		b_option_tbl o
+		LEFT JOIN
+		b_option_group_tbl g
+		ON
+		o.option_group_id = g.option_group_id
+		WHERE
+		o.menu_item_id = #{menu_item_id}
 	</select>
-	
-	<insert id="insertOrder" parameterType="com.springboot.delivery.model.OrderCart">
-		insert into b_order_tbl (order_id, user_id) values(#{order_id},#{user_id})
+
+	<insert id="insertOrder"
+		parameterType="com.springboot.delivery.model.OrderCart">
+		insert into b_order_tbl (order_id, user_id)
+		values(#{order_id},#{user_id})
 	</insert>
-	
-	<insert id="insertOrderDetail" parameterType="com.springboot.delivery.model.OrderCart">
-		insert into b_order_detail_tbl(order_detail_id,order_id,store_id,user_id,store_address,order_status) 
-			values((SELECT COALESCE(MAX(order_detail_id), 0) + 1 FROM b_order_detail_tbl),#{order_id},#{store_id},#{user_id},#{store_address},#{order_status})
+
+	<insert id="insertOrderDetail"
+		parameterType="com.springboot.delivery.model.OrderCart">
+		insert into
+		b_order_detail_tbl(order_detail_id,order_id,store_id,user_id,store_address,order_status)
+		values((SELECT COALESCE(MAX(order_detail_id), 0) + 1 FROM
+		b_order_detail_tbl),#{order_id},#{store_id},#{user_id},#{store_address},#{order_status})
 	</insert>
-	
-	<insert id="insertOrderOption" parameterType="com.springboot.delivery.model.OrderCart">
-    insert into order_option_tbl(order_option_id, menu_item_id, option_group_id, option_id, order_id)
-    values(
-        (SELECT COALESCE(MAX(order_option_id), 0) + 1 FROM order_option_tbl),
-        #{menu_item_id},
-        #{option_group_id},
-        #{option_id},
-        #{order_id}
-    )
-</insert>
-	
-	<select id="storeAddress" parameterType="String" resultType="String">
-		select store_address from b_store_tbl where store_id=#{store_id}	
+
+	<insert id="insertOrderOption"
+		parameterType="com.springboot.delivery.model.OrderCart">
+		insert into order_option_tbl(order_option_id,
+		menu_item_id, option_group_id,
+		option_id, order_id)
+		values(
+		(SELECT
+		COALESCE(MAX(order_option_id), 0) + 1 FROM order_option_tbl),
+		#{menu_item_id},
+		#{option_group_id},
+		#{option_id},
+		#{order_id}
+		)
+	</insert>
+
+	<select id="storeAddress" parameterType="String"
+		resultType="String">
+		select store_address from b_store_tbl where
+		store_id=#{store_id}
 	</select>
-	
+
+	<select id="getOrderByUserId" parameterType="String"
+		resultType="com.springboot.delivery.model.OrderCart">
+
+		select order_id from b_order_tbl where user_id=#{user_id}
+
+	</select>
+
+	<select id="getOrderStatusByOrderId" parameterType="String"
+		resultType="com.springboot.delivery.model.OrderCart">
+
+		select order_id, order_status from b_order_detail_tbl where
+		order_id =
+		#{order_id} and order_status = '0'
+
+	</select>
+
+<select id="getCartMenuDetails" parameterType="String" resultType="map">
+SELECT
+    mi.menu_name,
+    mi.price as menu_price,
+    mi.image_name,
+    mi.store_id,
+    LISTAGG(ot.option_name, ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_names,
+    LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_prices,
+    SUM(COALESCE(ot.option_price, 0)) as total_option_price
+FROM
+    b_order_tbl o
+JOIN
+    b_order_detail_tbl odt ON o.order_id = odt.order_id
+JOIN
+    order_option_tbl oo ON oo.order_id = o.order_id
+JOIN
+    b_menu_item_tbl mi ON oo.menu_item_id = mi.menu_item_id
+LEFT JOIN
+    b_option_tbl ot ON ot.option_id = oo.option_id
+WHERE
+    o.user_id = #{user_id}
+AND
+    odt.order_status = '0'
+GROUP BY
+    mi.menu_name, mi.price, mi.image_name, mi.store_id
+</select>
 </mapper>

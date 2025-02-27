@@ -175,4 +175,50 @@ public class UserStoreController {
 		return null;
 	}
 	
+	@GetMapping(value="/userstore/viewCart")
+	public ModelAndView viewCart(HttpSession session) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		OrderCart oc = this.userStoreService.getOrderByUserId(loginUser.getUser_id()); //유저 아이디로 오더id 찾기
+		String isEmptyCart = "";
+		List<Map<String, Object>> cartList = this.userStoreService.getCartMenuDetails(loginUser.getUser_id());
+		
+		System.out.println("User ID: " + loginUser.getUser_id());
+	    System.out.println("Cart List Size: " + cartList.size());
+	    System.out.println("Cart List: " + cartList);
+	    
+		if(cartList == null || cartList.isEmpty()) {
+			isEmptyCart = "empty";
+		} else {
+			isEmptyCart = "notEmpty";
+		}
+		mav.addObject("isEmptyCart", isEmptyCart);
+		mav.addObject("cartDetails", cartList);
+		mav.addObject("BODY", "../userstore/userCart.jsp");
+		
+		return mav;
+		
+	}
+	
+	@GetMapping(value="/userstore/returnToStore")
+	public ModelAndView returnToStore(String store_id, HttpSession session) {
+		System.out.println(store_id);
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    Store currentStore = (Store)storeService.getStore(store_id);
+	    session.setAttribute("currentStore", currentStore);
+		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+		List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
+		mav.addObject("maincategoryList",maincategoryList);
+		mav.addObject("storeCategory", mc);
+		mav.addObject("BODY","../userstore/userStoreMain.jsp");
+		
+		if (!mc.isEmpty()) {
+			Integer firstCategoryId = mc.get(0).getMenu_category_id();
+			List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
+			mav.addObject("menuList", menuList);
+			mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
+		}
+		return mav;
+	}
+	
 }
