@@ -29,7 +29,7 @@ public class AdminController {
     // 관리자 메인 페이지
     @GetMapping("/admin/home")
     public ModelAndView adminHome(HttpSession session) {
-        ModelAndView mav = new ModelAndView("admin/adminMain"); // 관리자 전용 레이아웃 페이지 사용
+        ModelAndView mav = new ModelAndView("admin/adminMain");
         
         // 세션에서 로그인 사용자 확인 (관리자 권한 체크)
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -39,10 +39,18 @@ public class AdminController {
             mav.setViewName("redirect:/user/index");
             return mav;
         }
+        
+        // 전체 회원 수 가져오기
+        int userCount = adminService.getUserCount();
+        mav.addObject("userCount", userCount);
+        
         // 기본적으로 대시보드 표시
         mav.addObject("activeMenu", "dashboard");      
         return mav;
     }
+    
+    
+    
     
     // 사용자 관리 페이지
     @GetMapping("/admin/userManagement")
@@ -114,16 +122,16 @@ public class AdminController {
     }
     
     // 쿠폰 삭제
-    @PostMapping("/admin/coupon/delete/{cp_id}")
+    @PostMapping("/admin/coupon/delete/{owner_coupon_id}")
     @ResponseBody
-    public ResponseEntity<String> deleteCoupon(@PathVariable Integer cp_id, HttpSession session) {
+    public ResponseEntity<String> deleteCoupon(@PathVariable Integer owner_coupon_id, HttpSession session) {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
         if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
         }
         
         try {
-            adminService.deleteCoupon(cp_id);
+            adminService.deleteCoupon(owner_coupon_id);
             return ResponseEntity.ok("success");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("삭제 실패");
@@ -158,7 +166,7 @@ public class AdminController {
             return mav;
         }
         
-        coupon.setCreated_date(new String());  // 생성일자 설정
+        coupon.setIssued_date(new String());  // 생성일자 설정
         adminService.createCoupon(coupon);        
         return mav;
     }

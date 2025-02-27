@@ -52,5 +52,9 @@ public class AdminService{
     public void deleteMaincategory(Integer main_category_id) {
         adminMapper.deleteMaincategory(main_category_id);
     }
+    public int getUserCount() {
+        return adminMapper.getUserCount();
+    }
+
     
 }

@@ -17,6 +17,6 @@ public interface AdminMapper {
 	void deleteCoupon(Integer cp_id);
 	void createMaincategory(Maincategory maincategory);
 	void deleteMaincategory(Integer main_category_id);
-	
+	int getUserCount();
 	
 }
