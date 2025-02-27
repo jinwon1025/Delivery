@@ -393,6 +393,7 @@ public class UserController {
 			mav.setViewName("redirect:/user/index");
 			return mav;
 		}
+		
 		BookMarkStore bms = new BookMarkStore();
 		Integer bmsCount = this.userService.getMaxBookMarkStore();
 		if(bmsCount == null) {
@@ -404,8 +405,8 @@ public class UserController {
 		
 		this.userService.insertBookMarkStore(bms);
 		
-	
-		return null;
+		mav.setViewName("redirect:/user/categoryStores");
+		return mav;
 	}
 	
 
