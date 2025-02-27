@@ -238,7 +238,7 @@ body {
 
 .favorite-btn:hover {
     transform: scale(1.1);
-    color: #ff1744; /* 호버 시 더 진한 빨간색 */
+    color: #ff1744;
 }
 
 /* 반응형 디자인 */
