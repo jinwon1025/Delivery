@@ -43,11 +43,17 @@
 	</insert>
 	
 	<insert id="insertOrderOption" parameterType="com.springboot.delivery.model.OrderCart">
-		insert into order_option_tbl(order_option_id,menu_item_id,option_group_id,option_id,order_id)
-			values((SELECT COALESCE(MAX(order_option_id), 0) + 1 FROM order_option_tbl),#{menu_item_id},#{option_group_id},#{option_id},#{order_id})
-	</insert>
+    insert into order_option_tbl(order_option_id, menu_item_id, option_group_id, option_id, order_id)
+    values(
+        (SELECT COALESCE(MAX(order_option_id), 0) + 1 FROM order_option_tbl),
+        #{menu_item_id},
+        #{option_group_id},
+        #{option_id},
+        #{order_id}
+    )
+</insert>
 	
-	<select id="storeAddress" parameterType="String" resultType="com.springboot.delivery.model.Store">
+	<select id="storeAddress" parameterType="String" resultType="String">
 		select store_address from b_store_tbl where store_id=#{store_id}	
 	</select>
 </mapper>

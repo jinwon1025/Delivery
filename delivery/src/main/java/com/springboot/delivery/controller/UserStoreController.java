@@ -10,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
+import com.springboot.delivery.model.OptionOrder;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Store;
@@ -94,30 +96,73 @@ public class UserStoreController {
 		return mav;
 	}
 	@PostMapping(value="/userstore/addCart")
-	public ModelAndView addCart(HttpSession session,Integer menuId, Integer option_group_id,Integer option_id,String option_name, Integer option_price) {
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-		
-		Store store = (Store)session.getAttribute("currentStore");
-		System.out.println("스토어 세션"+store.getStore_id());
-		ModelAndView mav = new ModelAndView("user/userMain");	
-		OrderCart oc = new OrderCart();
+	public ModelAndView addCart(HttpSession session, 
+	                          Integer menuId,
+	                          @RequestParam(required=false) List<Integer> selectedOptions,
+	                          @RequestParam(required=false) List<Integer> allOptionIds,
+	                          @RequestParam(required=false) List<Integer> allOptionGroupIds) {
+	    
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    Store store = (Store) session.getAttribute("currentStore");
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
 	    if (loginUser == null) {
 	        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
 	        mav.setViewName("redirect:/user/index");
+	        return mav;
 	    }
+	    
+	    // 주문 ID 생성 및 가게 주소 가져오기
 	    String orderId = generateOrderId();
 	    String storeAddress = this.userStoreService.storeAddress(store.getStore_id());
 	    
-	    oc.setOrder_id(orderId);
-	    oc.setUser_id(loginUser.getUser_id());
-		oc.setStore_id(store.getStore_id());
-		oc.setStore_address(storeAddress);
-		oc.setOrder_status(0);
-		oc.setOption_group_id(option_group_id);
-		oc.setOption_id(option_id);
-		oc.setOption_price(option_price);
-		mav.addObject("CART",oc);
-		return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
+	    // OrderCart 객체 생성
+	    OrderCart orderCart = new OrderCart();
+	    orderCart.setOrder_id(orderId);
+	    orderCart.setUser_id(loginUser.getUser_id());
+	    orderCart.setStore_id(store.getStore_id());
+	    orderCart.setStore_address(storeAddress);
+	    orderCart.setOrder_status(0);
+	    orderCart.setMenu_item_id(menuId);
+	    
+	    // 주문 기본 정보 삽입
+	    userStoreService.insertOrder(orderCart);
+	    
+	    // 주문 상세 정보 삽입
+	    userStoreService.insertOrderDetail(orderCart);
+	    
+	    // 선택된 옵션이 있다면 처리
+	    if (selectedOptions != null && !selectedOptions.isEmpty()) {
+	        List<OptionOrder> optionOrders = new ArrayList<>();
+	        
+	        for (Integer optionId : selectedOptions) {
+	            // allOptionIds 리스트에서 이 옵션의 인덱스 찾기
+	            int index = allOptionIds.indexOf(optionId);
+	            if (index >= 0) {
+	                OptionOrder optionOrder = new OptionOrder();
+	                optionOrder.setOption_id(optionId);
+	                optionOrder.setOption_group_id(allOptionGroupIds.get(index));
+	                optionOrders.add(optionOrder);
+	            }
+	        }
+	        
+	        // 주문 카트에 옵션 설정
+	        orderCart.setOptions(optionOrders);
+	        
+	        // 옵션을 데이터베이스에 삽입
+	        for (OptionOrder option : optionOrders) {
+	            OrderCart tempCart = new OrderCart();
+	            tempCart.setOrder_id(orderId);
+	            tempCart.setMenu_item_id(menuId);
+	            tempCart.setOption_id(option.getOption_id());
+	            tempCart.setOption_group_id(option.getOption_group_id());
+	            
+	            userStoreService.insertOrderOption(tempCart);
+	        }
+	    }
+	    
+	    // 메뉴 상세 페이지로 리다이렉트
+	    return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	}
 	
 	@PostMapping(value="/userstore/bookmark")
