@@ -96,6 +96,7 @@ h1 {
 					href="/user/categoryStores?categoryId=${category.main_category_id}">${category.main_category_name}</a>
 				<c:if test="${!status.last}"> | </c:if>
 			</c:forEach>
+			| <a href="/user/notice">공지사항</a>
 		</h2>
 
 		<hr>
