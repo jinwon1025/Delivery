@@ -81,7 +81,7 @@ h1 {
 				<a href="/user/logout">로그아웃</a>
 				<a href="/userstore/viewCart" class="fas fa-shopping-cart"></a>
 				<a href="/user/bookMarkList" class="fas fa-heart"></a>
-				<!-- 즐겨찾기 버튼 추가 -->
+				<!-- 즐겨찾기 버튼 추가1 -->
 			</c:when>
 			<c:otherwise>
 				<a href="/user/index">로그인</a>
