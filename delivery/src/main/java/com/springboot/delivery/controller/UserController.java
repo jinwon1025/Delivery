@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -310,7 +311,7 @@ public class UserController {
 	
 	
 	@GetMapping(value="/user/categoryStores")
-	public ModelAndView categoryStores(@RequestParam(required=false) Integer categoryId) {
+	public ModelAndView categoryStores(@RequestParam(required=false) Integer categoryId,HttpSession session) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    
 	    // 메인 카테고리 목록 가져오기 (메뉴 표시용)
@@ -335,7 +336,17 @@ public class UserController {
 	            }
 	        }
 	    }
-	    
+	    if(session.getAttribute("loginUser") != null) {
+	    	LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	    	List<BookMarkStore> bmsList = this.userService.getBookMarkStoreByUserId(loginUser.getUser_id());
+	    	
+	    	List<String> bookmarkList = new ArrayList<>();
+	    	for(BookMarkStore bms : bmsList) {
+	    		bookmarkList.add(bms.getStore_id());
+	    	}
+	    	mav.addObject("bmsList", bookmarkList);
+	    	System.out.println("북마크 리스트 :" +bmsList);
+	    }
 	    mav.addObject("storeList", storeList);
 	    mav.addObject("categoryName", categoryName);
 	    mav.addObject("BODY", "categoryStores.jsp");

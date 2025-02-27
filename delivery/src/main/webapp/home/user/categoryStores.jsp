@@ -227,16 +227,18 @@ body {
     transition: all 0.3s ease;
 }
 
-.favorite-btn:hover {
-    transform: scale(1.1);
-    color: #ffdd57;
-}
-
 .favorite-btn.active {
     color: #FFD700;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
 }
+.favorite-btn .fa-heart.fas {
+    color: #ff4136; /* 채워진 하트 아이콘 색상을 빨간색으로 */
+}
 
+.favorite-btn:hover {
+    transform: scale(1.1);
+    color: #ff1744;
+}
 /* 반응형 디자인 */
 @media ( max-width : 768px) {
 	.store-grid {
@@ -297,7 +299,16 @@ body {
 							
 							<!-- 즐겨찾기 버튼 - 가게 컨테이너 오른쪽 상단에 위치 -->
 							<button class="favorite-btn" onclick="bookmarkStore(event, '${store.store_id}');">
-                                <i class="fa-heart far"></i>
+                                <c:choose>
+							        <c:when test="${bmsList.contains(store.store_id)}">
+							            <!-- 즐겨찾기된 가게 -->
+							            <i class="fa-heart fas" style="color: #ff4136;"></i>
+							        </c:when>
+							        <c:otherwise>
+							            <!-- 즐겨찾기되지 않은 가게 -->
+							            <i class="fa-heart far"></i>
+							        </c:otherwise>
+							    </c:choose>
                             </button>
 						</div>
 					</c:forEach>
