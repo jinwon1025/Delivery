@@ -3,80 +3,119 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.delivery.mapper.AdminMapper">
 
-<insert id="createCoupon" parameterType="com.springboot.delivery.model.Coupon">
-    INSERT INTO b_coupon_tbl (
-        cp_id,
-        co_name,
-        sale_price,
-        created_date,
-        end_date,
-        minimum_purchase,
-        store_id
-    ) VALUES (
-        b_coupon_seq.NEXTVAL,
-        #{co_name},
-        #{sale_price},
-        #{created_date},
-        TO_DATE(#{end_date}, 'YYYY-MM-DD'),
-        #{minimum_purchase},
-        #{store_id, jdbcType=VARCHAR}
-    )
-</insert>
+	<!-- 쿠폰 생성 -->
+	<insert id="createCoupon"
+		parameterType="com.springboot.delivery.model.Coupon">
+		INSERT INTO b_owner_coupon_tbl (
+		owner_coupon_id,
+		cp_name,
+		sale_price,
+		minimum_purchase,
+		owner_id,
+		store_id,
+		issued_date,
+		expire_date,
+		total_quantity
+		) VALUES (
+		owner_coupon_seq.NEXTVAL,
+		#{cp_name},
+		#{sale_price},
+		#{minimum_purchase},
+		#{owner_id},
+		#{store_id},
+		SYSDATE,
+		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
+		#{total_quantity}
+		)
+	</insert>
 
-<insert id="createMaincategory" parameterType="com.springboot.delivery.model.Maincategory">
-    INSERT INTO b_main_category_tbl (
-        main_category_id,
-        main_category_name
-    ) VALUES (
-        main_category_seq.NEXTVAL,
-        #{main_category_name}
-    )
-</insert>
+	<!-- 전체 쿠폰 조회 -->
+	<select id="getAllCoupons"
+		resultType="com.springboot.delivery.model.Coupon">
+		SELECT
+		owner_coupon_id,
+		cp_name,
+		sale_price,
+		minimum_purchase,
+		owner_id,
+		store_id,
+		TO_CHAR(issued_date, 'YYYY-MM-DD') as issued_date,
+		TO_CHAR(expire_date, 'YYYY-MM-DD') as expire_date,
+		total_quantity
+		FROM b_owner_coupon_tbl
+		ORDER BY owner_coupon_id
+	</select>
+
+	<!-- 쿠폰 삭제 -->
+	<delete id="deleteCoupon" parameterType="Integer">
+		DELETE FROM b_owner_coupon_tbl
+		WHERE owner_coupon_id = #{owner_coupon_id}
+	</delete>
+
+	<insert id="createMaincategory"
+		parameterType="com.springboot.delivery.model.Maincategory">
+		INSERT INTO b_main_category_tbl (
+		main_category_id,
+		main_category_name
+		) VALUES (
+		main_category_seq.NEXTVAL,
+		#{main_category_name}
+		)
+	</insert>
 
 
-    <select id="getAllMaincategory" resultType="com.springboot.delivery.model.Maincategory">
-        SELECT * FROM b_main_category_tbl ORDER BY main_category_id
-    </select>
-    
-    
-    <!-- 전체 유저 조회 -->
-<select id="getAllUsers" resultType="com.springboot.delivery.model.User">
-    SELECT 
-        user_id,
-        user_name,
-        email,
-        password,
-        user_phone,
-        point,
-        TO_CHAR(birth, 'YYYY-MM-DD') as birth,
-        user_address
-    FROM b_user_info 
-    ORDER BY user_id
-</select>
-    
-    <!-- 전체 쿠폰 조회 -->
-    <select id="getAllCoupons" resultType="com.springboot.delivery.model.Coupon">
-        SELECT * FROM b_coupon_tbl ORDER BY cp_id 
-    </select>
-    
-   
-    <!-- 쿠폰 삭제 -->
-    <delete id="deleteMaincategory" parameterType="Integer">
-    DELETE FROM b_main_category_tbl 
-    WHERE main_category_id = #{main_category_id}
-    AND NOT EXISTS (
-        SELECT 1 
-        FROM user_constraints uc
-        JOIN user_cons_columns ucc ON uc.constraint_name = ucc.constraint_name
-        WHERE uc.r_constraint_name IN (
-            SELECT constraint_name 
-            FROM user_constraints 
-            WHERE table_name = 'B_MAIN_CATEGORY_TBL'
-        )
-        AND ucc.table_name = 'B_MAIN_CATEGORY_TBL'
-        AND ucc.column_name = 'MAIN_CATEGORY_ID'
-    )
-</delete>
+	<select id="getAllMaincategory"
+		resultType="com.springboot.delivery.model.Maincategory">
+		SELECT * FROM b_main_category_tbl ORDER BY main_category_id
+	</select>
 
- 
+
+	<!-- 전체 유저 조회 -->
+	<select id="getAllUsers"
+		resultType="com.springboot.delivery.model.User">
+		SELECT
+		user_id,
+		user_name,
+		email,
+		password,
+		user_phone,
+		point,
+		TO_CHAR(birth, 'YYYY-MM-DD') as birth,
+		user_address
+		FROM b_user_info
+		ORDER BY user_id
+	</select>
+
+
+	<delete id="deleteMaincategory" parameterType="Integer">
+		DELETE FROM
+		b_main_category_tbl
+		WHERE main_category_id = #{main_category_id}
+		AND NOT
+		EXISTS (
+		SELECT 1
+		FROM user_constraints uc
+		JOIN user_cons_columns ucc ON
+		uc.constraint_name = ucc.constraint_name
+		WHERE uc.r_constraint_name IN
+		(
+		SELECT constraint_name
+		FROM user_constraints
+		WHERE table_name =
+		'B_MAIN_CATEGORY_TBL'
+		)
+		AND ucc.table_name = 'B_MAIN_CATEGORY_TBL'
+		AND
+		ucc.column_name = 'MAIN_CATEGORY_ID'
+		)
+	</delete>
+
+	<!-- 전체 회원 수 조회 -->
+	<select id="getUserCount" resultType="int">
+		SELECT COUNT(*) FROM
+		b_user_info
+	</select>
+
+
+
 </mapper>

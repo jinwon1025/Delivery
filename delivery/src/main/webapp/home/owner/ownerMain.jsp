@@ -86,7 +86,7 @@ h1 {
 
 		<!-- 메뉴 (더 크게) -->
 		<h2>
-			<a href="/store/storeList">매장 목록</a> | <a href="/store/goRegister">매장 등록</a>
+			<a href="/store/storeList">매장 목록</a> | <a href="/store/goRegister">매장 등록</a> | <a href="/owner/notice">공지사항</a>
 		</h2>
 
 		<hr>
