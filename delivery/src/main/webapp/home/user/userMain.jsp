@@ -9,7 +9,8 @@
 <head>
 <meta charset="UTF-8">
 <title>금베달리스트 메인</title>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 /* 로그아웃 링크와 사용자 이름을 우측 상단에 배치 */
 .logout-container {
@@ -23,6 +24,13 @@
 
 .logout-container a {
 	margin-left: 10px;
+	text-decoration: none;
+	color: black;
+}
+
+.logout-container .fa-heart {
+	color: red; /* 하트 아이콘 색상을 빨간색으로 */
+	font-size: 20px; /* 아이콘 크기 조정 */
 }
 
 /* 중앙 정렬된 div */
@@ -72,11 +80,11 @@ h1 {
 				<a href="/user/mypage">마이페이지</a>
 				<a href="/user/logout">로그아웃</a>
 				<a href="/userstore/viewCart" class="fas fa-shopping-cart"></a>
-
+				<a href="/user/bookMarkList" class="fas fa-heart"></a>
+				<!-- 즐겨찾기 버튼 추가 -->
 			</c:when>
 			<c:otherwise>
 				<a href="/user/index">로그인</a>
-
 			</c:otherwise>
 		</c:choose>
 	</div>

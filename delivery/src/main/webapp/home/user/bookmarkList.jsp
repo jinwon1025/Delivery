@@ -223,18 +223,22 @@ body {
     padding: 5px;
     border-radius: 50%;
     z-index: 10;
-    color: #ccc;
+    color: #ff4136; /* 기본 색상을 빨간색으로 변경 */
     transition: all 0.3s ease;
+}
+
+.favorite-btn .fa-heart {
+    color: #ff4136; /* 하트 아이콘 색상을 빨간색으로 */
+}
+
+.favorite-btn .fa-heart.active {
+    color: #ff4136; /* 활성화된 하트도 빨간색 유지 */
+    text-shadow: 0 0 5px rgba(255, 65, 54, 0.5);
 }
 
 .favorite-btn:hover {
     transform: scale(1.1);
-    color: #ffdd57;
-}
-
-.favorite-btn.active {
-    color: #FFD700;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    color: #ff1744; /* 호버 시 더 진한 빨간색 */
 }
 
 /* 반응형 디자인 */
@@ -256,9 +260,9 @@ body {
 		<h1 class="category-title">${categoryName}</h1>
 
 		<c:choose>
-			<c:when test="${not empty storeList}">
+			<c:when test="${not empty bmsList}">
 				<div class="store-grid">
-					<c:forEach items="${storeList}" var="store" varStatus="status">
+					<c:forEach items="${bmsList}" var="store" varStatus="status">
 						<div class="store-item">
 							<div class="store-logo">
 								<c:choose>
@@ -297,21 +301,17 @@ body {
 							
 							<!-- 즐겨찾기 버튼 - 가게 컨테이너 오른쪽 상단에 위치 -->
 							<button class="favorite-btn" onclick="bookmarkStore(event, '${store.store_id}');">
-                                <i class="fa-heart far"></i>
+                                <i class="fa-heart fas active"></i>
                             </button>
 						</div>
 					</c:forEach>
 				</div>
 			</c:when>
 			<c:otherwise>
-				<div class="no-stores">해당 카테고리에 등록된 가게가 없습니다.</div>
+				<div class="no-stores">즐겨찾기한 가게가 없습니다.</div>
 			</c:otherwise>
 		</c:choose>
 
-		<div class="btn-group">
-			<a href="<c:url value='/user/categoryStores'/>" class="edit-btn">전체보기</a>
-			<a href="<c:url value='/user/index'/>" class="edit-btn">홈으로</a>
-		</div>
 	</div>
 
 	<!-- 가게 상세 페이지로 이동하기 위한 숨겨진 폼 -->
@@ -320,7 +320,7 @@ body {
 	</form>
 
 	<!-- 즐겨찾기 처리를 위한 숨겨진 폼 -->
-	<form id="bookmarkForm" action="<c:url value='/user/bookmark'/>" method="post" onsubmit="return bookmarkStore(event)">
+	<form id="bookmarkForm" action="<c:url value='/userstore/bookmark'/>" method="post" onsubmit="return bookmarkStore(event)">
 		<input type="hidden" id="bm_store_id" name="bm_store_id" value="">
 		<input type="hidden" id="loginStatus" name="loginStatus" value="${sessionScope.loginUser.user_id }">
 	</form>

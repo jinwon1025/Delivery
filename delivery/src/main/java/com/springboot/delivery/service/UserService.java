@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserMapper;
+import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
@@ -59,5 +60,16 @@ public class UserService {
     public List<Store> getStoresByCategory(Integer main_category_id){
     	return this.userMapper.getStoresByCategory(main_category_id);
     }
+    public Integer getMaxBookMarkStore() {
+		return this.userMapper.getMaxBookMarkStore();
+	}
+	
+	public void insertBookMarkStore(BookMarkStore bms) {
+		this.userMapper.insertBookMarkStore(bms);
+	}
+	
+	public List<BookMarkStore> getBookMarkStoreByUserId(String user_id){
+		return this.userMapper.getBookMarkStoreByUserId(user_id);
+	}
 
 }

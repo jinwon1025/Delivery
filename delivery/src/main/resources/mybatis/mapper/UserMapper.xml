@@ -63,6 +63,26 @@
 	
 	</select>
 	
+	<select id="getBookMarkStoreByUserId" parameterType="String" resultType="com.springboot.delivery.model.BookMarkStore">
+	select b.bm_id, b.user_id, s.store_id, s.store_name, s.store_address, s.store_address, s.last_price, s.owner_id,
+	s.store_phone, s.store_openHour, s.delivery_fee, s.made_in, s.store_image_name, s.delivery_time 
+	from b_bookmark_tbl b inner join b_store_tbl s on b.store_id = s.store_id
+	where b.user_id = #{user_id}
+	
+	</select>
+	
+		<select id="getMaxBookMarkStore" resultType="Integer">
+	
+	select max(bm_id) from b_bookmark_tbl
+	
+	</select>
+	
+	<insert id="insertBookMarkStore" parameterType="com.springboot.delivery.model.BookMarkStore">
+	
+	insert into b_bookmark_tbl values(#{bm_id}, #{store_id}, #{user_id})
+	
+	</insert>
+	
 
 
 
