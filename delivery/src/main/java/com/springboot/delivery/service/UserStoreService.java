@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserStoreMapper;
+import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
@@ -40,4 +41,5 @@ public class UserStoreService {
 	public String storeAddress(String store_id) {
 		return this.userStoreMapper.storeAddress(store_id);
 	}
+	
 }

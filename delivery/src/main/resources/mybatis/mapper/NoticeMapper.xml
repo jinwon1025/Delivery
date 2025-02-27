@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.delivery.mapper.NoticeMapper">
+    <!-- 사용자 공지사항 쿼리 -->
+    <select id="getAllUserNotices" resultType="com.springboot.delivery.model.UserNotice">
+        SELECT 
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        FROM b_user_notice_tbl
+        ORDER BY 
+            CASE WHEN important = 'Y' THEN 0 ELSE 1 END,
+            reg_date DESC
+    </select>
+    
+    <select id="getUserNoticeById" parameterType="Integer" resultType="com.springboot.delivery.model.UserNotice">
+        SELECT 
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        FROM b_user_notice_tbl
+        WHERE notice_id = #{notice_id}
+    </select>
+    
+    <insert id="createUserNotice" parameterType="com.springboot.delivery.model.UserNotice">
+        INSERT INTO b_user_notice_tbl (
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        ) VALUES (
+            user_notice_seq.NEXTVAL,
+            #{title},
+            #{content},
+            #{writer},
+            SYSDATE,
+            0,
+            #{important, jdbcType=VARCHAR}
+        )
+    </insert>
+    
+    <update id="updateUserNotice" parameterType="com.springboot.delivery.model.UserNotice">
+        UPDATE b_user_notice_tbl
+        SET 
+            title = #{title},
+            content = #{content},
+            important = #{important}
+        WHERE notice_id = #{notice_id}
+    </update>
+    
+    <delete id="deleteUserNotice" parameterType="Integer">
+        DELETE FROM b_user_notice_tbl
+        WHERE notice_id = #{notice_id}
+    </delete>
+    
+    <update id="increaseUserNoticeViewCount" parameterType="Integer">
+        UPDATE b_user_notice_tbl
+        SET view_count = view_count + 1
+        WHERE notice_id = #{notice_id}
+    </update>
+    
+    <!-- 사업자 공지사항 쿼리 -->
+    <select id="getAllOwnerNotices" resultType="com.springboot.delivery.model.OwnerNotice">
+        SELECT 
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        FROM b_owner_notice_tbl
+        ORDER BY 
+            CASE WHEN important = 'Y' THEN 0 ELSE 1 END,
+            reg_date DESC
+    </select>
+    
+    <select id="getOwnerNoticeById" parameterType="Integer" resultType="com.springboot.delivery.model.OwnerNotice">
+        SELECT 
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        FROM b_owner_notice_tbl
+        WHERE notice_id = #{notice_id}
+    </select>
+    
+    <insert id="createOwnerNotice" parameterType="com.springboot.delivery.model.OwnerNotice">
+        INSERT INTO b_owner_notice_tbl (
+            notice_id,
+            title,
+            content,
+            writer,
+            reg_date,
+            view_count,
+            important
+        ) VALUES (
+            owner_notice_seq.NEXTVAL,
+            #{title},
+            #{content},
+            #{writer},
+            SYSDATE,
+            0,
+            #{important, jdbcType=VARCHAR}
+        )
+    </insert>
+    
+    <update id="updateOwnerNotice" parameterType="com.springboot.delivery.model.OwnerNotice">
+        UPDATE b_owner_notice_tbl
+        SET 
+            title = #{title},
+            content = #{content},
+            important = #{important}
+        WHERE notice_id = #{notice_id}
+    </update>
+    
+    <delete id="deleteOwnerNotice" parameterType="Integer">
+        DELETE FROM b_owner_notice_tbl
+        WHERE notice_id = #{notice_id}
+    </delete>
+    
+    <update id="increaseOwnerNoticeViewCount" parameterType="Integer">
+        UPDATE b_owner_notice_tbl
+        SET view_count = view_count + 1
+        WHERE notice_id = #{notice_id}
+    </update>
+</mapper>

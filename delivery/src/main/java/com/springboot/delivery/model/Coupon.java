@@ -7,11 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Coupon {
-    private Integer cp_id;
-    private String co_name;
+    private Integer owner_coupon_id;    
+    private String cp_name;             
     private Integer sale_price;
-    private String created_date;
-    private String end_date;     
     private Integer minimum_purchase;
+    private String owner_id;           
     private String store_id;
+    private String issued_date;        
+    private String expire_date;         
+    private Integer total_quantity;      
 }

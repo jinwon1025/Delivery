@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
@@ -19,4 +20,6 @@ public interface UserStoreMapper {
 	void insertOrderDetail(OrderCart orderCart);
 	void insertOrderOption(OrderCart orderCart);
 	String storeAddress(String store_id);
+	
+
 }	

@@ -168,7 +168,7 @@
         <%-- 대시보드 컨텐츠 --%>
         <div id="dashboardContent">
             <div class="section-title">관리자 대시보드</div>
-            <p class="text-muted mb-4">웹사이트 관리 및 모니터링을 위한 중앙 관제 시스템</p>
+            <p class="text-muted mb-4">웹사이트 관리 및 모니터링을 위한 중앙 관제 시스템입니다.</p>
             
             <div class="stat-cards">
                 <div class="stat-card">

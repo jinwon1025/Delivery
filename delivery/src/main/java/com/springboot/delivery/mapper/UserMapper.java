@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
@@ -17,4 +18,9 @@ public interface UserMapper {
     Integer idcheck(String user_id);
     List<Store> getAllStore();
     List<Store> getStoresByCategory(Integer main_category_id);
+    
+    Integer getMaxBookMarkStore();
+	void insertBookMarkStore(BookMarkStore bms);
+	
+	List<BookMarkStore> getBookMarkStoreByUserId(String user_id);
 }	

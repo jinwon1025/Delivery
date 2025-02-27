@@ -56,4 +56,5 @@
 	<select id="storeAddress" parameterType="String" resultType="String">
 		select store_address from b_store_tbl where store_id=#{store_id}	
 	</select>
+	
 </mapper>
