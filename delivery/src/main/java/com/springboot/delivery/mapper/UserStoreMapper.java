@@ -9,6 +9,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
+import com.springboot.delivery.model.OrderQuantity;
 
 @Mapper
 public interface UserStoreMapper {
@@ -27,5 +28,7 @@ public interface UserStoreMapper {
 	Integer checkCountInCart(String order_id);
 	void deleteOrderDetail(String order_id);
 	void deleteOrder(String order_id);
+	Integer getMaxCountOrderOption();
+	void insertOrderItemQuantity(OrderQuantity oq);
 
 }	

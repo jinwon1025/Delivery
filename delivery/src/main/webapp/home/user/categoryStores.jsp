@@ -54,7 +54,7 @@
                                 <i class="fa-heart fas"></i>
                             </c:when>
                             <c:otherwise>
-                                <!-- 즐겨찾기되지 않은 가게 -->
+                                
                                 <i class="fa-heart far"></i>
                             </c:otherwise>
                         </c:choose>

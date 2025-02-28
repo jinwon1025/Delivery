@@ -12,6 +12,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
+import com.springboot.delivery.model.OrderQuantity;
 
 @Service
 public class UserStoreService {
@@ -71,4 +72,12 @@ public class UserStoreService {
 		this.userStoreMapper.deleteOrder(order_id);
 	}
 	
+	public Integer getMaxCountOrderOption() {
+		
+		return this.userStoreMapper.getMaxCountOrderOption();
+	}
+	
+	public void insertOrderItemQuantity(OrderQuantity oq) {
+		this.userStoreMapper.insertOrderItemQuantity(oq);
+	}
 }

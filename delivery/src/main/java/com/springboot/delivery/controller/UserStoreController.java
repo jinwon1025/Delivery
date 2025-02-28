@@ -20,6 +20,7 @@ import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionOrder;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
+import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
@@ -95,13 +96,16 @@ public class UserStoreController {
 		mav.addObject("STOREBODY","../userstore/userMenuDetail.jsp");
 		return mav;
 	}
+	
+	
 	@PostMapping(value="/userstore/addCart")
 	public ModelAndView addCart(HttpSession session, 
 	                          Integer menuId,
 	                          @RequestParam(required=false) List<Integer> selectedOptions,
 	                          @RequestParam(required=false) List<Integer> allOptionIds,
-	                          @RequestParam(required=false) List<Integer> allOptionGroupIds) {
-	    
+	                          @RequestParam(required=false) List<Integer> allOptionGroupIds,
+	                          Integer quantity) {
+	    System.out.println("개수 :"+quantity);
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 	    Store store = (Store) session.getAttribute("currentStore");
 	    ModelAndView mav = new ModelAndView("user/userMain");
@@ -148,17 +152,29 @@ public class UserStoreController {
 	        
 	        // 주문 카트에 옵션 설정
 	        orderCart.setOptions(optionOrders);
+	        Integer maxCount = this.userStoreService.getMaxCountOrderOption();
+	        if(maxCount==null) {
+	        	maxCount=0;
+	        }
 	        
 	        // 옵션을 데이터베이스에 삽입
 	        for (OptionOrder option : optionOrders) {
 	            OrderCart tempCart = new OrderCart();
+	            tempCart.setOrder_option_id(maxCount+1);
 	            tempCart.setOrder_id(orderId);
 	            tempCart.setMenu_item_id(menuId);
 	            tempCart.setOption_id(option.getOption_id());
 	            tempCart.setOption_group_id(option.getOption_group_id());
 	            
-	            userStoreService.insertOrderOption(tempCart);
+	            userStoreService.insertOrderOption(tempCart); //order_option_tbl에 메뉴하고 옵션 넣기
+
 	        }
+	        OrderQuantity oq = new OrderQuantity();
+            oq.setOrder_option_id(maxCount+1);
+            System.out.println("개수"+quantity);
+            oq.setQuantity(quantity);
+            
+            userStoreService.insertOrderItemQuantity(oq); //order_quantity_tbl에 개수 넣기
 	    }
 	    
 	    // 메뉴 상세 페이지로 리다이렉트
