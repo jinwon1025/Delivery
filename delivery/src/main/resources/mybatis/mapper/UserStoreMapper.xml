@@ -94,10 +94,13 @@
 
 <select id="getCartMenuDetails" parameterType="String" resultType="map">
 SELECT
+	mi.menu_item_id,
     mi.menu_name,
     mi.price as menu_price,
     mi.image_name,
     mi.store_id,
+    oo.order_option_id,
+    o.order_id, 
     LISTAGG(ot.option_name, ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_names,
     LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_prices,
     SUM(COALESCE(ot.option_price, 0)) as total_option_price
@@ -116,6 +119,36 @@ WHERE
 AND
     odt.order_status = '0'
 GROUP BY
-    mi.menu_name, mi.price, mi.image_name, mi.store_id
+    mi.menu_item_id, mi.menu_name, mi.price, mi.image_name, mi.store_id, oo.order_option_id,o.order_id
 </select>
+
+	<delete id="deleteItemInCart" parameterType="String">
+	
+	
+	delete from order_option_tbl where menu_item_id=#{menu_item_id}
+	
+	</delete>
+	
+	<select id="checkCountInCart" parameterType="String" resultType="Integer">
+	
+	select count(*) from order_option_tbl where order_id=#{order_id}
+	
+	</select>
+	
+	<delete id="deleteOrderDetail" parameterType="String">
+	
+	delete from b_order_detail_tbl where order_id=#{order_id}
+	
+	</delete>
+	
+	<delete id="deleteOrder" parameterType="String">
+	
+	delete from b_order_tbl where order_id=#{order_id}
+	
+	</delete>
+
+
+
+
+
 </mapper>
