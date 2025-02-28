@@ -177,7 +177,7 @@
                 <label for="selectAll" class="select-all-label">전체 선택</label>
             </div>
             
-            <%-- 메뉴 아이템 출력 --%>
+            <%-- 메뉴  아이템 출력 --%>
             <c:forEach items="${cartDetails}" var="item" varStatus="status">
                 <c:if test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID}">
                     <div class="cart-item">
