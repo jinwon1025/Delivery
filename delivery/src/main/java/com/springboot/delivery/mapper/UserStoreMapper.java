@@ -23,5 +23,9 @@ public interface UserStoreMapper {
 	OrderCart getOrderByUserId(String user_id);
 	OrderCart getOrderStatusByOrderId(String order_id);
 	List<Map<String, Object>> getCartMenuDetails(String user_id);
+	void deleteItemInCart(String menu_item_id);
+	Integer checkCountInCart(String order_id);
+	void deleteOrderDetail(String order_id);
+	void deleteOrder(String order_id);
 
 }	

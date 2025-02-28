@@ -40,10 +40,15 @@
         }
         .cart-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             padding: 15px 0;
             border-bottom: 1px solid #eee;
+        }
+        .cart-checkbox {
+            margin-right: 15px;
+            transform: scale(1.2);
+            margin-top: 5px;
         }
         .cart-item-details {
             flex-grow: 1;
@@ -52,15 +57,38 @@
         .cart-item-name {
             font-weight: bold;
             font-size: 18px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         .cart-item-options {
             color: #777;
             font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .option-group {
+            margin-bottom: 8px;
         }
         .cart-item-price {
             font-weight: bold;
             color: #333;
+            margin-right: 15px;
+            text-align: right;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        .delete-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .delete-btn:hover {
+            background-color: #ff4757;
         }
         .cart-total {
             display: flex;
@@ -94,12 +122,33 @@
             text-align: center;
             font-weight: bold;
             transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
         .btn:hover {
             background-color: #ff4757;
         }
         .option-item {
-            margin-bottom: 3px;
+            margin-bottom: 5px;
+        }
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .select-all-checkbox {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+        .select-all-label {
+            font-weight: bold;
+        }
+        .menu-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 15px;
         }
     </style>
 </head>
@@ -123,50 +172,161 @@
                 <h1>장바구니</h1>
             </div>
             
-            <c:forEach items="${cartDetails}" var="item">
-                <div class="cart-item">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.MENU_NAME}</div>
-                        <div class="cart-item-options">
-                            <c:if test="${not empty item.OPTION_NAMES}">
-                                <c:set var="optionNames" value="${fn:split(item.OPTION_NAMES, ', ')}" />
-                                <c:set var="optionPrices" value="${fn:split(item.OPTION_PRICES, ', ')}" />
-                                
-                                <c:forEach var="i" begin="0" end="${fn:length(optionNames) - 1}">
-                                    <div class="option-item">
-                                        ${optionNames[i]} (+<fmt:formatNumber value="${optionPrices[i]}" type="number"/>원)
-                                    </div>
+            <div class="select-all-container">
+                <input type="checkbox" id="selectAll" class="select-all-checkbox" onclick="selectAll(this)" checked>
+                <label for="selectAll" class="select-all-label">전체 선택</label>
+            </div>
+            
+            <%-- 메뉴 아이템 출력 --%>
+            <c:forEach items="${cartDetails}" var="item" varStatus="status">
+                <c:if test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID}">
+                    <div class="cart-item">
+                        <input type="checkbox" name="selectedItems" class="cart-checkbox" 
+                               value="${item.MENU_ITEM_ID}" 
+                               data-price="${item.MENU_PRICE}"
+                               checked
+                               onchange="updateTotalPrice()">
+                        
+                        <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${item.IMAGE_NAME}" alt="${item.MENU_NAME}" class="menu-image">
+                        
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.MENU_NAME}</div>
+                            <div class="cart-item-options">
+                                <c:forEach items="${cartDetails}" var="option">
+                                    <c:if test="${option.MENU_ITEM_ID == item.MENU_ITEM_ID}">
+                                        <div class="option-item">
+                                            ${option.OPTION_NAMES}
+                                                (+<fmt:formatNumber value="${option.OPTION_PRICES}" type="number"/>원)
+                                        </div>
+                                    </c:if>
                                 </c:forEach>
-                            </c:if>
+                            </div>
+                        </div>
+                        
+                        <div class="cart-item-actions">
+                            <div class="cart-item-price">
+                                <fmt:formatNumber value="${item.MENU_PRICE}" type="number"/>원
+                            </div>
+                            <form action="/userstore/deleteItemInCart" method="post" 
+                                  onsubmit="return deleteCheck()">
+                                <input type="hidden" name="menu_item_id" value="${item.MENU_ITEM_ID}"/>
+                                <input type="hidden" name="order_id" value="${item.ORDER_ID }"/>
+                                <input type="submit" value="삭제" class="delete-btn"/>
+                            </form>
                         </div>
                     </div>
-                    <div class="cart-item-price">
-                        <fmt:formatNumber value="${item.MENU_PRICE + item.TOTAL_OPTION_PRICE}" type="number"/>원
-                    </div>
-                </div>
+                </c:if>
             </c:forEach>
             
             <div class="cart-total">
                 <div class="cart-total-text">총 주문 금액</div>
                 <div class="cart-total-price">
                     <c:set var="totalPrice" value="0"/>
+                    <c:set var="processedMenuItems" value=""/>
                     <c:forEach items="${cartDetails}" var="item">
-                        <c:set var="totalPrice" value="${totalPrice + item.MENU_PRICE + item.TOTAL_OPTION_PRICE}"/>
+                        <c:if test="${!fn:contains(processedMenuItems, item.MENU_ITEM_ID)}">
+                            <c:set var="totalPrice" value="${totalPrice + item.MENU_PRICE}"/>
+                            <c:set var="processedMenuItems" value="${processedMenuItems},${item.MENU_ITEM_ID}"/>
+                        </c:if>
                     </c:forEach>
-                    <fmt:formatNumber value="${totalPrice}" type="number"/>원
+                    <span id="totalPriceDisplay"><fmt:formatNumber value="${totalPrice}" type="number"/>원</span>
+                    <input type="hidden" id="hiddenTotalPrice" name="totalPrice" value="${totalPrice}">
                 </div>
             </div>
             
             <div class="cart-actions">
-    <form action="/userstore/returnToStore" method="get">
-        <input type="hidden" name="store_id" value="${cartDetails[0].STORE_ID}">
-        <button type="submit" class="btn">메뉴 추가</button>
-    </form>
-    <form action="/order/proceed" method="get">
-        <button type="submit" class="btn">주문하기</button>
-    </form>
-</div>
+                <a href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}" class="btn">메뉴 추가</a>
+                <form action="/order/proceed" method="post" onsubmit="return validateForm()">
+                    <input type="hidden" id="orderTotalPrice" name="totalPrice" value="${totalPrice}">
+                    <c:forEach items="${cartDetails}" var="item" varStatus="status">
+                        <c:if test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID}">
+                            <input type="hidden" name="selectedItems" value="${item.MENU_ITEM_ID}" class="selectedItems-hidden">
+                        </c:if>
+                    </c:forEach>
+                    <button type="submit" class="btn">주문하기</button>
+                </form>
+            </div>
+        </div>
     </c:otherwise>
 </c:choose>
+
+<script>
+    function selectAll(source) {
+        const checkboxes = document.getElementsByName('selectedItems');
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+        updateTotalPrice();
+    }
+    
+    function updateTotalPrice() {
+        const checkboxes = document.getElementsByName('selectedItems');
+        let totalPrice = 0;
+        
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                const itemPrice = parseInt(checkboxes[i].getAttribute('data-price'));
+                totalPrice += itemPrice;
+            }
+        }
+        
+        document.getElementById('totalPriceDisplay').innerText = totalPrice.toLocaleString() + '원';
+        document.getElementById('hiddenTotalPrice').value = totalPrice;
+        document.getElementById('orderTotalPrice').value = totalPrice;
+        
+        // 체크박스 상태에 따라 hidden input 업데이트
+        updateSelectedItemsHidden();
+    }
+    
+    function updateSelectedItemsHidden() {
+        const checkboxes = document.getElementsByName('selectedItems');
+        const hiddenInputs = document.getElementsByClassName('selectedItems-hidden');
+        
+        // 모든 hidden input을 초기에 비활성화
+        for (let i = 0; i < hiddenInputs.length; i++) {
+            hiddenInputs[i].disabled = true;
+        }
+        
+        // 체크된 체크박스에 해당하는 hidden input 활성화
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                for (let j = 0; j < hiddenInputs.length; j++) {
+                    if (hiddenInputs[j].value === checkboxes[i].value) {
+                        hiddenInputs[j].disabled = false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    function validateForm() {
+        const checkboxes = document.getElementsByName('selectedItems');
+        let atLeastOneChecked = false;
+        
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                atLeastOneChecked = true;
+                break;
+            }
+        }
+        
+        if (!atLeastOneChecked) {
+            alert('최소 하나 이상의 메뉴를 선택해주세요.');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function deleteCheck() {
+        return confirm('선택한 메뉴를 장바구니에서 삭제하시겠습니까?');
+    }
+    
+    // 페이지 로드 시 hidden input 업데이트
+    window.onload = function() {
+        updateSelectedItemsHidden();
+    };
+</script>
 </body>
 </html>

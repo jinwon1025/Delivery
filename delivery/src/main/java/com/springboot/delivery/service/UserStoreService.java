@@ -55,4 +55,20 @@ public class UserStoreService {
 		return this.userStoreMapper.getCartMenuDetails(user_id);
 	}
 	
+	public void deleteItemInCart(String menu_item_id) {
+		this.userStoreMapper.deleteItemInCart(menu_item_id);
+	}
+	
+	public Integer checkCountInCart(String order_id) {
+		return this.userStoreMapper.checkCountInCart(order_id);
+	}
+	
+	public void deleteOrderDetail(String order_id) {
+		this.userStoreMapper.deleteOrderDetail(order_id);
+	}
+	
+	public void deleteOrder(String order_id) {
+		this.userStoreMapper.deleteOrder(order_id);
+	}
+	
 }

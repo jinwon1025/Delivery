@@ -221,4 +221,18 @@ public class UserStoreController {
 		return mav;
 	}
 	
+	@PostMapping(value="/userstore/deleteItemInCart")
+	public ModelAndView deleteItemInCart(HttpSession session, String menu_item_id, String order_id) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		System.out.println("(메뉴아이템 아이디) :"+menu_item_id);
+		System.out.println("(오더 아이디) : "+order_id);
+		this.userStoreService.deleteItemInCart(menu_item_id);
+		Integer isEmptyCart = this.userStoreService.checkCountInCart(order_id); //삭제를 했는데 카트가 비어있는지 확인
+		if(isEmptyCart == 0) { //카트가 빈 상태이기 때문에 order_tbl, order_detail_tbl 정보 삭제
+			this.userStoreService.deleteOrderDetail(order_id);
+			this.userStoreService.deleteOrder(order_id);
+		}
+		return new ModelAndView("redirect:/userstore/viewCart");
+	}
+	
 }
