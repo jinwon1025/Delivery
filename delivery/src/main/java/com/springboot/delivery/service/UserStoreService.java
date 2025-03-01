@@ -57,7 +57,7 @@ public class UserStoreService {
 		return this.userStoreMapper.getCartMenuDetails(user_id);
 	}
 	
-	public void deleteItemInCart(String menu_item_id) {
+	public void deleteItemInCart(Integer menu_item_id) {
 		this.userStoreMapper.deleteItemInCart(menu_item_id);
 	}
 	
@@ -114,6 +114,10 @@ public class UserStoreService {
 	
 	public void deleteOrderOptionInCart(String order_id) {
 		this.userStoreMapper.deleteOrderOptionInCart(order_id);
+	}
+	
+	public void deleteQuantityInCart(String menu_item_id) {
+		this.userStoreMapper.deleteQuantityInCart(menu_item_id);
 	}
 	
 
