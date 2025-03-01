@@ -77,7 +77,7 @@
 	
 	<insert id="insertOrderItemQuantity" parameterType="com.springboot.delivery.model.OrderQuantity">
 	
-	insert into order_quantity_tbl values(#{order_option_id}, #{quantity})
+	insert into order_quantity_tbl values(#{order_option_id}, #{quantity}, #{order_id})
 	
 	</insert>
 
@@ -136,6 +136,12 @@ GROUP BY
     mi.menu_item_id, mi.menu_name, mi.price, mi.image_name, mi.store_id, oo.order_option_id, o.order_id, oq.quantity
 </select>
 
+	<select id="isMenuInCart" parameterType="String" resultType="String">
+	
+	select order_id from b_order_tbl where user_id = #{user_id}
+	
+	</select>
+
 	<delete id="deleteItemInCart" parameterType="String">
 	
 	
@@ -160,6 +166,10 @@ GROUP BY
 	delete from b_order_tbl where order_id=#{order_id}
 	
 	</delete>
+	
+<select id="getOrderOptionId" parameterType="String" resultType="Integer">
+    SELECT MAX(ORDER_OPTION_ID) FROM order_option_tbl WHERE ORDER_ID = #{orderId}
+</select>
 
 
 

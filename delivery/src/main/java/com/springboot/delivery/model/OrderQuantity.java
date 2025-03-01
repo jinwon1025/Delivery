@@ -9,4 +9,5 @@ public class OrderQuantity {
 
 	private Integer order_option_id;
 	private Integer quantity;
+	private String order_id;
 }

@@ -80,4 +80,12 @@ public class UserStoreService {
 	public void insertOrderItemQuantity(OrderQuantity oq) {
 		this.userStoreMapper.insertOrderItemQuantity(oq);
 	}
+	
+	public String isMenuInCart(String user_id) {
+		return this.userStoreMapper.isMenuInCart(user_id);
+	}
+	
+	public Integer getOrderOptionId(String order_id) {
+		return this.userStoreMapper.getOrderOptionId(order_id);
+	}
 }

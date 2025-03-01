@@ -30,5 +30,7 @@ public interface UserStoreMapper {
 	void deleteOrder(String order_id);
 	Integer getMaxCountOrderOption();
 	void insertOrderItemQuantity(OrderQuantity oq);
+	String isMenuInCart(String user_id);
+	Integer getOrderOptionId(String order_id);
 
 }	
