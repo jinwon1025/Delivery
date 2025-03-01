@@ -7,12 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserStoreMapper;
-import com.springboot.delivery.model.BookMarkStore;
+import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
+import com.springboot.delivery.model.QuantityUpdateParam;
 
 @Service
 public class UserStoreService {
@@ -87,5 +88,17 @@ public class UserStoreService {
 	
 	public Integer getOrderOptionId(String order_id) {
 		return this.userStoreMapper.getOrderOptionId(order_id);
+	}
+	
+	public Integer findMatchingOptionId(MatchingOptionParam mop) {
+
+	    
+	    return userStoreMapper.findMatchingOptionId(mop);
+	}
+
+	public void increaseQuantity(QuantityUpdateParam qup) {
+
+	    
+	    userStoreMapper.increaseQuantity(qup);
 	}
 }

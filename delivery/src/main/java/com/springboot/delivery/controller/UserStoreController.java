@@ -15,12 +15,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
+import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionOrder;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
+import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
@@ -138,7 +140,31 @@ public class UserStoreController {
 	        // 장바구니에 이미 항목이 있는 경우
 	        orderId = existingCartId;
 	        
-	        // 주문 옵션 ID 가져오기
+	        // 동일한 메뉴와 옵션 조합이 있는지 확인
+	        if (!optionOrders.isEmpty()) {
+	            MatchingOptionParam mop = new MatchingOptionParam();
+	            mop.setOrderId(existingCartId);
+	            mop.setMenuItemId(menuId);
+	            mop.setOptionList(optionOrders);
+	            mop.setOptionCount(optionOrders.size());
+	            
+	            Integer matchingOptionId = userStoreService.findMatchingOptionId(mop);
+	            
+	            if (matchingOptionId != null) {
+	                // 동일한 메뉴와 옵션 조합이 있으면 수량만 증가
+	                QuantityUpdateParam qup = new QuantityUpdateParam();
+	                qup.setOrderOptionId(matchingOptionId);
+	                qup.setOrderId(existingCartId);
+	                qup.setAdditionalQuantity(quantity);
+	                
+	                userStoreService.increaseQuantity(qup);
+	                
+	                // 수량만 증가했으므로 즉시 리다이렉트
+	                return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
+	            }
+	        }
+	        
+	        // 동일한 메뉴+옵션 조합이 없거나 옵션이 없는 경우 새 항목 추가
 	        Integer orderOptionId = this.userStoreService.getOrderOptionId(orderId) + 1;
 	        
 	        // 선택된 옵션 처리
