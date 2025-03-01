@@ -169,13 +169,18 @@ public class UserStoreController {
 	        if (!storeIdInOrder.equals(currentStoreId)) { //카트에 있는 가게와 다른 가게에서 구매할 경우
 	        	System.out.println("장바구니에 있는 가게와 다른데에서 구매할건데");
 	            // 다른 가게의 장바구니인 경우 기존 장바구니 삭제
-	            this.userStoreService.deleteOrderQuantityInCart(storeIdInOrder);
-	            this.userStoreService.deleteOrderOptionInCart(storeIdInOrder);
-	            this.userStoreService.deleteOrderDetail(storeIdInOrder);
-	            this.userStoreService.deleteOrder(storeIdInOrder);
+	            this.userStoreService.deleteOrderQuantityInCart(existingCartId);
+	            System.out.println(storeIdInOrder);
+	            System.out.println("1");
+	            this.userStoreService.deleteOrderOptionInCart(existingCartId);
+	            System.out.println("2");
+	            this.userStoreService.deleteOrderDetail(existingCartId);
+	            System.out.println("3");
+	            this.userStoreService.deleteOrder(existingCartId);
+	            System.out.println("4");
 	            
 	            orderId = generateOrderId();
-
+	            System.out.println("5");
 	            // 새 주문 카트 생성
 	            OrderCart orderCart = new OrderCart();
 	            orderCart.setOrder_id(orderId);
@@ -187,31 +192,45 @@ public class UserStoreController {
 
 	            // 기본 주문 정보 입력
 	            userStoreService.insertOrder(orderCart);
+	            System.out.println("6");
 	            userStoreService.insertOrderDetail(orderCart);
+	            System.out.println("7");
 
 	            // 선택된 옵션 처리
 	            if (!optionOrders.isEmpty()) {
 	                // 옵션 ID 결정
+	            	 System.out.println("8");
 	                Integer maxCount = this.userStoreService.getMaxCountOrderOption();
+	                System.out.println("9");
 	                Integer orderOptionId = (maxCount == null) ? 1 : maxCount + 1;
+	                System.out.println("10");
 
 	                for (OptionOrder option : optionOrders) {
 	                    OrderCart tempCart = new OrderCart();
+	                    System.out.println("A");
 	                    tempCart.setOrder_option_id(orderOptionId);
+	                    System.out.println("B");
 	                    tempCart.setOrder_id(orderId);
+	                    System.out.println("C");
 	                    tempCart.setMenu_item_id(menuId);
+	                    System.out.println("D");
 	                    tempCart.setOption_id(option.getOption_id());
+	                    System.out.println("E");
 	                    tempCart.setOption_group_id(option.getOption_group_id());
-
+	                    
+	                    System.out.println("11");
 	                    userStoreService.insertOrderOption(tempCart);
 	                }
 
 	                // 수량 정보 추가
+	                System.out.println("12");
 	                OrderQuantity oq = new OrderQuantity();
 	                oq.setOrder_option_id(orderOptionId);
 	                oq.setQuantity(quantity);
 	                oq.setOrder_id(orderId);
+	                System.out.println("13");
 	                userStoreService.insertOrderItemQuantity(oq);
+	                System.out.println("14");
 	            }
 	        } else {
 	        	System.out.println("장바구니에 있는 가게와 같은데에서 구매할건데");
