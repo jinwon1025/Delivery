@@ -80,23 +80,42 @@ public class UserStoreController {
 
 	@GetMapping(value = "/userstore/menuDetail")
 	public ModelAndView menuDetail(Integer menu_item_id, HttpSession session) {
-		Store store = (Store) session.getAttribute("currentStore");
-		ModelAndView mav = new ModelAndView("user/userMain");
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
-		mav.addObject("maincategoryList", maincategoryList);
-		mav.addObject("storeCategory", mc);
-		mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-		MenuItem mi = this.userStoreService.menuItemDetail(menu_item_id);
-		List<OptionSet> os = this.userStoreService.optionDetail(menu_item_id);
-		Map<String, List<OptionSet>> groupedOptions = new TreeMap<>();
-		for (OptionSet option : os) {
-			groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
-		}
-		mav.addObject("menuDetail", mi);
-		mav.addObject("optionGroups", groupedOptions);
-		mav.addObject("STOREBODY", "../userstore/userMenuDetail.jsp");
-		return mav;
+	    Store store = (Store) session.getAttribute("currentStore");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
+	    mav.addObject("maincategoryList", maincategoryList);
+	    mav.addObject("storeCategory", mc);
+	    mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+	    
+	    MenuItem mi = this.userStoreService.menuItemDetail(menu_item_id);
+	    
+	    OrderCart oc = new OrderCart();
+	    oc.setUser_id(loginUser.getUser_id());
+	    
+	    String existingOrderId = this.userStoreService.findOrderByUserId(oc);
+	    String existingOrderStoreId = "none"; // 기본값
+	    
+	    if (existingOrderId != null) {
+	        oc.setOrder_id(existingOrderId);
+	        existingOrderStoreId = this.userStoreService.findStoreByMenuItemInCart(oc);
+	    }
+	    
+	    List<OptionSet> os = this.userStoreService.optionDetail(menu_item_id);
+	    Map<String, List<OptionSet>> groupedOptions = new TreeMap<>();
+	    for (OptionSet option : os) {
+	        groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
+	    }
+	    
+	    mav.addObject("menuDetail", mi);
+	    mav.addObject("optionGroups", groupedOptions);
+	    mav.addObject("STOREBODY", "../userstore/userMenuDetail.jsp");
+	    mav.addObject("orderStore", existingOrderStoreId);
+	    mav.addObject("currentStore", store.getStore_id());
+	    
+	    return mav;
 	}
 
 	@PostMapping(value = "/userstore/addCart")
@@ -104,7 +123,7 @@ public class UserStoreController {
 	        @RequestParam(required = false) List<Integer> selectedOptions,
 	        @RequestParam(required = false) List<Integer> allOptionIds,
 	        @RequestParam(required = false) List<Integer> allOptionGroupIds, Integer quantity) {
-	    
+
 	    // 필요한 사용자 및 상점 정보 가져오기
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 	    Store store = (Store) session.getAttribute("currentStore");
@@ -116,14 +135,13 @@ public class UserStoreController {
 
 	    // 가게 주소 가져오기
 	    String storeAddress = this.userStoreService.storeAddress(store.getStore_id());
-	    
+
 	    // 현재 장바구니 상태 확인
-	    String orderId;
 	    String existingCartId = this.userStoreService.isMenuInCart(loginUser.getUser_id());
-	    
-	    // 옵션 객체 준비 (두 경우 모두 사용)
+
+	    // 옵션 객체 준비
 	    List<OptionOrder> optionOrders = new ArrayList<>();
-	    
+
 	    if (selectedOptions != null && !selectedOptions.isEmpty()) {
 	        for (Integer optionId : selectedOptions) {
 	            int index = allOptionIds.indexOf(optionId);
@@ -136,39 +154,140 @@ public class UserStoreController {
 	        }
 	    }
 
+	    String orderId;
 	    if (existingCartId != null) {
+	    	System.out.println("이미 항목이 있어 카트에");
 	        // 장바구니에 이미 항목이 있는 경우
 	        orderId = existingCartId;
+	        OrderCart oc = new OrderCart();
+	        oc.setUser_id(loginUser.getUser_id());
+	        oc.setOrder_id(existingCartId);
 	        
-	        // 동일한 메뉴와 옵션 조합이 있는지 확인
-	        if (!optionOrders.isEmpty()) {
-	            MatchingOptionParam mop = new MatchingOptionParam();
-	            mop.setOrderId(existingCartId);
-	            mop.setMenuItemId(menuId);
-	            mop.setOptionList(optionOrders);
-	            mop.setOptionCount(optionOrders.size());
+	        String storeIdInOrder = this.userStoreService.findStoreByMenuItemInCart(oc);
+	        String currentStoreId = store.getStore_id();
+	        
+	        if (!storeIdInOrder.equals(currentStoreId)) { //카트에 있는 가게와 다른 가게에서 구매할 경우
+	        	System.out.println("장바구니에 있는 가게와 다른데에서 구매할건데");
+	            // 다른 가게의 장바구니인 경우 기존 장바구니 삭제
+	            this.userStoreService.deleteOrderQuantityInCart(storeIdInOrder);
+	            this.userStoreService.deleteOrderOptionInCart(storeIdInOrder);
+	            this.userStoreService.deleteOrderDetail(storeIdInOrder);
+	            this.userStoreService.deleteOrder(storeIdInOrder);
 	            
-	            Integer matchingOptionId = userStoreService.findMatchingOptionId(mop);
-	            
-	            if (matchingOptionId != null) {
-	                // 동일한 메뉴와 옵션 조합이 있으면 수량만 증가
-	                QuantityUpdateParam qup = new QuantityUpdateParam();
-	                qup.setOrderOptionId(matchingOptionId);
-	                qup.setOrderId(existingCartId);
-	                qup.setAdditionalQuantity(quantity);
-	                
-	                userStoreService.increaseQuantity(qup);
-	                
-	                // 수량만 증가했으므로 즉시 리다이렉트
-	                return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
+	            orderId = generateOrderId();
+
+	            // 새 주문 카트 생성
+	            OrderCart orderCart = new OrderCart();
+	            orderCart.setOrder_id(orderId);
+	            orderCart.setUser_id(loginUser.getUser_id());
+	            orderCart.setStore_id(store.getStore_id());
+	            orderCart.setStore_address(storeAddress);
+	            orderCart.setOrder_status(0);
+	            orderCart.setMenu_item_id(menuId);
+
+	            // 기본 주문 정보 입력
+	            userStoreService.insertOrder(orderCart);
+	            userStoreService.insertOrderDetail(orderCart);
+
+	            // 선택된 옵션 처리
+	            if (!optionOrders.isEmpty()) {
+	                // 옵션 ID 결정
+	                Integer maxCount = this.userStoreService.getMaxCountOrderOption();
+	                Integer orderOptionId = (maxCount == null) ? 1 : maxCount + 1;
+
+	                for (OptionOrder option : optionOrders) {
+	                    OrderCart tempCart = new OrderCart();
+	                    tempCart.setOrder_option_id(orderOptionId);
+	                    tempCart.setOrder_id(orderId);
+	                    tempCart.setMenu_item_id(menuId);
+	                    tempCart.setOption_id(option.getOption_id());
+	                    tempCart.setOption_group_id(option.getOption_group_id());
+
+	                    userStoreService.insertOrderOption(tempCart);
+	                }
+
+	                // 수량 정보 추가
+	                OrderQuantity oq = new OrderQuantity();
+	                oq.setOrder_option_id(orderOptionId);
+	                oq.setQuantity(quantity);
+	                oq.setOrder_id(orderId);
+	                userStoreService.insertOrderItemQuantity(oq);
+	            }
+	        } else {
+	        	System.out.println("장바구니에 있는 가게와 같은데에서 구매할건데");
+	            if (!optionOrders.isEmpty()) { // 동일한 메뉴와 옵션 조합이 있는지 확인
+	            	System.out.println("동일한 메뉴와 옵션을 가진 메뉴가 있어");
+	                MatchingOptionParam mop = new MatchingOptionParam();
+	                mop.setOrderId(existingCartId);
+	                mop.setMenuItemId(menuId);
+	                mop.setOptionList(optionOrders);
+	                mop.setOptionCount(optionOrders.size());
+
+	                Integer matchingOptionId = userStoreService.findMatchingOptionId(mop);
+
+	                if (matchingOptionId != null) {
+	                	System.out.println("그래서 수량만 증가할거야");
+	                    // 동일한 메뉴와 옵션 조합이 있으면 수량만 증가
+	                    QuantityUpdateParam qup = new QuantityUpdateParam();
+	                    qup.setOrderOptionId(matchingOptionId);
+	                    qup.setOrderId(existingCartId);
+	                    qup.setAdditionalQuantity(quantity);
+
+	                    userStoreService.increaseQuantity(qup);
+
+	                    // 수량만 증가했으므로 즉시 리다이렉트
+	                    return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
+	                }
+	            }
+	            System.out.println("카트에 없는 메뉴야");
+	            // 동일한 메뉴+옵션 조합이 없거나 옵션이 없는 경우 새 항목 추가
+	            Integer orderOptionId = this.userStoreService.getOrderOptionId(orderId) + 1;
+
+	            // 선택된 옵션 처리
+	            if (!optionOrders.isEmpty()) {
+	                for (OptionOrder option : optionOrders) {
+	                    OrderCart tempCart = new OrderCart();
+	                    tempCart.setOrder_option_id(orderOptionId);
+	                    tempCart.setOrder_id(orderId);
+	                    tempCart.setMenu_item_id(menuId);
+	                    tempCart.setOption_id(option.getOption_id());
+	                    tempCart.setOption_group_id(option.getOption_group_id());
+
+	                    userStoreService.insertOrderOption(tempCart);
+	                }
+
+	                // 수량 정보 추가
+	                OrderQuantity oq = new OrderQuantity();
+	                oq.setOrder_option_id(orderOptionId);
+	                oq.setQuantity(quantity);
+	                oq.setOrder_id(orderId);
+	                userStoreService.insertOrderItemQuantity(oq);
 	            }
 	        }
-	        
-	        // 동일한 메뉴+옵션 조합이 없거나 옵션이 없는 경우 새 항목 추가
-	        Integer orderOptionId = this.userStoreService.getOrderOptionId(orderId) + 1;
-	        
+	    } else {
+	    	System.out.println("장바구니가 비어있어.");
+	        // 장바구니가 비어있는 경우
+	        orderId = generateOrderId();
+
+	        // 새 주문 카트 생성
+	        OrderCart orderCart = new OrderCart();
+	        orderCart.setOrder_id(orderId);
+	        orderCart.setUser_id(loginUser.getUser_id());
+	        orderCart.setStore_id(store.getStore_id());
+	        orderCart.setStore_address(storeAddress);
+	        orderCart.setOrder_status(0);
+	        orderCart.setMenu_item_id(menuId);
+
+	        // 기본 주문 정보 입력
+	        userStoreService.insertOrder(orderCart);
+	        userStoreService.insertOrderDetail(orderCart);
+
 	        // 선택된 옵션 처리
 	        if (!optionOrders.isEmpty()) {
+	            // 옵션 ID 결정
+	            Integer maxCount = this.userStoreService.getMaxCountOrderOption();
+	            Integer orderOptionId = (maxCount == null) ? 1 : maxCount + 1;
+
 	            for (OptionOrder option : optionOrders) {
 	                OrderCart tempCart = new OrderCart();
 	                tempCart.setOrder_option_id(orderOptionId);
@@ -179,48 +298,7 @@ public class UserStoreController {
 
 	                userStoreService.insertOrderOption(tempCart);
 	            }
-	            
-	            // 수량 정보 추가
-	            OrderQuantity oq = new OrderQuantity();
-	            oq.setOrder_option_id(orderOptionId);
-	            oq.setQuantity(quantity);
-	            oq.setOrder_id(orderId);
-	            userStoreService.insertOrderItemQuantity(oq);
-	        }
-	    } else {
-	        // 장바구니가 비어있는 경우
-	        orderId = generateOrderId();
-	        
-	        // 새 주문 카트 생성
-	        OrderCart orderCart = new OrderCart();
-	        orderCart.setOrder_id(orderId);
-	        orderCart.setUser_id(loginUser.getUser_id());
-	        orderCart.setStore_id(store.getStore_id());
-	        orderCart.setStore_address(storeAddress);
-	        orderCart.setOrder_status(0);
-	        orderCart.setMenu_item_id(menuId);
-	        
-	        // 기본 주문 정보 입력
-	        userStoreService.insertOrder(orderCart);
-	        userStoreService.insertOrderDetail(orderCart);
-	        
-	        // 선택된 옵션 처리
-	        if (!optionOrders.isEmpty()) {
-	            // 옵션 ID 결정
-	            Integer maxCount = this.userStoreService.getMaxCountOrderOption();
-	            Integer orderOptionId = (maxCount == null) ? 1 : maxCount + 1;
-	            
-	            for (OptionOrder option : optionOrders) {
-	                OrderCart tempCart = new OrderCart();
-	                tempCart.setOrder_option_id(orderOptionId);
-	                tempCart.setOrder_id(orderId);
-	                tempCart.setMenu_item_id(menuId);
-	                tempCart.setOption_id(option.getOption_id());
-	                tempCart.setOption_group_id(option.getOption_group_id());
-	                
-	                userStoreService.insertOrderOption(tempCart);
-	            }
-	            
+
 	            // 수량 정보 추가
 	            OrderQuantity oq = new OrderQuantity();
 	            oq.setOrder_option_id(orderOptionId);
@@ -233,7 +311,6 @@ public class UserStoreController {
 	    // 메뉴 상세 페이지로 리다이렉트
 	    return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	}
-
 
 	@PostMapping(value = "/userstore/bookmark")
 	public ModelAndView bookmark(HttpSession session, String loginStatus) {

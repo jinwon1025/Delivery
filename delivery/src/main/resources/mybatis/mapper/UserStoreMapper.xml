@@ -148,30 +148,40 @@
 
 	</select>
 
-	<select id="findMatchingOptionId"
-		parameterType="com.springboot.delivery.model.MatchingOptionParam"
-		resultType="Integer">
-		SELECT oo1.ORDER_OPTION_ID
-		FROM order_option_tbl oo1
-		WHERE oo1.ORDER_ID = #{orderId}
-		AND oo1.MENU_ITEM_ID = #{menuItemId}
-		<foreach collection="optionList" item="option">
-			AND EXISTS (
-			SELECT 1
-			FROM order_option_tbl oo
-			WHERE oo.ORDER_OPTION_ID = oo1.ORDER_OPTION_ID
-			AND oo.OPTION_GROUP_ID = #{option.option_group_id}
-			AND oo.OPTION_ID = #{option.option_id}
-			)
-		</foreach>
-		AND (
-		SELECT COUNT(*)
-		FROM order_option_tbl oo
-		WHERE oo.ORDER_OPTION_ID = oo1.ORDER_OPTION_ID
-		) = #{optionCount}
-		GROUP BY oo1.ORDER_OPTION_ID
-	</select>
-
+<select id="findMatchingOptionId" 
+        parameterType="com.springboot.delivery.model.MatchingOptionParam"
+        resultType="Integer">
+    SELECT oo.ORDER_OPTION_ID
+    FROM order_option_tbl oo
+    JOIN (
+        SELECT ORDER_OPTION_ID
+        FROM order_option_tbl
+        WHERE ORDER_ID = #{orderId} AND MENU_ITEM_ID = #{menuItemId}
+        GROUP BY ORDER_OPTION_ID
+        HAVING COUNT(DISTINCT OPTION_GROUP_ID) = #{optionCount}
+    ) oo1 ON oo.ORDER_OPTION_ID = oo1.ORDER_OPTION_ID
+    WHERE 
+        oo.ORDER_ID = #{orderId} AND 
+        oo.MENU_ITEM_ID = #{menuItemId}
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM (
+            <foreach collection="optionList" item="option" separator=" UNION ALL ">
+                SELECT #{option.option_group_id} AS OPTION_GROUP_ID, 
+                       #{option.option_id} AS OPTION_ID
+                FROM DUAL
+            </foreach>
+        ) opt
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM order_option_tbl 
+            WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID 
+              AND OPTION_GROUP_ID = opt.OPTION_GROUP_ID 
+              AND OPTION_ID = opt.OPTION_ID
+        )
+    )
+    AND ROWNUM = 1
+</select>
 	<update id="increaseQuantity"
 		parameterType="com.springboot.delivery.model.QuantityUpdateParam">
 		UPDATE order_quantity_tbl
@@ -211,7 +221,32 @@
 		SELECT MAX(ORDER_OPTION_ID) FROM order_option_tbl WHERE ORDER_ID =
 		#{orderId}
 	</select>
-
+	
+	<select id="findOrderByUserId" parameterType="com.springboot.delivery.model.OrderCart" resultType="String">
+	
+	select order_id from b_order_tbl where user_id=#{user_id}
+	
+	</select>
+	
+	<select id="findStoreByMenuItemInCart" parameterType="com.springboot.delivery.model.OrderCart" resultType="String">
+	
+	select store_id from b_order_detail_tbl where user_id=#{user_id} and order_id=#{order_id}
+	
+	</select>
+	
+	<delete id="deleteOrderQuantityInCart" parameterType="String">
+	
+	delete from order_quantity_tbl where order_id=#{order_id}
+	
+	</delete>
+	
+	<delete id="deleteOrderOptionInCart" parameterType="String">
+	
+	delete from order_option_tbl where order_id=#{order_id}
+	
+	</delete>
+	
+		
 
 
 

@@ -36,4 +36,8 @@ public interface UserStoreMapper {
 	Integer getOrderOptionId(String order_id);
 	Integer findMatchingOptionId(MatchingOptionParam mop);
 	void increaseQuantity(QuantityUpdateParam qup);
+	String findOrderByUserId(OrderCart oc);
+	String findStoreByMenuItemInCart(OrderCart oc);
+	void deleteOrderQuantityInCart(String order_id);
+	void deleteOrderOptionInCart(String order_id);
 }	

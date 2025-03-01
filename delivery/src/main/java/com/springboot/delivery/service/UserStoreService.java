@@ -93,12 +93,28 @@ public class UserStoreService {
 	public Integer findMatchingOptionId(MatchingOptionParam mop) {
 
 	    
-	    return userStoreMapper.findMatchingOptionId(mop);
+	    return this.userStoreMapper.findMatchingOptionId(mop);
 	}
 
-	public void increaseQuantity(QuantityUpdateParam qup) {
-
-	    
-	    userStoreMapper.increaseQuantity(qup);
+	public void increaseQuantity(QuantityUpdateParam qup) {  
+	    this.userStoreMapper.increaseQuantity(qup);
 	}
+	
+	public String findOrderByUserId(OrderCart oc) {
+		return this.userStoreMapper.findOrderByUserId(oc);
+	}
+	
+	public String findStoreByMenuItemInCart(OrderCart oc) {
+		return this.userStoreMapper.findStoreByMenuItemInCart(oc);
+	}
+	
+	public void deleteOrderQuantityInCart(String order_id) {
+		this.userStoreMapper.deleteOrderQuantityInCart(order_id);
+	}
+	
+	public void deleteOrderOptionInCart(String order_id) {
+		this.userStoreMapper.deleteOrderOptionInCart(order_id);
+	}
+	
+
 }
