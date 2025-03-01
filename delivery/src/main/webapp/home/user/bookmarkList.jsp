@@ -301,8 +301,18 @@ body {
 							
 							<!-- 즐겨찾기 버튼 - 가게 컨테이너 오른쪽 상단에 위치 -->
 							<button class="favorite-btn" onclick="bookmarkStore(event, '${store.store_id}');">
-                                <i class="fa-heart fas active"></i>
-                            </button>
+                        <c:choose>
+                            <c:when test="${bookMarkList.contains(store.store_id)}">
+                        		
+                                <!-- 즐겨찾기된 가게 -->
+                                <i class="fa-heart fas"></i>
+                            </c:when>
+                            <c:otherwise>
+                                <!-- 즐겨찾기 안된 가게 -->
+                                <i class="fa-heart far"></i>
+                            </c:otherwise>
+                        </c:choose>
+                    </button>
 						</div>
 					</c:forEach>
 				</div>

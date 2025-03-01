@@ -71,5 +71,13 @@ public class UserService {
 	public List<BookMarkStore> getBookMarkStoreByUserId(String user_id){
 		return this.userMapper.getBookMarkStoreByUserId(user_id);
 	}
-
+	
+	public void deleteBookMarkStore(BookMarkStore bms) {
+		this.userMapper.deleteBookMarkStore(bms);
+	}
+	
+	
+	public List<String> getBookMarkList(String user_id){
+		return this.userMapper.getBookMarkList(user_id);
+	}
 }

@@ -23,4 +23,6 @@ public interface UserMapper {
 	void insertBookMarkStore(BookMarkStore bms);
 	
 	List<BookMarkStore> getBookMarkStoreByUserId(String user_id);
+	void deleteBookMarkStore(BookMarkStore bms);
+	List<String> getBookMarkList(String user_id);
 }	

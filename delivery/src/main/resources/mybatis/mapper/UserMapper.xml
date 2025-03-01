@@ -83,6 +83,18 @@
 	
 	</insert>
 	
+	<delete id="deleteBookMarkStore" parameterType="com.springboot.delivery.model.BookMarkStore">
+	
+	delete from b_bookmark_tbl where store_id=#{store_id} and user_id=#{user_id}
+	
+	</delete>
+	
+	<select id="getBookMarkList" parameterType="String">
+	
+	select store_id from b_bookmark_tbl where user_id = #{user_id}
+	
+	</select>
+	
 
 
 
