@@ -37,25 +37,24 @@ public class UserController {
 
 	@GetMapping(value = "/user/index")
 	public ModelAndView userIndex(HttpSession session) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		mav.addObject("maincategoryList", maincategoryList);
-
-		// 로그인이 되어있다면 로그인상태 페이지 유지
-		if (loginUser != null) {
-			if ("ADMIN".equals(loginUser.getRole())) {
-				mav.addObject("BODY", "admin/adminHome.jsp"); // 관리자는 관리자 페이지로
-			} else {
-				mav.addObject("BODY", "loginUser.jsp"); // 일반 사용자는 일반 페이지로
-			}
-		} else {
-			// 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
-			mav.addObject("BODY", "index.jsp");
-			mav.addObject(new LoginUser());
-		}
-		return mav;
+	    // 로그인이 되어있다면 로그인상태 페이지 유지
+	    if (loginUser != null) {
+	        if ("ADMIN".equals(loginUser.getRole())) {
+	            mav.setViewName("redirect:/admin/home"); // 관리자는 관리자 페이지로 리다이렉트
+	        } else {
+	            mav.setViewName("redirect:/user/categoryStores"); // 일반 사용자는 카테고리 스토어 페이지로 리다이렉트
+	        }
+	    } else {
+	        // 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
+	        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	        mav.addObject("maincategoryList", maincategoryList);
+	        mav.addObject("BODY", "index.jsp");
+	        mav.addObject(new LoginUser());
+	    }
+	    return mav;
 	}
 
 	@GetMapping(value = "/user/register")
@@ -146,7 +145,26 @@ public class UserController {
 				// 관리자 홈으로 리다이렉트
 				mav.setViewName("redirect:/admin/home");
 			} else {
-				mav.addObject("BODY", "loginUser.jsp");
+				// 메인 카테고리 목록 가져오기 (메뉴 표시용)
+				List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+				mav.addObject("maincategoryList", maincategoryList);
+
+				List<Store> storeList;
+				String categoryName = "전체 가게";
+
+				storeList = userService.getAllStore();
+
+				if (session.getAttribute("loginUser") != null) {
+					LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+					List<BookMarkStore> bmsList = this.userService.getBookMarkStoreByUserId(loginUser.getUser_id());
+
+					List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id());
+					mav.addObject("bookMarkList", bookMarkList);
+					System.out.println("북마크 리스트 :" + bmsList);
+				}
+				mav.addObject("storeList", storeList);
+				mav.addObject("categoryName", categoryName);
+				mav.addObject("BODY", "categoryStores.jsp");
 			}
 		}
 		return mav;
@@ -362,12 +380,13 @@ public class UserController {
 
 		ModelAndView mav = new ModelAndView("user/userMain");
 
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory(); //즐겨찾기에 들어있는 가게 정보 다 가져오기
+		List<Maincategory> maincategoryList = adminService.getAllMaincategory(); // 즐겨찾기에 들어있는 가게 정보 다 가져오기
 		mav.addObject("maincategoryList", maincategoryList);
 
-		List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id()); //즐겨찾기에 들어있는 가게 store_id만 가져오기
-		
-		mav.addObject("bookMarkList", bookMarkList);	
+		List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id()); // 즐겨찾기에 들어있는 가게 store_id만
+																								// 가져오기
+
+		mav.addObject("bookMarkList", bookMarkList);
 		mav.addObject("bmsList", bmsList);
 		mav.addObject("BODY", "bookmarkList.jsp");
 		return mav;

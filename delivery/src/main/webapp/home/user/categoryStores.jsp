@@ -1,6 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<style>
+  .store-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2개의 열 생성 */
+    gap: 20px; /* 가게 사이의 간격 */
+  }
+  
+  .store-item {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 0; /* 기존 마진 제거 (그리드가 간격 관리) */
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .store-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* 반응형 디자인 - 작은 화면에서는 1열로 표시 */
+  @media (max-width: 768px) {
+    .store-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
 <!-- 가게 목록 -->
 <c:choose>
     <c:when test="${not empty storeList}">
@@ -47,7 +78,6 @@
                     <button class="favorite-btn" onclick="bookmarkStore(event, '${store.store_id}');">
                         <c:choose>
                             <c:when test="${bookMarkList.contains(store.store_id)}">
-                        		
                                 <!-- 즐겨찾기된 가게 -->
                                 <i class="fa-heart fas"></i>
                             </c:when>
