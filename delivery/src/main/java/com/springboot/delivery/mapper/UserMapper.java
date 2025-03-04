@@ -8,6 +8,7 @@ import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.model.UserCard;
 
 @Mapper
 public interface UserMapper {
@@ -25,4 +26,5 @@ public interface UserMapper {
 	List<BookMarkStore> getBookMarkStoreByUserId(String user_id);
 	void deleteBookMarkStore(BookMarkStore bms);
 	List<String> getBookMarkList(String user_id);
+	void userCardRegister(UserCard uc);
 }	

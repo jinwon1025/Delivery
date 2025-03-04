@@ -4,13 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,10 +21,12 @@ import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.UserService;
 
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -437,5 +439,77 @@ public class UserController {
 		mav.setViewName("redirect:/user/categoryStores");
 		return mav;
 	}
+	@GetMapping(value = "/user/viewPay")
+	public ModelAndView viewPay(HttpSession session) {
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		ModelAndView mav = new ModelAndView("user/userMain");
+		mav.addObject("BODY","viewPay.jsp");
+		return mav;
+	}
+	@GetMapping(value="/user/payRegister")
+	public ModelAndView payRegister() {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		mav.addObject("userCard", new UserCard());
+		mav.addObject("BODY","payRegister.jsp");
+		return mav;
+	}
+	@PostMapping(value="/user/cardRegister")
+	public ModelAndView cardRegister(@Valid UserCard userCard, BindingResult br, HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    
+	    try {
+	        // 로그인 검사
+	        LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	        if(loginUser == null) {
+	            return new ModelAndView("redirect:/user/index");
+	        }
+	        
+	        // 카드 번호 필드를 합쳐서 card_number에 할당
+	        String cardNum1 = userCard.getCard_number_1() != null ? userCard.getCard_number_1() : "";
+	        String cardNum2 = userCard.getCard_number_2() != null ? userCard.getCard_number_2() : "";
+	        String cardNum3 = userCard.getCard_number_3() != null ? userCard.getCard_number_3() : "";
+	        String cardNum4 = userCard.getCard_number_4() != null ? userCard.getCard_number_4() : "";
+	        
+	        String fullCardNumberStr = cardNum1 + cardNum2 + cardNum3 + cardNum4;
+	        if(!fullCardNumberStr.isEmpty()) {
+	            userCard.setCard_number(fullCardNumberStr);
+	            System.out.println("합쳐진 카드번호: " + userCard.getCard_number());
+	        } else {
+	            br.rejectValue("card_number", "error.card_number", "카드 번호를 입력해주세요.");
+	        }
+	        
+	        System.out.println("유효성 검사 오류 개수: " + br.getErrorCount());
+	        if(br.hasErrors()) {
+	            System.out.println("유효성 검사 실패:");
+	            br.getAllErrors().forEach(error -> {
+	                System.out.println("필드: " + (error instanceof org.springframework.validation.FieldError ? 
+	                    ((org.springframework.validation.FieldError)error).getField() : "글로벌") + 
+	                    ", 메시지: " + error.getDefaultMessage());
+	            });
+	            mav.getModel().putAll(br.getModel());
+	            mav.addObject("BODY", "payRegister.jsp");
+	            return mav;
+	        }
+	        
+	        userCard.setUser_id(loginUser.getUser_id());
+	        System.out.println("유저아이디: " + userCard.getUser_id());
+	        System.out.println("카드번호: " + userCard.getCard_number());
+	        System.out.println("카드주인: " + userCard.getCard_holder());
+	        System.out.println("유효기간: " + userCard.getExpiry_date());
+	        System.out.println("카드타입: " + userCard.getCard_type());
+	        
+	        // 데이터베이스 삽입 시도
+	        this.userService.userCardRegister(userCard);
+	        
+	        return new ModelAndView("redirect:/user/viewPay");
+	    } catch (Exception e) {
+	        System.err.println("카드 등록 중 오류 발생: " + e.getMessage());
+	        e.printStackTrace();
+	        mav.addObject("errorMessage", "카드 등록 중 오류가 발생했습니다: " + e.getMessage());
+	        mav.addObject("BODY", "payRegister.jsp");
+	        return mav;
+	    }
+	}
+	
 
 }

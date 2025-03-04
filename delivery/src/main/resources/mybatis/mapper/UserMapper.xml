@@ -95,6 +95,11 @@
 	
 	</select>
 	
+	<insert id="userCardRegister" parameterType="com.springboot.delivery.model.UserCard">
+	insert into b_pay_tbl (pay_id, user_id, card_number, card_holder, expiry_date, card_type)
+		values (b_pay_tbl_seq.NEXTVAL, #{user_id}, #{card_number}, #{card_holder}, #{expiry_date}, #{card_type})
+	</insert>
+	
 
 
 

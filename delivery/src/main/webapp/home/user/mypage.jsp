@@ -27,6 +27,12 @@
                     </a>
                 </li>
                 <li class="mypage-menu-item">
+                    <a href="<c:url value='/user/viewPay'/>" class="mypage-menu-link">
+                        <i class="fas fa-credit-card"></i>
+                        <span>결제수단 관리</span>
+                    </a>
+                </li>
+                <li class="mypage-menu-item">
                     <a href="<c:url value='/userstore/viewCart'/>" class="mypage-menu-link">
                         <i class="fas fa-shopping-cart"></i>
                         <span>장바구니</span>
