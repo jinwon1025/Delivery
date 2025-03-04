@@ -278,6 +278,9 @@ public class StoreController {
     	  
       // MenuCategory 객체 생성 및 설정
       Integer maxCount = this.storeService.getMaxMenuCount();
+      if(maxCount == null) {
+    	  maxCount = 0;
+      }
       MenuCategory mc = new MenuCategory();
       System.out.println(maxCount+1);
       mc.setMenu_category_id(maxCount + 1);
