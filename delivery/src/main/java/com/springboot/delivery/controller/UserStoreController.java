@@ -348,7 +348,9 @@ public class UserStoreController {
 		OrderCart oc = this.userStoreService.getOrderByUserId(loginUser.getUser_id()); // 유저 아이디로 오더id 찾기
 		String isEmptyCart = "";
 		List<Map<String, Object>> cartList = this.userStoreService.getCartMenuDetails(loginUser.getUser_id());
-
+		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+		mav.addObject("maincategoryList", maincategoryList);
+		mav.addObject("BODY", "../userstore/userStoreMain.jsp");
 		System.out.println("User ID: " + loginUser.getUser_id());
 		System.out.println("Cart List Size: " + cartList.size());
 		System.out.println("Cart List: " + cartList);
@@ -357,10 +359,10 @@ public class UserStoreController {
 			isEmptyCart = "empty";
 		} else {
 			isEmptyCart = "notEmpty";
-		}
+		}	
 		mav.addObject("isEmptyCart", isEmptyCart);
 		mav.addObject("cartDetails", cartList);
-		mav.addObject("BODY", "../userstore/userCart.jsp");
+		mav.addObject("STOREBODY", "../userstore/userCart.jsp");
 
 		return mav;
 
