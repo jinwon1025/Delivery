@@ -323,7 +323,7 @@ public class UserStoreController {
 	        }
 	    }
 
-	    // 메뉴 상세 페이지로 리다이렉트
+	    // 메뉴 상세 페이지로  리다이렉트
 	    return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	}
 
