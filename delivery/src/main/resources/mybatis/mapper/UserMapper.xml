@@ -83,6 +83,23 @@
 	
 	</insert>
 	
+	<delete id="deleteBookMarkStore" parameterType="com.springboot.delivery.model.BookMarkStore">
+	
+	delete from b_bookmark_tbl where store_id=#{store_id} and user_id=#{user_id}
+	
+	</delete>
+	
+	<select id="getBookMarkList" parameterType="String">
+	
+	select store_id from b_bookmark_tbl where user_id = #{user_id}
+	
+	</select>
+	
+	<insert id="userCardRegister" parameterType="com.springboot.delivery.model.UserCard">
+	insert into b_pay_tbl (pay_id, user_id, card_number, card_holder, expiry_date, card_type)
+		values (b_pay_tbl_seq.NEXTVAL, #{user_id}, #{card_number}, #{card_holder}, #{expiry_date}, #{card_type})
+	</insert>
+	
 
 
 

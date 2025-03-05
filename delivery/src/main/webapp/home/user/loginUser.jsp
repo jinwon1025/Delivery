@@ -25,9 +25,9 @@
             <div class="category-img" style="background-image: url('${pageContext.request.contextPath}/image/categories/${category.main_category_id}.jpg')"></div>
             <div class="category-info">
                 <h3 class="category-name">${category.main_category_name}</h3>
-                <p class="category-count">가게 ${category.storeCount}개</p>
             </div>
         </a>
+        
     </c:forEach>
 </div>
 

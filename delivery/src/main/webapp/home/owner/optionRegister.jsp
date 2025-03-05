@@ -284,8 +284,20 @@
  
  function categoryCheck(){
 	 const newCategoryName = document.getElementById('category_name').value;
+	 const radioButtons = document.getElementsByName('selection_type');
+	 let radio = false;
 	 if(newCategoryName===''){
 		 alert("카테고리명을 입력해주세요.");
+		 return false;
+	 }
+	 for(let i = 0; i < radioButtons.length; i++){
+		 if(radioButtons[i].checked){
+			 radio = true;
+			 break;
+		 }
+	 }
+	 if(!radio){
+		 alert("단일선택 중복선택 중 하나를 선택해주세요.");
 		 return false;
 	 }
 	 return true;

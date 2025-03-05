@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserStoreMapper;
-import com.springboot.delivery.model.BookMarkStore;
+import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
+import com.springboot.delivery.model.OrderQuantity;
+import com.springboot.delivery.model.QuantityUpdateParam;
 
 @Service
 public class UserStoreService {
@@ -55,8 +57,8 @@ public class UserStoreService {
 		return this.userStoreMapper.getCartMenuDetails(user_id);
 	}
 	
-	public void deleteItemInCart(String menu_item_id) {
-		this.userStoreMapper.deleteItemInCart(menu_item_id);
+	public void deleteItemInCart(OrderCart oc) {
+		this.userStoreMapper.deleteItemInCart(oc);
 	}
 	
 	public Integer checkCountInCart(String order_id) {
@@ -71,4 +73,53 @@ public class UserStoreService {
 		this.userStoreMapper.deleteOrder(order_id);
 	}
 	
+	public Integer getMaxCountOrderOption() {
+		
+		return this.userStoreMapper.getMaxCountOrderOption();
+	}
+	
+	public void insertOrderItemQuantity(OrderQuantity oq) {
+		this.userStoreMapper.insertOrderItemQuantity(oq);
+	}
+	
+	public String isMenuInCart(String user_id) {
+		return this.userStoreMapper.isMenuInCart(user_id);
+	}
+	
+	public Integer getOrderOptionId(String order_id) {
+		return this.userStoreMapper.getOrderOptionId(order_id);
+	}
+	
+	public Integer findMatchingOptionId(MatchingOptionParam mop) {
+
+	    
+	    return this.userStoreMapper.findMatchingOptionId(mop);
+	}
+
+	public void increaseQuantity(QuantityUpdateParam qup) {  
+	    this.userStoreMapper.increaseQuantity(qup);
+	}
+	
+	public String findOrderByUserId(OrderCart oc) {
+		return this.userStoreMapper.findOrderByUserId(oc);
+	}
+	
+	public String findStoreByMenuItemInCart(OrderCart oc) {
+		return this.userStoreMapper.findStoreByMenuItemInCart(oc);
+	}
+	
+	public void deleteOrderQuantityInCart(String order_id) {
+		this.userStoreMapper.deleteOrderQuantityInCart(order_id);
+	}
+	
+	public void deleteOrderOptionInCart(String order_id) {
+		this.userStoreMapper.deleteOrderOptionInCart(order_id);
+	}
+	
+	public void deleteQuantityInCart(OrderCart oc) {
+		this.userStoreMapper.deleteQuantityInCart(oc);
+	}
+
+	
+
 }

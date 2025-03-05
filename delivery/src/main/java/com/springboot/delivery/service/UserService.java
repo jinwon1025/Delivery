@@ -10,6 +10,7 @@ import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.model.UserCard;
 
 @Service
 public class UserService {
@@ -71,5 +72,17 @@ public class UserService {
 	public List<BookMarkStore> getBookMarkStoreByUserId(String user_id){
 		return this.userMapper.getBookMarkStoreByUserId(user_id);
 	}
-
+	
+	public void deleteBookMarkStore(BookMarkStore bms) {
+		this.userMapper.deleteBookMarkStore(bms);
+	}
+	
+	
+	public List<String> getBookMarkList(String user_id){
+		return this.userMapper.getBookMarkList(user_id);
+	}
+	
+	public void userCardRegister(UserCard uc) {
+		this.userMapper.userCardRegister(uc);
+	}
 }

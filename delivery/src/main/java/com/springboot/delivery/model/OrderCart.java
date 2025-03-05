@@ -23,5 +23,6 @@ public class OrderCart {
     private Integer menu_item_id;
     private Integer option_id;        // 이 필드 추가
     private Integer option_group_id;  // 이 필드 추가
+    private Integer quantity; 
     private List<OptionOrder> options;
 }

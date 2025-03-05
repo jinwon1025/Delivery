@@ -167,8 +167,7 @@ WHERE USED_CP_ID IN (
 
 	<select id="getMaxMenuCount" resultType="Integer">
 
-		select count(*) from
-		b_menu_category_tbl
+SELECT MAX(menu_category_id) FROM b_menu_category_tbl
 
 	</select>
 
