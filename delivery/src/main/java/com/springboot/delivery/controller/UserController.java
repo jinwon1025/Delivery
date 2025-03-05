@@ -354,9 +354,6 @@ public class UserController {
 	}
 	
 	
-	
-	
-	
 	@GetMapping(value="/user/allStore") //모든 가맹점 목록 가져오기
 	public ModelAndView allStore() {
 		ModelAndView mav =new ModelAndView("user/userMain");
@@ -365,6 +362,7 @@ public class UserController {
 		mav.addObject("BODY", "allStoreList.jsp");
 		return mav;
 	}
+	
 	
 
 	

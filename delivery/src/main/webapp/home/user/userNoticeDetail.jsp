@@ -2,105 +2,78 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<style>
-    .notice-detail-container {
-        width: 90%;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-    }
+<div class="page-header">
+    <h1 class="page-title">공지사항</h1>
+    <p class="page-subtitle">금베달리스트의 중요 소식을 확인하세요</p>
     
-    .notice-detail-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #1a237e;
-        color: #1a237e;
-    }
-    
-    .notice-detail-header {
-        background-color: #f5f7fa;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-    
-    .notice-detail-subject {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-    
-    .notice-detail-info {
-        display: flex;
-        justify-content: space-between;
-        color: #777;
-        font-size: 0.9em;
-    }
-    
-    .notice-detail-content {
-        min-height: 300px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: white;
-        margin-bottom: 20px;
-        white-space: pre-line;
-    }
-    
-    .notice-detail-buttons {
-        text-align: center;
-        margin-top: 20px;
-    }
-    
-    .btn-back {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #1a237e;
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    
-    .btn-back:hover {
-        background-color: #0e1858;
-    }
-    
-    .notice-badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 50px;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-        background-color: #f44336;
-        margin-right: 10px;
-    }
-</style>
+    <!-- 간단한 브레드크럼 -->
+    <nav class="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<c:url value='/user/index'/>">홈</a></li>
+            <li class="breadcrumb-item"><a href="<c:url value='/user/notice'/>">공지사항</a></li>
+            <li class="breadcrumb-item active">상세 보기</li>
+        </ol>
+    </nav>
+</div>
 
 <div class="notice-detail-container">
-    <h2 class="notice-detail-title">공지사항</h2>
-    
-    <div class="notice-detail-header">
-        <div class="notice-detail-subject">
-            <c:if test="${notice.important == 'Y'}">
-                <span class="notice-badge">중요</span>
+    <div class="card">
+        <div class="card-body">
+            <!-- 공지사항 헤더 -->
+            <div class="notice-detail-header">
+                <div class="notice-detail-subject">
+                    <c:if test="${notice.important == 'Y'}">
+                        <span class="notice-badge">중요</span>
+                    </c:if>
+                    ${notice.title}
+                </div>
+                <div class="notice-detail-info">
+                    <span>
+                        <i class="fas fa-user mr-1"></i> ${notice.writer}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar mr-1"></i> 
+                        <fmt:formatDate value="${notice.reg_date}" pattern="yyyy-MM-dd HH:mm"/>
+                    </span>
+                    <span>
+                        <i class="fas fa-eye mr-1"></i> 조회수: ${notice.view_count}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 공지사항 내용 -->
+            <div class="notice-detail-content">
+                ${notice.content}
+            </div>
+            
+            <!-- 이전/다음 글 (선택적) -->
+            <c:if test="${not empty prevNextNotices}">
+                <div class="notice-nav mt-4 pt-3 border-top">
+                    <c:if test="${not empty prevNextNotices.prev}">
+                        <div class="notice-nav-item d-flex mb-2">
+                            <span class="mr-2 text-muted"><i class="fas fa-chevron-up"></i> 이전글:</span>
+                            <a href="<c:url value='/user/notice/${prevNextNotices.prev.notice_id}'/>" class="notice-link">
+                                ${prevNextNotices.prev.title}
+                            </a>
+                        </div>
+                    </c:if>
+                    <c:if test="${not empty prevNextNotices.next}">
+                        <div class="notice-nav-item d-flex">
+                            <span class="mr-2 text-muted"><i class="fas fa-chevron-down"></i> 다음글:</span>
+                            <a href="<c:url value='/user/notice/${prevNextNotices.next.notice_id}'/>" class="notice-link">
+                                ${prevNextNotices.next.title}
+                            </a>
+                        </div>
+                    </c:if>
+                </div>
             </c:if>
-            ${notice.title}
+            
+            <!-- 하단 버튼 영역 -->
+            <div class="notice-detail-buttons mt-4 text-center">
+                <a href="<c:url value='/user/notice'/>" class="btn btn-outline-gold">
+                    <i class="fas fa-list mr-1"></i> 목록으로
+                </a>
+            </div>
         </div>
-        <div class="notice-detail-info">
-            <span>작성자: ${notice.writer}</span>
-            <span>작성일: <fmt:formatDate value="${notice.reg_date}" pattern="yyyy-MM-dd HH:mm"/></span>
-            <span>조회수: ${notice.view_count}</span>
-        </div>
-    </div>
-    
-    <div class="notice-detail-content">
-        ${notice.content}
-    </div>
-    
-    <div class="notice-detail-buttons">
-        <a href="/user/notice" class="btn-back">목록으로 돌아가기</a>
     </div>
 </div>
