@@ -1,118 +1,90 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page session="true"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 금베달리스트 사업자</title>
+    
+    <!-- 공통 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/utilities.css'/>">
+    
+    <!-- 사업자 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/store/store-layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-components.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-pages.css'/>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts - Noto Sans KR -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+</head>
+<body>
 
-<style>
-    .notice-container {
-        width: 90%;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    .notice-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #1a237e;
-        color: #1a237e;
-    }
-    
-    .notice-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-    
-    .notice-table th, .notice-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    .notice-table th {
-        background-color: #f5f7fa;
-        font-weight: bold;
-    }
-    
-    .notice-table tr:hover {
-        background-color: #f9f9f9;
-    }
-    
-    .notice-important {
-        background-color: #fff3f3;
-    }
-    
-    .notice-badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 50px;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-        background-color: #f44336;
-    }
-    
-    .notice-link {
-        color: #333;
-        text-decoration: none;
-    }
-    
-    .notice-link:hover {
-        color: #1e88e5;
-        text-decoration: underline;
-    }
-    
-    .notice-date {
-        color: #777;
-        font-size: 0.9em;
-    }
-    
-    .notice-view-count {
-        color: #777;
-        font-size: 0.9em;
-        text-align: center;
-    }
-</style>
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <div class="store-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">사업자 공지사항</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%">번호</th>
+                                    <th style="width: 55%">제목</th>
+                                    <th style="width: 15%">작성자</th>
+                                    <th style="width: 15%">작성일</th>
+                                    <th style="width: 5%">조회</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:if test="${empty noticeList}">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">등록된 공지사항이 없습니다.</td>
+                                    </tr>
+                                </c:if>
+                                
+                                <c:forEach var="notice" items="${noticeList}">
+                                    <tr class="${notice.important == 'Y' ? 'bg-gray-100' : ''}">
+                                        <td>${notice.notice_id}</td>
+                                        <td>
+                                            <a href="/owner/notice/${notice.notice_id}" class="text-gray-800 hover:text-primary">
+                                                <c:if test="${notice.important == 'Y'}">
+                                                    <span class="badge bg-primary text-white text-xs px-2 py-1 rounded-pill mr-2">중요</span>
+                                                </c:if>
+                                                ${notice.title}
+                                            </a>
+                                        </td>
+                                        <td>${notice.writer}</td>
+                                        <td class="text-gray-600">
+                                            <fmt:formatDate value="${notice.reg_date}" pattern="yyyy-MM-dd"/>
+                                        </td>
+                                        <td class="text-center">${notice.view_count}</td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<div class="notice-container">
-    <h2 class="notice-title">사업자 공지사항</h2>
     
-    <table class="notice-table">
-        <thead>
-            <tr>
-                <th style="width: 10%">번호</th>
-                <th style="width: 55%">제목</th>
-                <th style="width: 15%">작성자</th>
-                <th style="width: 15%">작성일</th>
-                <th style="width: 5%">조회</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:if test="${empty noticeList}">
-                <tr>
-                    <td colspan="5" style="text-align: center;">등록된 공지사항이 없습니다.</td>
-                </tr>
-            </c:if>
-            
-            <c:forEach var="notice" items="${noticeList}">
-                <tr class="${notice.important == 'Y' ? 'notice-important' : ''}">
-                    <td>${notice.notice_id}</td>
-                    <td>
-                        <a href="/owner/notice/${notice.notice_id}" class="notice-link">
-                            <c:if test="${notice.important == 'Y'}">
-                                <span class="notice-badge">중요</span>
-                            </c:if>
-                            ${notice.title}
-                        </a>
-                    </td>
-                    <td>${notice.writer}</td>
-                    <td class="notice-date">
-                        <fmt:formatDate value="${notice.reg_date}" pattern="yyyy-MM-dd"/>
-                    </td>
-                    <td class="notice-view-count">${notice.view_count}</td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
-</div>
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

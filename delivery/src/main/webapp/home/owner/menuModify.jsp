@@ -3,52 +3,138 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메뉴 수정</title>
+    <title>메뉴 수정 - 금베달리스트 사업자</title>
+    
+    <!-- 공통 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/utilities.css'/>">
+    
+    <!-- 사업자 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/store/store-layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-components.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-pages.css'/>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts - Noto Sans KR -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
 </head>
 <body>
-    <h2>메뉴 수정</h2>
-
-    <!-- 메뉴 수정 폼 -->
-    <form:form action="/store/menuModify" method="post" modelAttribute="menuItem">
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <div class="store-container">
+            <div class="add-menu-form">
+                <h2 class="form-title">메뉴 수정</h2>
+                
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-error mb-4">
+                        ${errorMessage}
+                    </div>
+                </c:if>
+                
+                <form:form action="/store/menuModify" method="post" modelAttribute="menuItem" enctype="multipart/form-data">
+                    <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}" />
+                    
+                    <div class="menu-preview mb-4">
+                        <div class="preview-img">
+                            <c:choose>
+                                <c:when test="${not empty menuItem.image_name}">
+                                    <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menuItem.image_name}" 
+                                         alt="${menuItem.menu_name}" id="current-image">
+                                </c:when>
+                                <c:otherwise>
+                                    <div id="image-preview">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                        <div class="preview-info">
+                            <h3 class="preview-name" id="preview-name">${menuItem.menu_name}</h3>
+                            <p class="preview-price" id="preview-price">${menuItem.price}원</p>
+                            <p class="preview-desc" id="preview-desc">${menuItem.content}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="menu_name">메뉴명</label>
+                                <form:input path="menu_name" id="menu_name" cssClass="form-control" />
+                                <form:errors path="menu_name" cssClass="text-error" />
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="price">가격</label>
+                                <form:input path="price" id="price" type="number" cssClass="form-control" />
+                                <form:errors path="price" cssClass="text-error" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="content">메뉴 설명</label>
+                                <form:textarea path="content" id="content" cssClass="form-control" rows="4" />
+                                <form:errors path="content" cssClass="text-error" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="image_name">메뉴 이미지 변경</label>
+                        <form:input path="image_name" id="image_name" type="file" cssClass="form-control" 
+                                   onchange="previewImage(this);" accept="image/*" />
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-white" onclick="history.back()">취소</button>
+                        <button type="submit" class="btn btn-primary">수정하기</button>
+                    </div>
+                </form:form>
+            </div>
+        </div>
+    </main>
+    
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // 이미지 미리보기
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    $('#current-image').attr('src', e.target.result);
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
         
-        <!-- 메뉴명 -->
-        <div class="form-group">
-            <label for="menuName">메뉴명:</label>
-            <form:input path="menu_name" id="menuName" class="form-control" value="${menuItem.menu_name}" />
-            <form:errors path="menu_name" cssClass="form-error"/>
-        </div>
-        
-        <!-- 가격 -->
-        <div class="form-group">
-            <label for="price">가격:</label>
-            <form:input path="price" id="price" class="form-control" type="number" value="${menuItem.price}" />
-            <form:errors path="price" cssClass="form-error"/>
-        </div>
-
-        <!-- 메뉴 설명 -->
-        <div class="form-group">
-            <label for="content">설명:</label>
-            <form:textarea path="content" id="content" class="form-control" rows="4"></form:textarea>
-            <form:errors path="content" cssClass="form-error"/>
-        </div>
-
-        <!-- 이미지 -->
-        <div class="form-group">
-            <label for="image">이미지:</label>
-            <form:input path="image_name" id="image" class="form-control" type="file"/>
-        </div>
-
-        <!-- 수정하기 버튼 -->
-        <div class="form-group">
-        	<input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id }"/>
-            <input type="submit" value="수정하기" class="btn btn-custom"/>
-        </div>
-
-    </form:form>
+        // 실시간 메뉴 정보 미리보기 업데이트
+        $(document).ready(function() {
+            $('#menu_name').on('input', function() {
+                $('#preview-name').text($(this).val() || '메뉴명');
+            });
+            
+            $('#price').on('input', function() {
+                $('#preview-price').text(($(this).val() || '0') + '원');
+            });
+            
+            $('#content').on('input', function() {
+                $('#preview-desc').text($(this).val() || '메뉴 설명');
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,101 +1,186 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page session="true"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>매장 등록</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매장 정보 수정 - 금베달리스트 사업자</title>
+    
+    <!-- 공통 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/utilities.css'/>">
+    
+    <!-- 사업자 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/store/store-layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-components.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-pages.css'/>">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts - Noto Sans KR -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
 </head>
 <body>
-	<h3 align="center">매장 등록</h3>
-	<form:form action="/store/modify" method="post"
-		modelAttribute="store" enctype="multipart/form-data" name="frm"
-		onsubmit="return totalcheck()">
-        
-        아이디(5자 이상 15자 이하) : <br />
-		<form:input path="store_id" readonly="true"/>
-		<br />
-        
-        가게명 : <br />
-		<form:input path="store_name" />
-		<br />
-		<font color="red"><form:errors path="store_name" /></font>
-		<br />
-        
-        
-        주소 : <br />
-		<form:input path="store_address" />
-		<br />
-		<font color="red"><form:errors path="store_address" /></font>
-		<br />
-        
-       	최소주문금액 : <br />
-		<form:input path="last_price" />
-		<br />
-		<font color="red"><form:errors path="last_price" /></font>
-		<br /><br/>
-        
-        메인 카테고리 :
-		<form:select path="main_category_Id">
-    		<c:forEach var="category" items="${maincategoryList}">
-        	<form:option value="${category.main_category_id}">${category.main_category_name}</form:option>
-    		</c:forEach>
-		</form:select><br/><br/>
-        
-        가게 전화번호 : <br />
-		<form:input path="store_phone" />
-		<br />
-		<font color="red"><form:errors path="store_phone" /></font>
-		<br /><br/>
-        
-        가게 영업시간 : <br />
-		<form:input path="store_openHour" />
-		<br />
-		<font color="red"><form:errors path="store_phone" /></font>
-		<br /><br/>
-		
-		배달 시간 : <br />
-		<form:input path="delivery_time" />
-		<br />
-		<font color="red"><form:errors path="delivery_time" /></font>
-		<br /><br/>
-		
-        배달요금 : <br />
-		<form:input path="delivery_fee" />
-		<br />
-		<font color="red"><form:errors path="delivery_fee" /></font>
-		<br /><br/>
-        
-        가게 프로필 이미지 : 
-		<input type="file" name="image">
-		<br /><br/>
-        
- 
- 		원산지 : <br />
-		<form:input path="made_in" />
-		<br />
-		<font color="red"><form:errors path="made_in" /></font>
-		<br />		
-		<br />
 
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <div class="store-container">
+            <div class="store-registration">
+                <h2 class="step-title">매장 정보 수정</h2>
+                <p class="step-subtitle">아래 양식에 맞게 매장 정보를 수정해주세요.</p>
+                
+                <form:form action="/store/modify" method="post" modelAttribute="store" enctype="multipart/form-data" name="frm" onsubmit="return totalcheck()">
+                    <div class="form-section">
+                        <h3 class="form-section-title">기본 정보</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="store_id">매장 아이디</label>
+                                    <form:input path="store_id" cssClass="form-control" readonly="true" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="store_name">매장명</label>
+                                    <form:input path="store_name" cssClass="form-control" />
+                                    <form:errors path="store_name" cssClass="text-error" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="store_address">주소</label>
+                                    <form:input path="store_address" cssClass="form-control" />
+                                    <form:errors path="store_address" cssClass="text-error" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="store_phone">매장 전화번호</label>
+                                    <form:input path="store_phone" cssClass="form-control" />
+                                    <form:errors path="store_phone" cssClass="text-error" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="store_openHour">영업 시간</label>
+                                    <form:input path="store_openHour" cssClass="form-control" placeholder="예: 09:00 - 22:00" />
+                                    <form:errors path="store_openHour" cssClass="text-error" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="main_category_Id">메인 카테고리</label>
+                                    <form:select path="main_category_Id" cssClass="form-select">
+                                        <c:forEach var="category" items="${maincategoryList}">
+                                            <form:option value="${category.main_category_id}">${category.main_category_name}</form:option>
+                                        </c:forEach>
+                                    </form:select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">배달 및 주문 정보</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="last_price">최소 주문 금액</label>
+                                    <form:input path="last_price" cssClass="form-control" type="number" placeholder="원 단위로 입력" />
+                                    <form:errors path="last_price" cssClass="text-error" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="delivery_fee">배달 요금</label>
+                                    <form:input path="delivery_fee" cssClass="form-control" type="number" placeholder="원 단위로 입력" />
+                                    <form:errors path="delivery_fee" cssClass="text-error" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="delivery_time">배달 시간</label>
+                                    <form:input path="delivery_time" cssClass="form-control" placeholder="예: 30~45분" />
+                                    <form:errors path="delivery_time" cssClass="text-error" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="made_in">원산지 정보</label>
+                                    <form:textarea path="made_in" cssClass="form-control" rows="4" placeholder="식재료 원산지 정보를 입력하세요" />
+                                    <form:errors path="made_in" cssClass="text-error" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">매장 이미지</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="image">매장 프로필 이미지</label>
+                            <input type="file" name="image" id="image" class="form-control" accept="image/*" onchange="previewImage(this)">
+                            <p class="text-gray-600 text-sm mt-1">이미지 선택하지 않으면 기존 이미지 유지됩니다.</p>
+                        </div>
+                        
+                        <div class="preview-container mt-3" id="image-preview-container">
+                            <c:choose>
+                                <c:when test="${not empty store.image_name}">
+                                    <img id="preview-image" src="${pageContext.request.contextPath}/upload/storeProfile/${store.image_name}" alt="매장 이미지" class="rounded shadow-sm" style="max-width: 300px; max-height: 200px;">
+                                </c:when>
+                                <c:otherwise>
+                                    <div id="no-image" class="bg-gray-200 rounded d-flex align-items-center justify-content-center" style="width: 300px; height: 200px;">
+                                        <i class="fas fa-store fa-3x text-gray-500"></i>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-white" onclick="history.back()">취소</button>
+                        <button type="submit" class="btn btn-primary">정보 수정</button>
+                    </div>
+                </form:form>
+            </div>
+        </div>
+    </main>
 
-		<input type="submit" value="매장정보 수정" />
-
-		<script type="text/javascript">
-
-            function totalcheck() {
-               if(confirm("정말로 수정하시겠습니까?")){
-            	   return true;
-               }
-               else {
-            	   return false;
-               }
+    
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // 이미지 미리보기
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    if (document.getElementById('no-image')) {
+                        // 이미지가 없었던 경우, 이미지 요소 생성
+                        var imageContainer = document.getElementById('image-preview-container');
+                        imageContainer.innerHTML = '<img id="preview-image" src="' + e.target.result + '" alt="매장 이미지 미리보기" class="rounded shadow-sm" style="max-width: 300px; max-height: 200px;">';
+                    } else {
+                        // 기존 이미지가 있었던 경우, 소스 변경
+                        document.getElementById('preview-image').src = e.target.result;
+                    }
+                }
+                
+                reader.readAsDataURL(input.files[0]);
             }
-        </script>
-
-	</form:form>
+        }
+        
+        // 폼 제출 전 확인
+        function totalcheck() {
+            return confirm("매장 정보를 수정하시겠습니까?");
+        }
+    </script>
 </body>
 </html>

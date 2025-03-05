@@ -3,101 +3,160 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>사업자 회원가입</title>
-</head>
-<body>
-	<h3 align="center">사업자 회원가입</h3>
-	<form:form action="/owner/register" method="post"
-		modelAttribute="owner" enctype="multipart/form-data" name="frm" onsubmit="return totalcheck()">
-		<form:hidden path="idchecked" />
-아이디 : <br />
-		<form:input path="owner_id" />
-		<input type="button" value="중복검사" onclick="idcheck()" />
-		<br />
-		<font color="red"><form:errors path="owner_id" /></font>
-		<br />
-		<font color="red"><form:errors path="idchecked" /></font>
-		<br />
 
+<div class="auth-container">
+	<div class="auth-header">
+		<h2 class="auth-title">사업자 회원가입</h2>
+		<p class="auth-subtitle">금베달리스트에 매장을 등록하고 사업을 확장하세요</p>
+	</div>
 
-비밀번호 : <br />
-		<form:password path="owner_password" onkeyup="checkPassword()" />
-		<br />
-		<font color="red"><form:errors path="owner_password" /></font>
-		<br />
-비밀번호 확인 : <br />
-		<input type="password" name="CONFIRM" onkeyup="checkPassword()" />
-		<br />
-		<div id="passwordMatch" style="color: red;"></div>
-		<br />
-이름 : <br />
-		<form:input path="owner_name" />
-		<br />
-		<font color="red"><form:errors path="owner_name" /></font>
-		<br />
-		<br />
-이메일 : <br />
-		<form:input path="owner_email" />
-		<br />
-		<font color="red"><form:errors path="owner_email" /></font>
-		<br />
-		<br />
-프로필 이미지 : <br />
-		<input type="file" name="image">
-		<br />
-		<br />
-전화번호 : <br />
-		<form:input path="owner_phone" />
-		<br />
-		<font color="red"><form:errors path="owner_phone" /></font>
-		<br />
-		<br />
+	<div class="auth-form">
+		<form:form action="/owner/insertRegister" method="post"
+			modelAttribute="owner" name="frm" onsubmit="return totalcheck()"
+			enctype="multipart/form-data">
+			<form:hidden path="idchecked" />
 
+			<div class="form-group">
+				<label for="owner_id" class="form-label">사업자 아이디</label>
+				<div class="d-flex">
+					<form:input path="owner_id" id="owner_id" class="form-control"
+						placeholder="아이디 입력 (5~15자)" />
+					<button type="button" class="btn btn-outline-gold ml-2"
+						onclick="idcheck()">중복확인</button>
+				</div>
+				<small class="text-muted">5자 이상, 15자 이내로 입력하세요</small>
+				<div class="text-error mt-1">
+					<form:errors path="owner_id" />
+				</div>
+			</div>
 
-		<input type="submit" value="회원가입" />
+			<div class="form-group">
+				<label for="owner_password" class="form-label">비밀번호</label>
+				<form:password path="owner_password" id="owner_password"
+					class="form-control" placeholder="비밀번호 입력 (8자 이상 영문+숫자)" />
+				<small class="text-muted">8자 이상의 영문, 숫자 조합으로 입력하세요</small>
+				<div class="text-error mt-1">
+					<form:errors path="owner_password" />
+				</div>
+			</div>
 
-		<script type="text/javascript">
-function idcheck(){
-if(document.frm.owner_id.value == ''){
-alert("아이디를 입력하세요.");
-document.frm.owner_id.focus();
-return false;
-} else {
-if(document.frm.owner_id.value.length < 5 ||
-document.frm.owner_id.value.length > 15){
-alert("계정은 5자 이상, 15자 이하로 입력하세요.");
-document.frm.owner_id.focus();
-return false;
+			<div class="form-group">
+				<label for="passwordcheck" class="form-label">비밀번호 확인</label> <input
+					type="password" id="passwordcheck" name="passwordcheck"
+					class="form-control" placeholder="비밀번호를 다시 입력해주세요" />
+				<div id="password-error-message" class="text-error mt-1"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="owner_name" class="form-label">사업자명</label>
+				<form:input path="owner_name" id="owner_name" class="form-control"
+					placeholder="사업자명을 입력해주세요" />
+				<div class="text-error mt-1">
+					<form:errors path="owner_name" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="owner_email" class="form-label">이메일</label>
+				<form:input path="owner_email" id="owner_email" class="form-control"
+					type="email" placeholder="이메일을 입력해주세요" />
+				<div class="text-error mt-1">
+					<form:errors path="owner_email" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="owner_phone" class="form-label">전화번호</label>
+				<form:input path="owner_phone" id="owner_phone" class="form-control"
+					placeholder="'-' 없이 숫자만 입력해주세요" />
+				<div class="text-error mt-1">
+					<form:errors path="owner_phone" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="form-label">프로필 이미지</label>
+				<div class="custom-file-upload">
+					<input type="file" name="image" id="profile-image"
+						class="form-control" /> <small class="text-muted">프로필
+						이미지는 선택사항입니다</small>
+				</div>
+			</div>
+
+			<div class="form-group mt-4">
+				<button type="submit" class="btn-auth">가입하기</button>
+			</div>
+		</form:form>
+	</div>
+
+	<div class="auth-footer">
+		<p>
+			이미 계정이 있으신가요? <a href="<c:url value='/owner/goLogin'/>"
+				class="auth-link">로그인</a>
+		</p>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function idcheck() {
+    if(document.frm.owner_id.value=='') {
+        alert("아이디를 입력해야 합니다.");
+        document.frm.owner_id.focus();
+        return false;
+    } else {
+        if(document.frm.owner_id.value.length < 5 || document.frm.owner_id.value.length > 15) {
+            alert("계정은 5자 이상, 15자 이내로 입력하세요.");
+            document.frm.owner_id.focus();
+            return false;
+        }
+    }
+    var url = "/owner/idcheck?owner_id="+document.frm.owner_id.value;
+    window.open(url, "_blank_", "width=450, height=200");
 }
-}
-var url = "/owner/idcheck?owner_id=" + document.frm.owner_id.value;
-window.open(url, "_blank_", "width=450, height=200");
-}
-
-
-
 
 function totalcheck() {
-// 아이디가 비어있거나 공백만 있는 경우는 검사하지 않고 @NotBlank 메시지가 표시되도록 함
-if(document.frm.owner_id.value.trim() === '') {
-return true; // 폼 제출을 허용하여 서버 측 @NotBlank 검증이 동작하도록 함
+    if(document.frm.owner_id.value=='') {
+        alert("아이디를 입력해야 합니다.");
+        document.frm.owner_id.focus();
+        return false;
+    }
+    
+    if(document.frm.idchecked.value=='') {
+        alert("아이디 중복검사를 해야합니다.");
+        return false;
+    }
+    
+    if(document.frm.owner_password.value=='') {
+        alert("비밀번호를 입력해야합니다.");
+        document.frm.owner_password.focus();
+        return false;
+    }
+    
+    if(document.frm.owner_password.value !== document.frm.passwordcheck.value) {
+        alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        document.frm.passwordcheck.focus();
+        return false;
+    }
+    
+    return true;
 }
 
-// 아이디가 입력되어 있는데 중복검사를 하지 않은 경우
-if(document.frm.idchecked.value == '') {
-alert("아이디 중복검사를 해야합니다.");
-return false;
-}
+// 비밀번호 확인 실시간 검사
+$(document).ready(function() {
+    const passwordField = $('#owner_password');
+    const passwordCheckField = $('#passwordcheck');
+    const errorMessage = $('#password-error-message');
+    const submitButton = $('button[type="submit"]');
 
-
-return true;
-}
+    passwordCheckField.on('input', function() {
+        if (passwordField.val() !== passwordCheckField.val()) {
+            errorMessage.text('비밀번호가 일치하지 않습니다.').show();
+            submitButton.prop('disabled', true);
+        } else {
+            errorMessage.hide();
+            submitButton.prop('disabled', false);
+        }
+    });
+});
 </script>
-
-	</form:form>
-</body>
-</html>

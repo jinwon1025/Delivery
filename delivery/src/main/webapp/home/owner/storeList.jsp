@@ -2,166 +2,117 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>가게 목록</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            padding: 20px;
-        }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .store-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between; /* 두 열 사이에 공간을 균등하게 분배 */
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .store-box {
-            display: flex;
-            align-items: flex-start;
-            border: 1px solid #ddd;
-            padding: 15px;
-            width: calc(50% - 10px); /* 두 개의 박스가 한 줄에 맞도록 너비 조정 */
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-            margin-bottom: 20px; /* 행간 간격을 위해 아래 마진 추가 */
-        }
+<div class="page-header">
+    <h1 class="page-title">내 가게 관리</h1>
+    <p class="page-subtitle">등록한 가게 목록과 상세 정보를 확인하고 관리할 수 있습니다.</p>
+    
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div>
+            <a href="<c:url value='/store/goRegister'/>" class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i> 새 가게 등록
+            </a>
+        </div>
         
-        /* 홀수 항목일 때 마지막 항목 스타일 */
-        .store-container::after {
-            content: "";
-            width: calc(50% - 10px); /* 빈 공간을 차지할 요소 너비 */
-            display: block;
-        }
+        <div class="d-flex">
+            <div class="form-group mb-0 mr-2">
+                <select class="form-select">
+                    <option value="all">모든 가게</option>
+                    <option value="open">영업 중</option>
+                    <option value="closed">영업 종료</option>
+                </select>
+            </div>
+            <div class="form-group mb-0">
+                <input type="text" class="form-control" placeholder="가게 이름 검색">
+            </div>
+        </div>
+    </div>
+</div>
 
-        .store-image {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .store-info {
-            flex-grow: 1;
-            min-width: 0; /* 텍스트가 너무 길 경우 오버플로우 방지 */
-        }
-
-        .store-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .store-details {
-            font-size: 14px;
-            color: #666;
-            margin: 3px 0;
-        }
-
-        /* 이모지 스타일 */
-        .emoji {
-            margin-right: 5px;
-        }
-
-        .store-actions {
-            margin-top: 15px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .store-actions form {
-            flex: 1;
-        }
-
-        .store-actions input[type="submit"] {
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: 1px solid #007bff;
-            background-color: white;
-            color: #007bff;
-            transition: all 0.3s ease;
-        }
-
-        .store-actions input[type="submit"]:hover {
-            background-color: #f0f0f0;
-        }
-
-        .store-actions input[value="가게 삭제"] {
-            color: #e74c3c;
-            border-color: #e74c3c;
-        }
-
-        .store-actions input[value="가게 삭제"]:hover {
-            background-color: #f9d6d6;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .store-box {
-                width: 100%; /* 모바일에서는 한 줄에 하나만 */
-                margin-left: 0; /* 모바일에서는 여백 제거 */
-            }
-        }
-    </style>
-</head>
-<body>
-    <h2>가게 리스트</h2>
-
-    <div class="store-container">
-        <c:forEach var="store" items="${storeList}" varStatus="status">
-            <div class="store-box">
-                <!-- 가게 프로필 사진 -->
+<div class="store-card-list">
+    <c:forEach var="store" items="${storeList}" varStatus="status">
+        <div class="store-card">
+            <div class="store-card-img">
                 <c:choose>
                     <c:when test="${not empty store.store_image_name}">
-                        <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="가게 프로필" class="store-image">
+                        <img src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" 
+                             alt="${store.store_name}">
                     </c:when>
                     <c:otherwise>
-                        <img src="${pageContext.request.contextPath}/image/noStoreProfile.png" class="store-image">
+                        <img src="${pageContext.request.contextPath}/image/noStoreProfile.png" 
+                             alt="기본 이미지">
                     </c:otherwise>
                 </c:choose>
-
-                <!-- 가게 정보 -->
-                <div class="store-info">
-                    <p class="store-name">${store.store_name} (${store.store_id})</p>
-                    <p class="store-details"><span class="emoji">🚚</span>배달 요금: ${store.delivery_fee}원</p>
-                    <p class="store-details"><span class="emoji">💰</span>최소 주문 금액: ${store.last_price}원</p>
-                    
-                    <!-- 가게 관리 및 삭제 버튼을 최소 주문 금액 아래에 배치 -->
-                    <div class="store-actions">
-                        <form action="/store/storeMain" method="get">
-                            <input type="hidden" name="store_id" value="${store.store_id}"/>
-                            <input type="submit" value="가게 관리" name="BTN"/>
-                        </form>
-                        <form action="/store/delete" method="post" onsubmit="return confirm('정말 가게를 삭제하시겠습니까?');">
-                            <input type="hidden" name="store_id" value="${store.store_id}"/>
-                            <input type="submit" value="가게 삭제" name="BTN"/>
-                        </form>
+                <div class="store-status status-open">영업 중</div>
+            </div>
+            
+            <div class="store-card-body">
+                <h3 class="store-card-title">
+                    ${store.store_name}
+                    <span class="store-badge">배달</span>
+                </h3>
+                
+                <div class="store-card-meta">
+                    <div class="store-meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${empty store.store_address ? '주소 미등록' : store.store_address}</span>
+                    </div>
+                    <div class="store-meta-item">
+                        <i class="fas fa-phone"></i>
+                        <span>${empty store.store_phone ? '연락처 미등록' : store.store_phone}</span>
+                    </div>
+                    <div class="store-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>${empty store.store_openHour ? '영업시간 미등록' : store.store_openHour}</span>
+                    </div>
+                    <div class="store-meta-item">
+                        <i class="fas fa-won-sign"></i>
+                        <span>최소주문: ${store.last_price}원</span>
+                    </div>
+                    <div class="store-meta-item">
+                        <i class="fas fa-truck"></i>
+                        <span>배달비: ${store.delivery_fee}원</span>
                     </div>
                 </div>
             </div>
-        </c:forEach>
+            
+            <div class="store-card-footer">
+                <div class="store-stats">
+                    <div class="store-stat">
+                        <i class="fas fa-star"></i>
+                        <span>4.8</span>
+                    </div>
+                    <div class="store-stat">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>123건</span>
+                    </div>
+                </div>
+                
+                <div class="store-card-btns">
+                    <form action="/store/storeMain" method="get" class="d-inline">
+                        <input type="hidden" name="store_id" value="${store.store_id}"/>
+                        <button type="submit" class="btn btn-sm btn-primary">관리</button>
+                    </form>
+                    <form action="/store/delete" method="post" class="d-inline" 
+                          onsubmit="return confirm('${store.store_name} 가게를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                        <input type="hidden" name="store_id" value="${store.store_id}"/>
+                        <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+</div>
+
+<c:if test="${empty storeList}">
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-store-slash" style="font-size: 4rem; color: var(--gray-400);"></i>
+        </div>
+        <h3 class="mb-3">등록된 가게가 없습니다</h3>
+        <p class="text-muted mb-4">아직 등록된 가게가 없습니다. 새로운 가게를 등록해보세요!</p>
+        <a href="<c:url value='/store/goRegister'/>" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i> 가게 등록하기
+        </a>
     </div>
-</body>
-</html>
+</c:if>

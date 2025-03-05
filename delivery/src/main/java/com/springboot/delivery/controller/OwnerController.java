@@ -30,11 +30,21 @@ public class OwnerController {
 	private OwnerService ownerSerivce;
 
 	@GetMapping(value = "/owner/index")
-	public ModelAndView ownerIndex() {
-		ModelAndView mav = new ModelAndView("owner/ownerMain");
-		mav.addObject("BODY", "ownerLogin.jsp");
-		mav.addObject(new LoginOwner());
-		return mav;
+	public ModelAndView ownerIndex(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("owner/ownerMain");
+	    
+	    // 세션에서 로그인 정보 확인
+	    LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
+	    
+	    if (loginOwner != null) {
+	        // 로그인되어 있는 경우 메인 페이지 또는 스토어 목록 페이지로 리다이렉트
+	        return new ModelAndView("redirect:/store/storeList");
+	    } else {
+	        // 로그인되어 있지 않은 경우 로그인 페이지 표시
+	        mav.addObject("BODY", "ownerLogin.jsp");
+	        mav.addObject(new LoginOwner());
+	        return mav;
+	    }
 	}
 
 	@PostMapping(value = "/owner/register")
