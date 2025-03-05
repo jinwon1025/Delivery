@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserStoreMapper;
+import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
@@ -118,6 +119,26 @@ public class UserStoreService {
 	
 	public void deleteQuantityInCart(OrderCart oc) {
 		this.userStoreMapper.deleteQuantityInCart(oc);
+	}
+	
+	public Integer getDeliveryFee(String store_id) {
+		return this.userStoreMapper.getDeliveryFee(store_id);
+	}
+	
+	public CartUser cartUserData(String user_id) {
+		return this.userStoreMapper.cartUserData(user_id);
+	}
+	
+	public void insertPay(OrderCart oc) {
+		this.userStoreMapper.insertPay(oc);
+	}
+	
+	public void updateOrderStore(OrderCart oc) {
+		this.userStoreMapper.updateOrderStore(oc);
+	}
+	
+	public String checkOrder(String user_id) {
+		return this.userStoreMapper.checkOrder(user_id);
 	}
 
 	

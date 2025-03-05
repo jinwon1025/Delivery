@@ -93,8 +93,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
+            padding: 15px 0;
             border-top: 2px solid #ff6b6b;
         }
         .cart-total-text {
@@ -188,6 +187,71 @@
         .quantity-btn:hover {
             background-color: #ddd;
         }
+        /* 결제 금액 요약 박스 스타일 */
+        .payment-summary {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .payment-summary-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .payment-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .payment-summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .payment-summary-price {
+            text-align: right;
+        }
+        .discount-price {
+            color: #2E86C1;
+        }
+        .total-price {
+            color: #ff6b6b;
+        }
+        /* 하단 주문 정보 및 버튼 컨테이너 */
+        .order-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .order-footer-left {
+            flex: 1;
+        }
+        .order-footer-right {
+            display: flex;
+            gap: 10px;
+        }
+        @media (max-width: 680px) {
+            .order-footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .order-footer-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .order-footer-right .btn {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -275,37 +339,74 @@
     </c:if>
 </c:forEach>
             
-            <div class="cart-total">
-                <div class="cart-total-text">총 주문 금액</div>
-                <div class="cart-total-price">
-                    <c:set var="totalPrice" value="0"/>
-                    <c:set var="processedItems" value=""/>
-                    <c:forEach items="${cartDetails}" var="item">
-                        <c:set var="itemKey" value="${item.MENU_ITEM_ID}-${item.ORDER_OPTION_ID}"/>
-                        <c:if test="${!fn:contains(processedItems, itemKey)}">
-                            <c:set var="itemQuantity" value="${empty item.QUANTITY ? 1 : item.QUANTITY}"/>
-                            <c:set var="totalPrice" value="${totalPrice + (item.MENU_PRICE * itemQuantity)}"/>
-                            <c:set var="processedItems" value="${processedItems},${itemKey}"/>
-                        </c:if>
-                    </c:forEach>
-                    <span id="totalPriceDisplay"><fmt:formatNumber value="${totalPrice}" type="number"/>원</span>
-                    <input type="hidden" id="hiddenTotalPrice" name="totalPrice" value="${totalPrice}">
+            <!-- 결제 금액 요약 박스 추가 -->
+            <div class="payment-summary">
+                <div class="payment-summary-title">결제금액을 확인해주세요</div>
+                <div class="payment-summary-row">
+                    <div>메뉴금액</div>
+                    <div class="payment-summary-price">
+                        <span id="menuPriceDisplay">
+                            <c:set var="totalPrice" value="0"/>
+                            <c:set var="processedItems" value=""/>
+                            <c:forEach items="${cartDetails}" var="item">
+                                <c:set var="itemKey" value="${item.MENU_ITEM_ID}-${item.ORDER_OPTION_ID}"/>
+                                <c:if test="${!fn:contains(processedItems, itemKey)}">
+                                    <c:set var="itemQuantity" value="${empty item.QUANTITY ? 1 : item.QUANTITY}"/>
+                                    <c:set var="totalPrice" value="${totalPrice + (item.MENU_PRICE * itemQuantity)}"/>
+                                    <c:set var="processedItems" value="${processedItems},${itemKey}"/>
+                                </c:if>
+                            </c:forEach>
+                            <fmt:formatNumber value="${totalPrice}" type="number"/>원
+                        </span>
+                    </div>
+                </div>
+                <div class="payment-summary-row">
+                    <div>배달팁</div>
+                    <div class="payment-summary-price">
+                        <span id="deliveryFeeDisplay">
+                            <fmt:formatNumber value="${deliveryFee}" type="number"/>원
+                        </span>
+                    </div>
+                </div>
+                <div class="payment-summary-total">
+                    <div>결제예정금액</div>
+                    <div class="payment-summary-price total-price">
+                        <span id="finalTotalPriceDisplay">
+                            <fmt:formatNumber value="${totalPrice + deliveryFee}" type="number"/>원
+                        </span>
+                        <input type="hidden" id="hiddenFinalTotalPrice" name="finalTotalPrice" value="${totalPrice + deliveryFee}">
+                    </div>
                 </div>
             </div>
-            
-            <div class="cart-actions">
-                <a href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}" class="btn">메뉴 추가</a>
-                <form action="/order/proceed" method="post" onsubmit="return validateForm()">
-                    <input type="hidden" id="orderTotalPrice" name="totalPrice" value="${totalPrice}">
-                    <c:forEach items="${cartDetails}" var="item" varStatus="status">
-                        <c:if test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID || cartDetails[status.index-1].ORDER_OPTION_ID != item.ORDER_OPTION_ID}">
-                            <input type="hidden" name="selectedItems" value="${item.MENU_ITEM_ID}" class="selectedItems-hidden">
-                            <input type="hidden" name="itemQuantities" value="${empty item.QUANTITY ? 1 : item.QUANTITY}" class="itemQuantities-hidden">
-                            <input type="hidden" name="orderOptionIds" value="${item.ORDER_OPTION_ID}" class="orderOptionIds-hidden">
-                        </c:if>
-                    </c:forEach>
-                    <button type="submit" class="btn">주문하기</button>
-                </form>
+
+            <!-- 하단 주문 정보 및 버튼 컨테이너 -->
+            <div class="order-footer">
+                <div class="order-footer-left">
+                    <div class="cart-total">
+                        <div class="cart-total-text">총 주문 금액</div>
+                        <div class="cart-total-price">
+                            <span id="totalPriceDisplay"><fmt:formatNumber value="${totalPrice}" type="number"/>원</span>
+                            <input type="hidden" id="hiddenTotalPrice" name="totalPrice" value="${totalPrice}">
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer-right">
+                    <a href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}" class="btn">메뉴 추가</a>
+                    <form action="/userStore/startOrder" method="get" onsubmit="return validateForm()">
+                        <input type="hidden" id="orderTotalPrice" name="totalPrice" value="${totalPrice}">
+                        <input type="hidden" id="orderDeliveryFee" name="deliveryFee" value="${deliveryFee}">
+                        <input type="hidden" id="orderFinalTotalPrice" name="finalTotalPrice" value="${totalPrice + deliveryFee}">
+                        <input type="hidden" id="order_Id" name="order_Id" value="${cartDetails[0].ORDER_ID}">
+                        <c:forEach items="${cartDetails}" var="item" varStatus="status">
+                            <c:if test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID || cartDetails[status.index-1].ORDER_OPTION_ID != item.ORDER_OPTION_ID}">
+                                <input type="hidden" name="selectedItems" value="${item.MENU_ITEM_ID}" class="selectedItems-hidden">
+                                <input type="hidden" name="itemQuantities" value="${empty item.QUANTITY ? 1 : item.QUANTITY}" class="itemQuantities-hidden">
+                                <input type="hidden" name="orderOptionIds" value="${item.ORDER_OPTION_ID}" class="orderOptionIds-hidden">
+                            </c:if>
+                        </c:forEach>
+                        <button type="submit" class="btn">주문하기</button>
+                    </form>
+                </div>
             </div>
         </div>
     </c:otherwise>
@@ -365,10 +466,23 @@ function updateTotalPrice() {
         }
     }
     
+    // 배달팁 (고정값 또는 서버에서 받아온 값)
+    const deliveryFee = Number(document.getElementById('orderDeliveryFee').value || 4110);
+    const finalTotalPrice = totalPrice + deliveryFee;
+    
+    // 화면의 가격 정보 업데이트
     document.getElementById('totalPriceDisplay').innerText = totalPrice.toLocaleString() + '원'; // 화면에 총 가격 표시 (천 단위 구분자 포함)
+    document.getElementById('menuPriceDisplay').innerText = totalPrice.toLocaleString() + '원'; // 메뉴 금액 표시
+    document.getElementById('finalTotalPriceDisplay').innerText = finalTotalPrice.toLocaleString() + '원'; // 최종 결제 금액 표시
+    
+    // 숨겨진 입력 필드 업데이트
     document.getElementById('hiddenTotalPrice').value = totalPrice; // 숨겨진 총 가격 입력 필드 업데이트
     document.getElementById('orderTotalPrice').value = totalPrice; // 주문 총 가격 입력 필드 업데이트
+    document.getElementById('hiddenFinalTotalPrice').value = finalTotalPrice; // 숨겨진 최종 금액 입력 필드 업데이트
+    document.getElementById('orderFinalTotalPrice').value = finalTotalPrice; // 주문 최종 금액 입력 필드 업데이트
+    
     updateSelectedItemsHidden(); // 선택된 아이템에 대한 숨겨진 입력 필드 업데이트
+    
     // 체크박스 상태 변경 시 전체선택 체크박스도 업데이트
     updateSelectAllCheckbox(); // 전체 선택 체크박스 상태 업데이트
 }

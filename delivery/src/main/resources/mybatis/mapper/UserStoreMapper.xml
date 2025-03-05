@@ -71,14 +71,16 @@
 	</insert>
 	<select id="getMaxCountOrderOption" resultType="Integer">
 
-		select max(order_option_id) from order_option_tbl
+		select
+		max(order_option_id) from order_option_tbl
 
 	</select>
 
 	<insert id="insertOrderItemQuantity"
 		parameterType="com.springboot.delivery.model.OrderQuantity">
 
-		insert into order_quantity_tbl values(#{order_option_id}, #{quantity},
+		insert into order_quantity_tbl
+		values(#{order_option_id}, #{quantity},
 		#{order_id})
 
 	</insert>
@@ -91,9 +93,9 @@
 
 	<select id="getOrderByUserId" parameterType="String"
 		resultType="com.springboot.delivery.model.OrderCart">
-
-		select order_id from b_order_tbl where user_id=#{user_id}
-
+		SELECT order_id
+		FROM b_order_detail_tbl
+		WHERE user_id = #{user_id} AND order_status = 0
 	</select>
 
 	<select id="getOrderStatusByOrderId" parameterType="String"
@@ -116,8 +118,10 @@
 		oo.order_option_id,
 		o.order_id,
 		oq.quantity,
-		LISTAGG(ot.option_name, ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_names,
-		LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP (ORDER BY
+		LISTAGG(ot.option_name, ', ') WITHIN GROUP (ORDER BY ot.option_name)
+		as option_names,
+		LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP
+		(ORDER BY
 		ot.option_name) as option_prices,
 		SUM(COALESCE(ot.option_price, 0)) as total_option_price
 		FROM
@@ -141,133 +145,187 @@
 		oo.order_option_id, o.order_id, oq.quantity
 	</select>
 
-	<select id="isMenuInCart" parameterType="String"
-		resultType="String">
-
-		select order_id from b_order_tbl where user_id = #{user_id}
-
+<select id="isMenuInCart" parameterType="String" resultType="String">
+    SELECT order_id FROM (
+        SELECT order_id FROM b_order_tbl 
+        WHERE user_id = #{user_id} 
+        AND EXISTS (
+            SELECT 1 FROM b_order_detail_tbl 
+            WHERE b_order_detail_tbl.order_id = b_order_tbl.order_id 
+            AND order_status = 0
+        )
+        ORDER BY order_time DESC
+    ) WHERE ROWNUM = 1
+</select>
+	
+	<select id="checkOrder" parameterType="String" resultType="String">
+	
+		select order_id from b_order_detail_tbl where user_id=#{user_id} and order_status = '0'
+	
 	</select>
 
-<select id="findMatchingOptionId" 
-        parameterType="com.springboot.delivery.model.MatchingOptionParam"
-        resultType="Integer">
-    SELECT DISTINCT oo.ORDER_OPTION_ID
-    FROM order_option_tbl oo
-    WHERE oo.ORDER_ID = #{orderId} 
-      AND oo.MENU_ITEM_ID = #{menuItemId}
-      AND (
-          SELECT COUNT(1) 
-          FROM order_option_tbl 
-          WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
-      ) = #{optionCount}
-      AND NOT EXISTS (
-          SELECT 1 
-          FROM (
-              <foreach collection="optionList" item="option" separator=" UNION ALL ">
-                  SELECT #{option.option_group_id} AS OPTION_GROUP_ID, 
-                         #{option.option_id} AS OPTION_ID
-                  FROM DUAL
-              </foreach>
-          ) opt
-          WHERE NOT EXISTS (
-              SELECT 1 
-              FROM order_option_tbl 
-              WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID 
-                AND OPTION_GROUP_ID = opt.OPTION_GROUP_ID 
-                AND OPTION_ID = opt.OPTION_ID
-          )
-      )
-      AND NOT EXISTS (
-          SELECT 1 
-          FROM order_option_tbl 
-          WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
-          AND NOT EXISTS (
-              SELECT 1 
-              FROM (
-                  <foreach collection="optionList" item="option" separator=" UNION ALL ">
-                      SELECT #{option.option_group_id} AS OPTION_GROUP_ID, 
-                             #{option.option_id} AS OPTION_ID
-                      FROM DUAL
-                  </foreach>
-              ) opt
-              WHERE opt.OPTION_GROUP_ID = OPTION_GROUP_ID 
-                AND opt.OPTION_ID = OPTION_ID
-          )
-      )
-    AND ROWNUM = 1
-</select>
+	<select id="findMatchingOptionId"
+		parameterType="com.springboot.delivery.model.MatchingOptionParam"
+		resultType="Integer">
+		SELECT DISTINCT oo.ORDER_OPTION_ID
+		FROM order_option_tbl oo
+		WHERE oo.ORDER_ID = #{orderId}
+		AND oo.MENU_ITEM_ID = #{menuItemId}
+		AND (
+		SELECT COUNT(1)
+		FROM order_option_tbl
+		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		) = #{optionCount}
+		AND NOT EXISTS (
+		SELECT 1
+		FROM (
+		<foreach collection="optionList" item="option"
+			separator=" UNION ALL ">
+			SELECT #{option.option_group_id} AS OPTION_GROUP_ID,
+			#{option.option_id} AS OPTION_ID
+			FROM DUAL
+		</foreach>
+		) opt
+		WHERE NOT EXISTS (
+		SELECT 1
+		FROM order_option_tbl
+		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		AND OPTION_GROUP_ID = opt.OPTION_GROUP_ID
+		AND OPTION_ID = opt.OPTION_ID
+		)
+		)
+		AND NOT EXISTS (
+		SELECT 1
+		FROM order_option_tbl
+		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		AND NOT EXISTS (
+		SELECT 1
+		FROM (
+		<foreach collection="optionList" item="option"
+			separator=" UNION ALL ">
+			SELECT #{option.option_group_id} AS OPTION_GROUP_ID,
+			#{option.option_id} AS OPTION_ID
+			FROM DUAL
+		</foreach>
+		) opt
+		WHERE opt.OPTION_GROUP_ID = OPTION_GROUP_ID
+		AND opt.OPTION_ID = OPTION_ID
+		)
+		)
+		AND ROWNUM = 1
+	</select>
 	<update id="increaseQuantity"
 		parameterType="com.springboot.delivery.model.QuantityUpdateParam">
 		UPDATE order_quantity_tbl
-		SET QUANTITY = QUANTITY + #{additionalQuantity}
+		SET QUANTITY = QUANTITY +
+		#{additionalQuantity}
 		WHERE ORDER_OPTION_ID = #{orderOptionId}
-		AND ORDER_ID = #{orderId}
+		AND
+		ORDER_ID = #{orderId}
 	</update>
 
-	<delete id="deleteItemInCart" parameterType="com.springboot.delivery.model.OrderCart">
+	<delete id="deleteItemInCart"
+		parameterType="com.springboot.delivery.model.OrderCart">
 
 
-		delete from order_option_tbl where order_option_id = #{order_option_id} and order_id = #{order_id} 
+		delete from order_option_tbl where order_option_id =
+		#{order_option_id} and order_id = #{order_id}
 	</delete>
-	
-	<delete id="deleteQuantityInCart" parameterType="com.springboot.delivery.model.OrderCart">
-	
+
+	<delete id="deleteQuantityInCart"
+		parameterType="com.springboot.delivery.model.OrderCart">
+
 		delete from order_quantity_tbl where order_id=#{order_id}
-	
+
 	</delete>
 
 	<select id="checkCountInCart" parameterType="String"
 		resultType="Integer">
 
-		select count(*) from order_option_tbl where order_id=#{order_id}
+		select count(*) from order_option_tbl where
+		order_id=#{order_id}
 
 	</select>
 
 	<delete id="deleteOrderDetail" parameterType="String">
 
-		delete from b_order_detail_tbl where order_id=#{order_id}
+		delete from
+		b_order_detail_tbl where order_id=#{order_id}
 
 	</delete>
 
 	<delete id="deleteOrder" parameterType="String">
 
-		delete from b_order_tbl where order_id=#{order_id}
+		delete from b_order_tbl
+		where order_id=#{order_id}
 
 	</delete>
 
 	<select id="getOrderOptionId" parameterType="String"
 		resultType="Integer">
-		SELECT MAX(ORDER_OPTION_ID) FROM order_option_tbl WHERE ORDER_ID =
+		SELECT MAX(ORDER_OPTION_ID) FROM order_option_tbl WHERE
+		ORDER_ID =
 		#{orderId}
 	</select>
-	
-	<select id="findOrderByUserId" parameterType="com.springboot.delivery.model.OrderCart" resultType="String">
-	
-	select order_id from b_order_tbl where user_id=#{user_id}
-	
+
+	<select id="findOrderByUserId"
+		parameterType="com.springboot.delivery.model.OrderCart"
+		resultType="String">
+
+		select order_id from b_order_detail_tbl where user_id=#{user_id} and order_status='0'
+
 	</select>
-	
-	<select id="findStoreByMenuItemInCart" parameterType="com.springboot.delivery.model.OrderCart" resultType="String">
-	
-	select store_id from b_order_detail_tbl where user_id=#{user_id} and order_id=#{order_id}
-	
+
+	<select id="findStoreByMenuItemInCart"
+		parameterType="com.springboot.delivery.model.OrderCart"
+		resultType="String">
+
+		select store_id from b_order_detail_tbl where user_id=#{user_id} and
+		order_id=#{order_id} and order_status=#{order_status}
+
 	</select>
-	
+
 	<delete id="deleteOrderQuantityInCart" parameterType="String">
-	
-	delete from order_quantity_tbl where order_id=#{order_id}
-	
+
+		delete from order_quantity_tbl where order_id=#{order_id}
+
 	</delete>
-	
+
 	<delete id="deleteOrderOptionInCart" parameterType="String">
-	
-	delete from order_option_tbl where order_id=#{order_id}
-	
+
+		delete from order_option_tbl where order_id=#{order_id}
+
 	</delete>
-	
-		
+
+	<select id="getDeliveryFee" parameterType="String"
+		resultType="Integer">
+
+		select delivery_fee from b_store_tbl where store_id=#{store_id}
+
+	</select>
+
+	<select id="cartUserData" parameterType="String"
+		resultType="com.springboot.delivery.model.CartUser">
+
+		select user_phone, point, user_address from b_user_info where
+		user_id=#{user_id}
+
+	</select>
+
+	<update id="insertPay"
+		parameterType="com.springboot.delivery.model.OrderCart">
+
+		update b_order_detail_tbl set toowner=#{toowner},torider=#{torider},
+		order_status=#{order_status}, totalprice=#{totalPrice} where
+		order_id=#{order_id}
 
 
-
+	</update>
+	<update id="updateOrderStore" parameterType="com.springboot.delivery.model.OrderCart">
+    UPDATE b_order_detail_tbl 
+    SET store_id = #{store_id}, 
+        store_address = #{store_address}
+    WHERE order_id = #{order_id}
+</update>
 
 </mapper>

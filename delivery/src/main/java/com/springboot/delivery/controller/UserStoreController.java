@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.MatchingOptionParam;
@@ -83,37 +84,49 @@ public class UserStoreController {
 	    Store store = (Store) session.getAttribute("currentStore");
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 	    ModelAndView mav = new ModelAndView("user/userMain");
-	    
+
 	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
 	    List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
 	    mav.addObject("maincategoryList", maincategoryList);
 	    mav.addObject("storeCategory", mc);
 	    mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-	    
+
 	    MenuItem mi = this.userStoreService.menuItemDetail(menu_item_id);
-	    
+
+	    // 장바구니 관련 로직
 	    OrderCart oc = new OrderCart();
 	    oc.setUser_id(loginUser.getUser_id());
-	    
+	    oc.setOrder_status(0);
+	    System.out.println("유저 아이디"+oc.getUser_id());
 	    String existingOrderId = this.userStoreService.findOrderByUserId(oc);
 	    String existingOrderStoreId = "none"; // 기본값
+
+	    // 장바구니 상태를 확인하여 결과 저장
+	    boolean showModal = false;
 	    
 	    if (existingOrderId != null) {
 	        oc.setOrder_id(existingOrderId);
+	        oc.setOrder_status(0);
 	        existingOrderStoreId = this.userStoreService.findStoreByMenuItemInCart(oc);
+	        
+	        // 장바구니가 비어있지 않고, 다른 가게의 상품이 담겨있는 경우
+	        if (existingOrderStoreId != null && !existingOrderStoreId.equals(store.getStore_id())) {
+	            showModal = true;
+	        }
 	    }
 	    
+	    // 결과를 모델에 추가
+	    mav.addObject("showModal", showModal);
+
 	    List<OptionSet> os = this.userStoreService.optionDetail(menu_item_id);
 	    Map<String, List<OptionSet>> groupedOptions = new TreeMap<>();
 	    for (OptionSet option : os) {
 	        groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
 	    }
-	    
+
 	    mav.addObject("menuDetail", mi);
 	    mav.addObject("optionGroups", groupedOptions);
 	    mav.addObject("STOREBODY", "../userstore/userMenuDetail.jsp");
-	    mav.addObject("orderStore", existingOrderStoreId);
-	    mav.addObject("currentStore", store.getStore_id());
 	    
 	    return mav;
 	}
@@ -135,13 +148,18 @@ public class UserStoreController {
 
 	    // 가게 주소 가져오기
 	    String storeAddress = this.userStoreService.storeAddress(store.getStore_id());
+	    
+	    System.out.println("로그인유저 아이디아이디:" + loginUser.getUser_id());
 
-	    // 현재 장바구니 상태 확인
+	    // 현재 사용자의 장바구니(order_status=0) 주문 ID 가져오기
 	    String existingCartId = this.userStoreService.isMenuInCart(loginUser.getUser_id());
+	    
+	    if (existingCartId == null) {
+	        System.out.println("장바구니에 이전 항목이 없습니다.");
+	    }
 
-	    // 옵션 객체 준비
+	    // 옵션 객체 준비 - 선택된 옵션들 처리
 	    List<OptionOrder> optionOrders = new ArrayList<>();
-
 	    if (selectedOptions != null && !selectedOptions.isEmpty()) {
 	        for (Integer optionId : selectedOptions) {
 	            int index = allOptionIds.indexOf(optionId);
@@ -156,86 +174,63 @@ public class UserStoreController {
 
 	    String orderId;
 	    if (existingCartId != null) {
-	    	System.out.println("이미 항목이 있어 카트에");
-	        // 장바구니에 이미 항목이 있는 경우
+	        System.out.println("이미 장바구니에 항목이 있습니다");
+	        // 기존 장바구니 사용
 	        orderId = existingCartId;
 	        OrderCart oc = new OrderCart();
 	        oc.setUser_id(loginUser.getUser_id());
 	        oc.setOrder_id(existingCartId);
+	        oc.setOrder_status(0);
 	        
+	        // 현재 장바구니에 있는 상점 ID 확인
 	        String storeIdInOrder = this.userStoreService.findStoreByMenuItemInCart(oc);
 	        String currentStoreId = store.getStore_id();
 	        
-	        if (!storeIdInOrder.equals(currentStoreId)) { //카트에 있는 가게와 다른 가게에서 구매할 경우
-	        	System.out.println("장바구니에 있는 가게와 다른데에서 구매할건데");
-	            // 다른 가게의 장바구니인 경우 기존 장바구니 삭제
-	            this.userStoreService.deleteOrderQuantityInCart(existingCartId);
-	            System.out.println(storeIdInOrder);
-	            System.out.println("1");
-	            this.userStoreService.deleteOrderOptionInCart(existingCartId);
-	            System.out.println("2");
-	            this.userStoreService.deleteOrderDetail(existingCartId);
-	            System.out.println("3");
-	            this.userStoreService.deleteOrder(existingCartId);
-	            System.out.println("4");
+	        if (storeIdInOrder == null || !storeIdInOrder.equals(currentStoreId)) {
+	            // 다른 가게 상품을 담으려는 경우 - 기존 장바구니 아이템 삭제 후 가게 정보 업데이트
+	            System.out.println("장바구니에 있는 가게와 다른 가게에서 주문합니다");
 	            
-	            orderId = generateOrderId();
-	            System.out.println("5");
-	            // 새 주문 카트 생성
-	            OrderCart orderCart = new OrderCart();
-	            orderCart.setOrder_id(orderId);
-	            orderCart.setUser_id(loginUser.getUser_id());
-	            orderCart.setStore_id(store.getStore_id());
-	            orderCart.setStore_address(storeAddress);
-	            orderCart.setOrder_status(0);
-	            orderCart.setMenu_item_id(menuId);
-
-	            // 기본 주문 정보 입력
-	            userStoreService.insertOrder(orderCart);
-	            System.out.println("6");
-	            userStoreService.insertOrderDetail(orderCart);
-	            System.out.println("7");
+	            // 기존 주문 옵션과 수량 정보 삭제
+	            this.userStoreService.deleteOrderQuantityInCart(existingCartId);
+	            this.userStoreService.deleteOrderOptionInCart(existingCartId);
+	            
+	            // 주문 정보를 새 가게 정보로 업데이트
+	            OrderCart updateStoreCart = new OrderCart();
+	            updateStoreCart.setOrder_id(existingCartId);
+	            updateStoreCart.setStore_id(store.getStore_id());
+	            updateStoreCart.setStore_address(storeAddress);
+	            this.userStoreService.updateOrderStore(updateStoreCart);
 
 	            // 선택된 옵션 처리
 	            if (!optionOrders.isEmpty()) {
-	                // 옵션 ID 결정
-	            	 System.out.println("8");
+	                // 옵션 ID 얻기
 	                Integer maxCount = this.userStoreService.getMaxCountOrderOption();
-	                System.out.println("9");
 	                Integer orderOptionId = (maxCount == null) ? 1 : maxCount + 1;
-	                System.out.println("10");
 
+	                // 각 옵션 추가
 	                for (OptionOrder option : optionOrders) {
 	                    OrderCart tempCart = new OrderCart();
-	                    System.out.println("A");
 	                    tempCart.setOrder_option_id(orderOptionId);
-	                    System.out.println("B");
 	                    tempCart.setOrder_id(orderId);
-	                    System.out.println("C");
 	                    tempCart.setMenu_item_id(menuId);
-	                    System.out.println("D");
 	                    tempCart.setOption_id(option.getOption_id());
-	                    System.out.println("E");
 	                    tempCart.setOption_group_id(option.getOption_group_id());
 	                    
-	                    System.out.println("11");
 	                    userStoreService.insertOrderOption(tempCart);
 	                }
 
 	                // 수량 정보 추가
-	                System.out.println("12");
 	                OrderQuantity oq = new OrderQuantity();
 	                oq.setOrder_option_id(orderOptionId);
 	                oq.setQuantity(quantity);
 	                oq.setOrder_id(orderId);
-	                System.out.println("13");
 	                userStoreService.insertOrderItemQuantity(oq);
-	                System.out.println("14");
 	            }
 	        } else {
-	        	System.out.println("장바구니에 있는 가게와 같은데에서 구매할건데");
-	            if (!optionOrders.isEmpty()) { // 동일한 메뉴와 옵션 조합이 있는지 확인
-	            	System.out.println("동일한 메뉴와 옵션을 가진 메뉴가 있어");
+	            System.out.println("장바구니에 있는 가게와 같은 가게에서 주문합니다");
+	            
+	            // 옵션이 있는 메뉴인 경우 동일한 메뉴와 옵션 조합이 있는지 확인
+	            if (!optionOrders.isEmpty()) {
 	                MatchingOptionParam mop = new MatchingOptionParam();
 	                mop.setOrderId(existingCartId);
 	                mop.setMenuItemId(menuId);
@@ -245,8 +240,8 @@ public class UserStoreController {
 	                Integer matchingOptionId = userStoreService.findMatchingOptionId(mop);
 
 	                if (matchingOptionId != null) {
-	                	System.out.println("그래서 수량만 증가할거야");
-	                    // 동일한 메뉴와 옵션 조합이 있으면 수량만 증가
+	                    // 동일한 메뉴와 옵션 조합이 이미 있으면 수량만 증가
+	                    System.out.println("동일한 메뉴와 옵션 조합이 있어 수량만 증가시킵니다");
 	                    QuantityUpdateParam qup = new QuantityUpdateParam();
 	                    qup.setOrderOptionId(matchingOptionId);
 	                    qup.setOrderId(existingCartId);
@@ -254,13 +249,14 @@ public class UserStoreController {
 
 	                    userStoreService.increaseQuantity(qup);
 
-	                    // 수량만 증가했으므로 즉시 리다이렉트
 	                    return new ModelAndView("redirect:/userstore/menuDetail?menu_item_id=" + menuId);
 	                }
 	            }
-	            System.out.println("카트에 없는 메뉴야");
-	            // 동일한 메뉴+옵션 조합이 없거나 옵션이 없는 경우 새 항목 추가
-	            Integer orderOptionId = this.userStoreService.getOrderOptionId(orderId) + 1;
+
+	            // 동일 메뉴+옵션 조합이 없거나 옵션이 없는 경우 새 항목 추가
+	            System.out.println("카트에 없는 메뉴를 추가합니다");
+	            Integer orderOptionId = this.userStoreService.getOrderOptionId(orderId);
+	            orderOptionId = (orderOptionId == null) ? 1 : orderOptionId + 1;
 
 	            // 선택된 옵션 처리
 	            if (!optionOrders.isEmpty()) {
@@ -284,8 +280,8 @@ public class UserStoreController {
 	            }
 	        }
 	    } else {
-	    	System.out.println("장바구니가 비어있어.");
-	        // 장바구니가 비어있는 경우
+	        // 장바구니가 비어있는 경우 - 새 주문 생성
+	        System.out.println("장바구니가 비어있어 새 주문을 생성합니다");
 	        orderId = generateOrderId();
 
 	        // 새 주문 카트 생성
@@ -343,29 +339,65 @@ public class UserStoreController {
 
 	@GetMapping(value = "/userstore/viewCart")
 	public ModelAndView viewCart(HttpSession session) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-		OrderCart oc = this.userStoreService.getOrderByUserId(loginUser.getUser_id()); // 유저 아이디로 오더id 찾기
-		String isEmptyCart = "";
-		List<Map<String, Object>> cartList = this.userStoreService.getCartMenuDetails(loginUser.getUser_id());
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		mav.addObject("maincategoryList", maincategoryList);
-		mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-		System.out.println("User ID: " + loginUser.getUser_id());
-		System.out.println("Cart List Size: " + cartList.size());
-		System.out.println("Cart List: " + cartList);
-
-		if (cartList == null || cartList.isEmpty()) {
-			isEmptyCart = "empty";
-		} else {
-			isEmptyCart = "notEmpty";
-		}	
-		mav.addObject("isEmptyCart", isEmptyCart);
-		mav.addObject("cartDetails", cartList);
-		mav.addObject("STOREBODY", "../userstore/userCart.jsp");
-
-		return mav;
-
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    // loginUser가 null인 경우 처리
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index"); // 로그인 페이지로 리다이렉트
+	    }
+	    
+	    // 기본 화면 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+	    
+	    // 주문 정보 가져오기
+	    OrderCart oc = this.userStoreService.getOrderByUserId(loginUser.getUser_id());
+	    
+	    // oc가 null인 경우 처리
+	    if (oc == null) {
+	        mav.addObject("isEmptyCart", "empty");
+	        mav.addObject("STOREBODY", "../userstore/userCart.jsp");
+	        return mav;
+	    }
+	    
+	    // 장바구니 정보 가져오기
+	    String isEmptyCart = "";
+	    List<Map<String, Object>> cartList = this.userStoreService.getCartMenuDetails(loginUser.getUser_id());
+	    
+	    System.out.println("User ID: " + loginUser.getUser_id());
+	    System.out.println("Order ID: " + oc.getOrder_id());
+	    
+	    // cartList가 null이거나 비어있는 경우 처리
+	    if (cartList == null || cartList.isEmpty()) {
+	        mav.addObject("isEmptyCart", "empty");
+	        mav.addObject("STOREBODY", "../userstore/userCart.jsp");
+	        return mav;
+	    }
+	    
+	    System.out.println("Cart List Size: " + cartList.size());
+	    System.out.println("Cart List: " + cartList);
+	    
+	    OrderCart oc1 = new OrderCart();
+	    oc1.setOrder_id(oc.getOrder_id());
+	    oc1.setUser_id(loginUser.getUser_id());
+	    oc1.setOrder_status(0);
+	    
+	    System.out.println("로그인 유저 아이디 : " + loginUser.getUser_id());
+	    System.out.println("orderId : " + oc.getOrder_id());
+	    System.out.println("userId : " + oc.getUser_id());
+	    System.out.println("orderStatus : " + oc.getOrder_status());
+	    
+	    String store_id = this.userStoreService.findStoreByMenuItemInCart(oc1);
+	    Integer delivery_fee = this.userStoreService.getDeliveryFee(store_id);
+	    
+	    mav.addObject("isEmptyCart", "notEmpty");
+	    mav.addObject("cartDetails", cartList);
+	    mav.addObject("deliveryFee", delivery_fee);
+	    mav.addObject("STOREBODY", "../userstore/userCart.jsp");
+	    
+	    return mav;
 	}
 
 	@GetMapping(value = "/userstore/returnToStore")
@@ -407,5 +439,46 @@ public class UserStoreController {
 		}
 		return new ModelAndView("redirect:/userstore/viewCart");
 	}
+	
+	@GetMapping(value="/userStore/startOrder")
+	public ModelAndView startOrder(HttpSession session, String totalPrice, String deliveryFee, String finalTotalPrice, String order_Id ) {
+		
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		ModelAndView mav = new ModelAndView("user/userMain");
+		mav.addObject("BODY", "../userstore/startOrder.jsp");
+		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
+		
+		mav.addObject("userInfo", cu);
+		mav.addObject("totalPrice", totalPrice);
+		mav.addObject("deliveryFee", deliveryFee);
+		mav.addObject("finalTotalPrice", finalTotalPrice);
+		System.out.println("결제창 오더 아이디:"+order_Id);
+		mav.addObject("order_Id", order_Id);
+		return mav;
+		
+	}
+	
+	@PostMapping(value="/userstore/pay")
+	public ModelAndView pay(HttpSession session, String riderRequest,
+			String storeRequest, String order_Id, String finalTotal) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		OrderCart oc = new OrderCart();
+		oc.setToowner(storeRequest);
+		System.out.println(storeRequest);
+		oc.setTorider(riderRequest);
+		System.out.println(riderRequest);
+		oc.setOrder_id(order_Id);
+		System.out.println("오더 아이디:"+order_Id);
+		oc.setOrder_status(1); //주문완료 처리
+		oc.setTotalPrice(Integer.parseInt(finalTotal));
+		System.out.println(finalTotal);
+		this.userStoreService.insertPay(oc); //라이더랑 사장님께 보내는 메시지, 가격, 주문상태 삽입
+		mav.addObject("BODY", "../userstore/end.jsp");
+		return mav;
+
+		
+		
+	}
+	
 
 }

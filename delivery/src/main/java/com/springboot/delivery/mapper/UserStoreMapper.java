@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
@@ -41,4 +42,10 @@ public interface UserStoreMapper {
 	void deleteOrderQuantityInCart(String order_id);
 	void deleteOrderOptionInCart(String order_id);
 	void deleteQuantityInCart(OrderCart oc);
+	Integer getDeliveryFee(String store_id);
+	CartUser cartUserData(String user_id);
+	void insertPay(OrderCart oc);
+	void updateOrderStore(OrderCart oc);
+	String checkOrder(String user_id);
+	
 }	

@@ -191,8 +191,7 @@ h2 {
 </style>
 </head>
 <body>
-	<form action="${pageContext.request.contextPath}/userstore/addCart"
-		method="post" onsubmit="return orderCheck(this)">
+	<form action="${pageContext.request.contextPath}/userstore/addCart" method="post" id="cartForm">
 		<div class="container">
 			<input type="hidden" name="menuId" value="${menuDetail.menu_item_id}">
 			<!-- 왼쪽: 메뉴 이미지 -->
@@ -240,7 +239,7 @@ h2 {
 				</div>
 
 				<!-- 장바구니 버튼 -->
-				<button type="submit" class="add-to-cart">장바구니에 추가</button>
+				<button type="button" class="add-to-cart" onclick="submitForm()">장바구니에 추가</button>
 			</div>
 		</div>
 	</form>
@@ -251,7 +250,7 @@ h2 {
             <p>선택하신 메뉴를 장바구니에 담을 경우 이전에 담은 메뉴가 삭제됩니다.</p>
             <div class="modal-buttons">
                 <button class="cancel-btn" onclick="closeModal()">취소</button>
-                <button id="confirmBtn" class="confirm-btn">담기</button>
+                <button class="confirm-btn" onclick="confirmAddToCart()">담기</button>
             </div>
         </div>
     </div>
@@ -273,18 +272,18 @@ h2 {
 			}
 		}
 		
-		function orderCheck(form){
-		    const storeId = "${orderStore}";
-		    const currentStore = "${currentStore}";
-		    if(storeId==='none' || storeId=== currentStore){
-		        return true;
+		function submitForm() {
+		    // 컨트롤러에서 이미 비교 작업이 수행되었으므로 
+		    // showModal이 true인 경우 모달을 표시하고, 아니면 바로 폼 제출
+		    if (${showModal}) {
+		        document.getElementById('customModal').style.display = 'flex';
 		    } else {
-		        document.getElementById('customModal').style.display='flex';
-                document.getElementById('confirmBtn').addEventListener('click', function() {
-                    form.submit();
-                });
-		        return false; // 폼 제출 방지
+		        document.getElementById('cartForm').submit();
 		    }
+		}
+		
+		function confirmAddToCart() {
+		    document.getElementById('cartForm').submit();
 		}
 
 		function closeModal() {
