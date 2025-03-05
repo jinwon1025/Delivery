@@ -365,8 +365,8 @@ public class UserController {
 		mav.addObject("BODY", "categoryStores.jsp");
 		return mav;
 	}
-
-	@GetMapping(value = "/user/allStore") // 모든 가맹점 목록 가져오기
+	
+	@GetMapping(value="/user/allStore") //모든 가맹점 목록 가져오기
 	public ModelAndView allStore() {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		List<Store> allStore = this.userService.getAllStore();
@@ -374,6 +374,8 @@ public class UserController {
 		mav.addObject("BODY", "allStoreList.jsp");
 		return mav;
 	}
+	
+	
 
 	@GetMapping(value = "/user/bookMarkList")
 	public ModelAndView bookMarkList(HttpSession session) {
