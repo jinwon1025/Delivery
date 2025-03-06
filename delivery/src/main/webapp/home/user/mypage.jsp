@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li class="mypage-menu-item">
-                    <a href="#" class="mypage-menu-link">
+                    <a href="<c:url value='/userstore/myOrderList'/>" class="mypage-menu-link">
                         <i class="fas fa-history"></i>
                         <span>주문 내역</span>
                     </a>

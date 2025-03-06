@@ -1,5 +1,8 @@
 package com.springboot.delivery.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,26 @@ public class OwnerService {
 	
 	public void updateInfo(Owner owner) {
 		this.ownerMapper.updateInfo(owner);
+	}
+	
+	public List<Store> getOwnerStores(String owner_id) {
+	    return this.ownerMapper.getOwnerStores(owner_id);
+	}
+
+	public List<Map<String, Object>> getOrderList(String owner_id) {
+	    return this.ownerMapper.getOrderList(owner_id);
+	}
+
+	public List<Map<String, Object>> getOrderItems(String orderId, String storeId) {
+	    return this.ownerMapper.getOrderItems(orderId, storeId);
+	}
+
+	public Map<String, Object> getOrderInfo(String orderId) {
+	    return this.ownerMapper.getOrderInfo(orderId);
+	}
+
+	public void updateOrderStatus(String orderId, int status) {
+	    this.ownerMapper.updateOrderStatus(orderId, status);
 	}
 
 }

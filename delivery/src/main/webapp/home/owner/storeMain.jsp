@@ -100,10 +100,10 @@
 				<a href="<c:url value='/store/menuManager'/>"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'menu') ? 'active' : ''}">
 					<i class="fas fa-utensils mr-2"></i> 메뉴 관리
-				</a> <span class="nav-divider">|</span> <a href="#"
+				</a> <a href="/owner/orderList"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'order') ? 'active' : ''}">
 					<i class="fas fa-clipboard-list mr-2"></i> 주문 목록
-				</a> <span class="nav-divider">|</span> <a href="#"
+				</a> </a> <span class="nav-divider">|</span> <a href="#"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'review') ? 'active' : ''}">
 					<i class="fas fa-star mr-2"></i> 리뷰 관리
 				</a> <span class="nav-divider">|</span> <a
@@ -271,10 +271,10 @@
 	<!-- JavaScript -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
-        // 페이지 로드 시 실행될 JavaScript 코드
-        $(document).ready(function() {
-            // 공통 기능 구현
-        });
-    </script>
+		// 페이지 로드 시 실행될 JavaScript 코드
+		$(document).ready(function() {
+			// 공통 기능 구현
+		});
+	</script>
 </body>
 </html>

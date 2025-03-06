@@ -4,12 +4,16 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -106,10 +110,8 @@ public class OwnerController {
 	    return new ModelAndView("redirect:/owner/index"); // 리다이렉트
 	}
 
-
 	@GetMapping(value = "/owner/goRegister")
 	public ModelAndView ownerRegister() {
-
 		ModelAndView mav = new ModelAndView("owner/ownerMain");
 		mav.addObject("BODY", "register.jsp");
 		mav.addObject(new Owner());
@@ -127,7 +129,6 @@ public class OwnerController {
 		}
 		mav.addObject("owner_id", owner_id);
 		return mav;
-
 	}
 
 	@PostMapping(value = "/owner/loginDo")
@@ -166,7 +167,6 @@ public class OwnerController {
 	
 	@GetMapping(value="/owner/goLogin")
 	public ModelAndView goLogin() {
-		
 		return new ModelAndView("redirect:/owner/index");
 	}
 	
@@ -251,6 +251,61 @@ public class OwnerController {
 	    
 	    return new ModelAndView("redirect:../owner/myPage");
 	}
-
+	
+	// 주문 목록 조회 메소드 (오타 수정: /ower/orderList → /owner/orderList)
+	@GetMapping(value="/owner/orderList")
+	public ModelAndView orderList(HttpSession session) {
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		
+		// 세션에서 로그인한 업주 정보 가져오기
+		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+		
+		if (loginOwner != null) {
+			// 업주가 소유한 가게 정보 가져오기
+			List<Store> storeList = ownerSerivce.getOwnerStores(loginOwner.getId());
 			
+			// 업주의 모든 가게에 대한 주문 목록 가져오기
+			List<Map<String, Object>> orderList = ownerSerivce.getOrderList(loginOwner.getId());
+			
+			System.out.println("Store List: " + storeList);
+		    System.out.println("Order List: " + orderList);
+			
+			mav.addObject("storeList", storeList);
+			mav.addObject("orderList", orderList);
+			mav.addObject("BODY", "ownerOrderList.jsp");
+		} else {
+			// 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+			mav.setViewName("redirect:/owner/index");
+		}
+		
+		return mav;
+	}
+	
+	// 주문 상세 정보 조회 메소드 (새로 추가)
+	@GetMapping("/owner/getOrderDetail")
+	public String getOrderDetail(@RequestParam String orderId, @RequestParam String storeId, Map<String, Object> model) {
+		// 주문 상품 목록 가져오기
+		List<Map<String, Object>> orderItems = ownerSerivce.getOrderItems(orderId, storeId);
+		
+		// 주문 기본 정보 가져오기
+		Map<String, Object> orderInfo = ownerSerivce.getOrderInfo(orderId);
+		
+		model.put("orderItems", orderItems);
+		model.put("orderInfo", orderInfo);
+		
+		return "owner/orderDetailFragment";
+	}
+	
+	// 주문 상태 업데이트 메소드 (새로 추가)
+	@PostMapping("/owner/updateOrderStatus")
+	@ResponseBody
+	public String updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
+		try {
+			ownerSerivce.updateOrderStatus(orderId, status);
+			return "success";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+	}
 }
