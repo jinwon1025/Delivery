@@ -47,5 +47,13 @@ public interface UserStoreMapper {
 	void insertPay(OrderCart oc);
 	void updateOrderStore(OrderCart oc);
 	String checkOrder(String user_id);
+	// 사용자별 주문 목록 조회
+	List<Map<String, Object>> getOrderListByUserId(String user_id);
+
+	// 주문 상세 정보 조회
+	Map<String, Object> getOrderInfoByOrderId(String orderId);
+
+	// 주문의 메뉴 항목 조회
+	List<Map<String, Object>> getOrderItemsByOrderId(String orderId);
 	
 }	

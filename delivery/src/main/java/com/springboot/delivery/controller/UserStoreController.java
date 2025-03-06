@@ -480,5 +480,55 @@ public class UserStoreController {
 		
 	}
 	
+	@GetMapping(value = "/userstore/myOrderList")
+	public ModelAndView myOrderList(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index");
+	    }
+	    
+	    // 기본 페이지 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    
+	    // 주문 목록 가져오기
+	    List<Map<String, Object>> orderList = userStoreService.getOrderListByUserId(loginUser.getUser_id());
+	    
+	    mav.addObject("orderList", orderList);
+	    mav.addObject("BODY", "../userstore/myOrderList.jsp");
+	    
+	    return mav;
+	}
+
+	@GetMapping(value = "/userstore/orderDetail")
+	public ModelAndView orderDetail(HttpSession session, @RequestParam String orderId) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index");
+	    }
+	    
+	    // 기본 페이지 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    
+	    // 주문 기본 정보 가져오기
+	    Map<String, Object> orderInfo = userStoreService.getOrderInfoByOrderId(orderId);
+	    
+	    // 주문 상세 메뉴 정보 가져오기
+	    List<Map<String, Object>> orderItems = userStoreService.getOrderItemsByOrderId(orderId);
+	    
+	    mav.addObject("orderInfo", orderInfo);
+	    mav.addObject("orderItems", orderItems);
+	    mav.addObject("BODY", "../userstore/orderDetail.jsp");
+	    
+	    return mav;
+	}
+
 
 }

@@ -95,7 +95,8 @@
 		resultType="com.springboot.delivery.model.OrderCart">
 		SELECT order_id
 		FROM b_order_detail_tbl
-		WHERE user_id = #{user_id} AND order_status = 0
+		WHERE user_id =
+		#{user_id} AND order_status = 0
 	</select>
 
 	<select id="getOrderStatusByOrderId" parameterType="String"
@@ -145,23 +146,28 @@
 		oo.order_option_id, o.order_id, oq.quantity
 	</select>
 
-<select id="isMenuInCart" parameterType="String" resultType="String">
-    SELECT order_id FROM (
-        SELECT order_id FROM b_order_tbl 
-        WHERE user_id = #{user_id} 
-        AND EXISTS (
-            SELECT 1 FROM b_order_detail_tbl 
-            WHERE b_order_detail_tbl.order_id = b_order_tbl.order_id 
-            AND order_status = 0
-        )
-        ORDER BY order_time DESC
-    ) WHERE ROWNUM = 1
-</select>
-	
-	<select id="checkOrder" parameterType="String" resultType="String">
-	
-		select order_id from b_order_detail_tbl where user_id=#{user_id} and order_status = '0'
-	
+	<select id="isMenuInCart" parameterType="String"
+		resultType="String">
+		SELECT order_id FROM (
+		SELECT order_id FROM b_order_tbl
+		WHERE user_id = #{user_id}
+		AND EXISTS (
+		SELECT 1 FROM b_order_detail_tbl
+		WHERE b_order_detail_tbl.order_id = b_order_tbl.order_id
+		AND
+		order_status = 0
+		)
+		ORDER BY order_time DESC
+		) WHERE ROWNUM = 1
+	</select>
+
+	<select id="checkOrder" parameterType="String"
+		resultType="String">
+
+		select order_id from b_order_detail_tbl where
+		user_id=#{user_id} and
+		order_status = '0'
+
 	</select>
 
 	<select id="findMatchingOptionId"
@@ -169,12 +175,14 @@
 		resultType="Integer">
 		SELECT DISTINCT oo.ORDER_OPTION_ID
 		FROM order_option_tbl oo
-		WHERE oo.ORDER_ID = #{orderId}
+		WHERE
+		oo.ORDER_ID = #{orderId}
 		AND oo.MENU_ITEM_ID = #{menuItemId}
 		AND (
 		SELECT COUNT(1)
 		FROM order_option_tbl
-		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		WHERE ORDER_OPTION_ID =
+		oo.ORDER_OPTION_ID
 		) = #{optionCount}
 		AND NOT EXISTS (
 		SELECT 1
@@ -189,15 +197,18 @@
 		WHERE NOT EXISTS (
 		SELECT 1
 		FROM order_option_tbl
-		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
-		AND OPTION_GROUP_ID = opt.OPTION_GROUP_ID
+		WHERE
+		ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		AND OPTION_GROUP_ID =
+		opt.OPTION_GROUP_ID
 		AND OPTION_ID = opt.OPTION_ID
 		)
 		)
 		AND NOT EXISTS (
 		SELECT 1
 		FROM order_option_tbl
-		WHERE ORDER_OPTION_ID = oo.ORDER_OPTION_ID
+		WHERE ORDER_OPTION_ID =
+		oo.ORDER_OPTION_ID
 		AND NOT EXISTS (
 		SELECT 1
 		FROM (
@@ -209,7 +220,8 @@
 		</foreach>
 		) opt
 		WHERE opt.OPTION_GROUP_ID = OPTION_GROUP_ID
-		AND opt.OPTION_ID = OPTION_ID
+		AND opt.OPTION_ID =
+		OPTION_ID
 		)
 		)
 		AND ROWNUM = 1
@@ -235,7 +247,8 @@
 	<delete id="deleteQuantityInCart"
 		parameterType="com.springboot.delivery.model.OrderCart">
 
-		delete from order_quantity_tbl where order_id=#{order_id}
+		delete from order_quantity_tbl where
+		order_id=#{order_id}
 
 	</delete>
 
@@ -272,7 +285,8 @@
 		parameterType="com.springboot.delivery.model.OrderCart"
 		resultType="String">
 
-		select order_id from b_order_detail_tbl where user_id=#{user_id} and order_status='0'
+		select order_id from b_order_detail_tbl where
+		user_id=#{user_id} and order_status='0'
 
 	</select>
 
@@ -280,34 +294,40 @@
 		parameterType="com.springboot.delivery.model.OrderCart"
 		resultType="String">
 
-		select store_id from b_order_detail_tbl where user_id=#{user_id} and
-		order_id=#{order_id} and order_status=#{order_status}
+		select store_id from b_order_detail_tbl where
+		user_id=#{user_id} and
+		order_id=#{order_id} and
+		order_status=#{order_status}
 
 	</select>
 
 	<delete id="deleteOrderQuantityInCart" parameterType="String">
 
-		delete from order_quantity_tbl where order_id=#{order_id}
+		delete from
+		order_quantity_tbl where order_id=#{order_id}
 
 	</delete>
 
 	<delete id="deleteOrderOptionInCart" parameterType="String">
 
-		delete from order_option_tbl where order_id=#{order_id}
+		delete from
+		order_option_tbl where order_id=#{order_id}
 
 	</delete>
 
 	<select id="getDeliveryFee" parameterType="String"
 		resultType="Integer">
 
-		select delivery_fee from b_store_tbl where store_id=#{store_id}
+		select delivery_fee from b_store_tbl where
+		store_id=#{store_id}
 
 	</select>
 
 	<select id="cartUserData" parameterType="String"
 		resultType="com.springboot.delivery.model.CartUser">
 
-		select user_phone, point, user_address from b_user_info where
+		select user_phone, point, user_address from b_user_info
+		where
 		user_id=#{user_id}
 
 	</select>
@@ -315,17 +335,118 @@
 	<update id="insertPay"
 		parameterType="com.springboot.delivery.model.OrderCart">
 
-		update b_order_detail_tbl set toowner=#{toowner},torider=#{torider},
-		order_status=#{order_status}, totalprice=#{totalPrice} where
+		update b_order_detail_tbl set
+		toowner=#{toowner},torider=#{torider},
+		order_status=#{order_status},
+		totalprice=#{totalPrice} where
 		order_id=#{order_id}
 
 
 	</update>
-	<update id="updateOrderStore" parameterType="com.springboot.delivery.model.OrderCart">
-    UPDATE b_order_detail_tbl 
-    SET store_id = #{store_id}, 
-        store_address = #{store_address}
-    WHERE order_id = #{order_id}
-</update>
+	<update id="updateOrderStore"
+		parameterType="com.springboot.delivery.model.OrderCart">
+		UPDATE b_order_detail_tbl
+		SET store_id = #{store_id},
+		store_address = #{store_address}
+		WHERE order_id = #{order_id}
+	</update>
+	<select id="getOrderListByUserId" parameterType="String" resultType="map">
+    SELECT
+        b.ORDER_ID,
+        b.ORDER_TIME,
+        d.ORDER_STATUS,
+        s.STORE_NAME,
+        d.TOTALPRICE,
+        (SELECT MIN(m.MENU_NAME)
+         FROM order_option_tbl o
+         JOIN b_menu_item_tbl m ON o.MENU_ITEM_ID = m.MENU_ITEM_ID
+         WHERE o.ORDER_ID = b.ORDER_ID) AS main_menu_name,
+        (SELECT COUNT(DISTINCT m.MENU_NAME) - 1
+         FROM order_option_tbl o
+         JOIN b_menu_item_tbl m ON o.MENU_ITEM_ID = m.MENU_ITEM_ID
+         WHERE o.ORDER_ID = b.ORDER_ID) AS additional_menu_count
+    FROM
+        b_order_tbl b
+    JOIN b_order_detail_tbl d ON b.ORDER_ID = d.ORDER_ID
+    JOIN b_store_tbl s ON d.STORE_ID = s.STORE_ID
+    WHERE
+        b.USER_ID = #{user_id}
+        AND d.ORDER_STATUS > 0
+        AND d.ORDER_STATUS != 5
+    ORDER BY
+        b.ORDER_TIME DESC
+</select>
+	<select id="getOrderInfoByOrderId" parameterType="String"
+		resultType="map">
+		SELECT
+		o.ORDER_ID,
+		o.ORDER_TIME,
+		od.ORDER_STATUS,
+		s.STORE_NAME,
+		s.STORE_ADDRESS AS store_address,
+		od.STORE_ADDRESS AS
+		delivery_address,
+		u.USER_PHONE,
+		od.TOTALPRICE,
+		(SELECT SUM(mi.PRICE *
+		oq.QUANTITY)
+		FROM order_option_tbl oo
+		JOIN b_menu_item_tbl mi ON
+		oo.MENU_ITEM_ID = mi.MENU_ITEM_ID
+		JOIN order_quantity_tbl oq ON
+		oo.ORDER_OPTION_ID = oq.ORDER_OPTION_ID
+		WHERE oo.ORDER_ID = o.ORDER_ID)
+		AS menu_price,
+		s.DELIVERY_FEE,
+		0 AS discount_amount,
+		od.TOOWNER AS
+		message_to_owner,
+		od.TORIDER AS message_to_rider,
+		'Card' AS
+		payment_method
+		FROM
+		b_order_tbl o
+		JOIN
+		b_order_detail_tbl od ON o.ORDER_ID
+		= od.ORDER_ID
+		JOIN
+		b_store_tbl s ON od.STORE_ID = s.STORE_ID
+		JOIN
+		b_user_info u ON o.USER_ID = u.USER_ID
+		WHERE
+		o.ORDER_ID = #{orderId}
+	</select>
 
+	<select id="getOrderItemsByOrderId" parameterType="String"
+		resultType="map">
+		SELECT
+		mi.MENU_ITEM_ID,
+		mi.MENU_NAME,
+		mi.PRICE AS menu_price,
+		oq.QUANTITY,
+		LISTAGG(opt.OPTION_NAME, ', ') WITHIN GROUP (ORDER BY
+		opt.OPTION_ID) AS option_names,
+		SUM(COALESCE(opt.OPTION_PRICE, 0)) AS
+		total_option_price,
+		(mi.PRICE + SUM(COALESCE(opt.OPTION_PRICE, 0))) *
+		oq.QUANTITY AS
+		item_total_price
+		FROM
+		order_option_tbl oo
+		JOIN
+		b_menu_item_tbl mi ON oo.MENU_ITEM_ID = mi.MENU_ITEM_ID
+		JOIN
+		order_quantity_tbl oq ON oo.ORDER_OPTION_ID = oq.ORDER_OPTION_ID
+		LEFT
+		JOIN
+		b_option_tbl opt ON oo.OPTION_ID = opt.OPTION_ID
+		WHERE
+		oo.ORDER_ID =
+		#{orderId}
+		GROUP BY
+		mi.MENU_ITEM_ID, mi.MENU_NAME, mi.PRICE,
+		oo.ORDER_OPTION_ID, oq.QUANTITY
+		ORDER BY
+		oo.ORDER_OPTION_ID
+	</select>
 </mapper>
