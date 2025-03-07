@@ -157,10 +157,10 @@
             border: 1px solid #ff6b6b;
             margin-right: 8px;
         }
-        .btn-reorder {
-            background-color: #ff6b6b;
+        .btn-review {
+            background-color: #3E90FF;
             color: #fff;
-            border: 1px solid #ff6b6b;
+            border: 1px solid #3E90FF;
         }
         .empty-orders {
             text-align: center;
@@ -253,7 +253,7 @@
                         
                         <div class="buttons">
                             <a href="${pageContext.request.contextPath}/userstore/orderDetail?orderId=${order.ORDER_ID}" class="btn btn-detail">주문 상세</a>
-                            <a href="${pageContext.request.contextPath}/userstore/returnToStore?store_id=${order.STORE_ID}" class="btn btn-reorder">같은 메뉴 담기</a>
+                            <a href="${pageContext.request.contextPath}/userstore/writeReview?orderId=${order.ORDER_ID}" class="btn btn-review">리뷰쓰기(임시)</a>
                         </div>
                     </div>
                 </c:forEach>
