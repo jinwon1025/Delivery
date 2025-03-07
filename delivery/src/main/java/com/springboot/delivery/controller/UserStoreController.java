@@ -507,26 +507,42 @@ public class UserStoreController {
 	public ModelAndView orderDetail(HttpSession session, @RequestParam String orderId) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-	    
+
 	    // 로그인 체크
 	    if (loginUser == null) {
 	        return new ModelAndView("redirect:/user/index");
 	    }
-	    
+
 	    // 기본 페이지 설정
 	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
 	    mav.addObject("maincategoryList", maincategoryList);
-	    
+
 	    // 주문 기본 정보 가져오기
 	    Map<String, Object> orderInfo = userStoreService.getOrderInfoByOrderId(orderId);
 	    
+	    // 디버깅: 주문 기본 정보 로그 출력
+	    System.out.println("====== 주문 기본 정보 ======");
+	    for (Map.Entry<String, Object> entry : orderInfo.entrySet()) {
+	        System.out.println(entry.getKey() + ": " + entry.getValue());
+	    }
+
 	    // 주문 상세 메뉴 정보 가져오기
 	    List<Map<String, Object>> orderItems = userStoreService.getOrderItemsByOrderId(orderId);
 	    
+	    // 디버깅: 주문 상세 메뉴 정보 로그 출력
+	    System.out.println("====== 주문 상세 메뉴 정보 ======");
+	    for (int i = 0; i < orderItems.size(); i++) {
+	        Map<String, Object> item = orderItems.get(i);
+	        System.out.println("메뉴 항목 #" + (i+1));
+	        for (Map.Entry<String, Object> entry : item.entrySet()) {
+	            System.out.println("  " + entry.getKey() + ": " + entry.getValue());
+	        }
+	    }
+
 	    mav.addObject("orderInfo", orderInfo);
 	    mav.addObject("orderItems", orderItems);
 	    mav.addObject("BODY", "../userstore/orderDetail.jsp");
-	    
+
 	    return mav;
 	}
 

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,10 +73,16 @@
             margin-bottom: 8px;
         }
         .menu-option {
-            margin-left: 10px;
+            margin-left: 20px;
             color: #666;
             font-size: 14px;
             margin-bottom: 5px;
+        }
+        .menu-price {
+            margin-top: 8px;
+            text-align: right;
+            font-weight: 500;
+            color: #333;
         }
         .info-row {
             display: flex;
@@ -153,9 +160,18 @@
             <c:forEach var="item" items="${orderItems}">
                 <div class="menu-item">
                     <div class="menu-name">${item.MENU_NAME} × ${item.QUANTITY}개</div>
-                    <c:if test="${not empty item.option_names}">
-                        <div class="menu-option">${item.option_names}</div>
+                    <c:if test="${not empty item.OPTION_NAMES}">
+                        <c:forEach var="option" items="${fn:split(item.OPTION_NAMES, '|')}">
+                            <div class="menu-option">- ${option}</div>
+                        </c:forEach>
                     </c:if>
+                    <div class="menu-price">
+                        <c:if test="${item.TOTAL_OPTION_PRICE > 0}">
+                            <span>메뉴: <fmt:formatNumber value="${item.MENU_PRICE}" pattern="#,###원" /> + 옵션: <fmt:formatNumber value="${item.TOTAL_OPTION_PRICE}" pattern="#,###원" /></span>
+                            <br/>
+                        </c:if>
+                        <span>합계: <fmt:formatNumber value="${item.ITEM_TOTAL_PRICE}" pattern="#,###원" /></span>
+                    </div>
                 </div>
             </c:forEach>
             
@@ -178,7 +194,7 @@
             <div class="info-row">
                 <div class="info-label">메뉴 금액</div>
                 <div class="info-value">
-                    <fmt:formatNumber value="${orderInfo.menu_price}" pattern="#,###원" />
+                    <fmt:formatNumber value="${orderInfo.MENU_PRICE}" pattern="#,###원" />
                 </div>
             </div>
             <div class="info-row">
@@ -187,11 +203,11 @@
                     <fmt:formatNumber value="${orderInfo.DELIVERY_FEE}" pattern="#,###원" />
                 </div>
             </div>
-            <c:if test="${orderInfo.discount_amount > 0}">
+            <c:if test="${orderInfo.DISCOUNT_AMOUNT > 0}">
                 <div class="info-row">
                     <div class="info-label">할인 금액</div>
                     <div class="info-value" style="color: #2196F3;">
-                        -<fmt:formatNumber value="${orderInfo.discount_amount}" pattern="#,###원" />
+                        -<fmt:formatNumber value="${orderInfo.DISCOUNT_AMOUNT}" pattern="#,###원" />
                     </div>
                 </div>
             </c:if>
@@ -203,7 +219,7 @@
             </div>
             <div class="info-row">
                 <div class="info-label">결제 방법</div>
-                <div class="info-value">카드 결제</div>
+                <div class="info-value">${orderInfo.PAYMENT_METHOD}</div>
             </div>
         </div>
         
@@ -213,27 +229,39 @@
             
             <div class="info-row">
                 <div class="info-label">배달 주소</div>
-                <div class="info-value">${orderInfo.STORE_ADDRESS}</div>
+                <div class="info-value">${orderInfo.DELIVERY_ADDRESS}</div>
             </div>
             <div class="info-row">
-                <div class="info-label">연락처</div>
-                <div class="info-value">${orderInfo.user_phone}</div>
+                <div class="info-label">전화번호</div>
+                <div class="info-value">
+                    가게: ${orderInfo.STORE_PHONE} / 고객: ${orderInfo.USER_PHONE}
+                </div>
             </div>
             
-            <c:if test="${not empty orderInfo.TOOWNER}">
+            <c:if test="${not empty orderInfo.MESSAGE_TO_OWNER}">
                 <div class="request-box">
                     <div class="request-title">가게 사장님께</div>
-                    <div class="request-content">${orderInfo.TOOWNER}</div>
+                    <div class="request-content">${orderInfo.MESSAGE_TO_OWNER}</div>
                 </div>
             </c:if>
             
-            <c:if test="${not empty orderInfo.TORIDER}">
+            <c:if test="${not empty orderInfo.MESSAGE_TO_RIDER}">
                 <div class="request-box">
                     <div class="request-title">라이더님께</div>
-                    <div class="request-content">${orderInfo.TORIDER}</div>
+                    <div class="request-content">${orderInfo.MESSAGE_TO_RIDER}</div>
                 </div>
             </c:if>
         </div>
     </div>
+    
+    <%-- 디버그 정보 (필요시 주석 해제) --%>
+    <%-- 
+    <div style="margin-top: 40px; padding: 20px; background-color: #f0f0f0; border-radius: 5px; font-family: monospace; font-size: 12px;">
+        <h3>Debug Info - orderInfo:</h3>
+        <pre>${orderInfo}</pre>
+        <h3>Debug Info - orderItems:</h3>
+        <pre>${orderItems}</pre>
+    </div>
+    --%>
 </body>
 </html>
