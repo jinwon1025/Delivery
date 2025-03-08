@@ -27,4 +27,8 @@ public interface UserMapper {
 	void deleteBookMarkStore(BookMarkStore bms);
 	List<String> getBookMarkList(String user_id);
 	void userCardRegister(UserCard uc);
+	List<UserCard>userCardList(String user_id);
+	void deleteCard(Integer pay_id);
+	Integer getPayPassword(String user_id);
+	void payPasswordRegister(User user);
 }	

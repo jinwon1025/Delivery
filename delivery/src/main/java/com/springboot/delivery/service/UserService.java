@@ -85,4 +85,19 @@ public class UserService {
 	public void userCardRegister(UserCard uc) {
 		this.userMapper.userCardRegister(uc);
 	}
+	
+	public List<UserCard> userCardLIst(String user_id){
+		return this.userMapper.userCardList(user_id);
+	}
+	public void deleteCard(Integer pay_id) {
+		this.userMapper.deleteCard(pay_id);
+	}
+	
+	public Integer getPayPassword(String user_id) {
+		return this.userMapper.getPayPassword(user_id);
+	}
+	
+	public void payPasswordRegister(User user) {
+		this.userMapper.payPasswordRegister(user);
+	}
 }

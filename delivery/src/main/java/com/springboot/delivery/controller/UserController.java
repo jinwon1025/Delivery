@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +25,6 @@ import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.UserService;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -445,6 +443,8 @@ public class UserController {
 	public ModelAndView viewPay(HttpSession session) {
 		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 		ModelAndView mav = new ModelAndView("user/userMain");
+		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
+		mav.addObject("cardList",uc);
 		mav.addObject("BODY","viewPay.jsp");
 		return mav;
 	}
@@ -512,7 +512,67 @@ public class UserController {
 	        return mav;
 	    }
 	}
-	
+	@GetMapping(value="/user/deleteCard")
+	public ModelAndView deleteCard(Integer payId) {
+		ModelAndView mav = new ModelAndView();
+		this.userService.deleteCard(payId);
+		mav.setViewName("redirect:/user/viewPay");
+		return mav;
+	}
+	@GetMapping(value="/user/paypassword")
+	public ModelAndView paypassword(HttpSession session) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		Integer payPassword = this.userService.getPayPassword(loginUser.getUser_id());
+		mav.addObject("payPassword", payPassword);
+		 // errorMsg가 있으면 가져오고 세션에서 제거
+	    if(session.getAttribute("errorMsg") != null) {
+	        mav.addObject("errorMsg", session.getAttribute("errorMsg"));
+	        session.removeAttribute("errorMsg"); // 세션에서 제거
+	    }
+	    
+	    // successMsg가 있으면 가져오고 세션에서 제거
+	    if(session.getAttribute("successMsg") != null) {
+	        mav.addObject("successMsg", session.getAttribute("successMsg"));
+	        session.removeAttribute("successMsg"); // 세션에서 제거
+	    }
+		mav.addObject("BODY","payPasswordRegister.jsp");
+		return mav;
+	}
+	@PostMapping(value="/user/registerPayPassword")
+	public ModelAndView registerpayPassword(HttpSession session, String payPassword) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		String user_id = loginUser.getUser_id();
+		Integer Password = Integer.parseInt(payPassword);
+		User user = new User();
+		user.setUser_id(user_id);
+		user.setPay_password(Password);
+		this.userService.payPasswordRegister(user);
+		mav.setViewName("redirect:/user/paypassword");
+		return mav;
+	}
+	@PostMapping(value="/user/updatePayPassword")
+	public ModelAndView updatePayPassword(HttpSession session, String currentPayPassword, String newPayPassword) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		User user = new User();
+		String user_id = loginUser.getUser_id();
+		Integer userPayPassword = this.userService.getPayPassword(user_id);
+		Integer currentPassword = Integer.parseInt(currentPayPassword);
+		if(!currentPassword.equals(userPayPassword)) {
+			session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
+            mav.setViewName("redirect:/user/paypassword");
+            return mav;
+		}
+		Integer Password = Integer.parseInt(newPayPassword);
+		user.setUser_id(user_id);
+		user.setPay_password(Password);
+		this.userService.payPasswordRegister(user);
+		session.setAttribute("successMsg", "비밀번호가 변경되었습니다.");
+		mav.setViewName("redirect:/user/paypassword");
+		return mav;
+	}
 	
 	
 
