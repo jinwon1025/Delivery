@@ -525,7 +525,6 @@ public class UserController {
 	    
 	    
 	}
-<<<<<<< HEAD
 	
 	@GetMapping("/user/getOrderStatus")
 	@ResponseBody
@@ -546,7 +545,7 @@ public class UserController {
 	    }
 	    
 	    return result;
-=======
+	}
 	@GetMapping(value="/user/deleteCard")
 	public ModelAndView deleteCard(Integer payId) {
 		ModelAndView mav = new ModelAndView();
@@ -607,7 +606,6 @@ public class UserController {
 		session.setAttribute("successMsg", "비밀번호가 변경되었습니다.");
 		mav.setViewName("redirect:/user/paypassword");
 		return mav;
->>>>>>> refs/remotes/origin/master
 	}
 	
 	
