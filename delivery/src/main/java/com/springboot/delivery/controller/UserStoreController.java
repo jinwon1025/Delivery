@@ -1,5 +1,8 @@
 package com.springboot.delivery.controller;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +11,11 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.CartUser;
@@ -24,12 +29,16 @@ import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
+import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
 import com.springboot.delivery.service.UserStoreService;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class UserStoreController {
@@ -458,26 +467,46 @@ public class UserStoreController {
 		
 	}
 	
-	@PostMapping(value="/userstore/pay")
-	public ModelAndView pay(HttpSession session, String riderRequest,
-			String storeRequest, String order_Id, String finalTotal) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		OrderCart oc = new OrderCart();
-		oc.setToowner(storeRequest);
-		System.out.println(storeRequest);
-		oc.setTorider(riderRequest);
-		System.out.println(riderRequest);
-		oc.setOrder_id(order_Id);
-		System.out.println("오더 아이디:"+order_Id);
-		oc.setOrder_status(1); //주문완료 처리
-		oc.setTotalPrice(Integer.parseInt(finalTotal));
-		System.out.println(finalTotal);
-		this.userStoreService.insertPay(oc); //라이더랑 사장님께 보내는 메시지, 가격, 주문상태 삽입
-		mav.addObject("BODY", "../userstore/end.jsp");
-		return mav;
-
-		
-		
+	@PostMapping(value="/userstore/pay") 
+	public ModelAndView pay(HttpSession session, String riderRequest, 
+	        String storeRequest, String order_Id, String finalTotal) { 
+	    ModelAndView mav = new ModelAndView("user/userMain"); 
+	    
+	    // 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
+	    OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
+	    
+	    // 새로운 OrderCart 객체 생성 대신 가져온 객체를 수정
+	    if (orderWithAddress != null) {
+	        // 필요한 정보 설정
+	        orderWithAddress.setToowner(storeRequest); 
+	        orderWithAddress.setTorider(riderRequest); 
+	        orderWithAddress.setOrder_status(1); // 주문완료 처리 
+	        orderWithAddress.setTotalPrice(Integer.parseInt(finalTotal)); 
+	        orderWithAddress.setOrder_id(order_Id); 
+	        
+	        // 수정된 객체로 결제 정보 저장
+	        this.userStoreService.insertPay(orderWithAddress); 
+	        
+	        // 모델에 객체 추가
+	        mav.addObject("orderCart", orderWithAddress);
+	    } else {
+	        // 쿼리 결과가 없을 경우 새 객체 생성
+	        OrderCart oc = new OrderCart(); 
+	        oc.setToowner(storeRequest); 
+	        oc.setTorider(riderRequest); 
+	        oc.setOrder_id(order_Id); 
+	        oc.setOrder_status(1); 
+	        oc.setTotalPrice(Integer.parseInt(finalTotal)); 
+	        
+	        this.userStoreService.insertPay(oc);
+	        mav.addObject("orderCart", oc);
+	    }
+	    
+	    // 추가 정보 모델에 추가
+	    mav.addObject("TOTALPRICE", finalTotal);
+	    mav.addObject("BODY", "../userstore/end.jsp"); 
+	    
+	    return mav; 
 	}
 	
 	@GetMapping(value = "/userstore/myOrderList")
@@ -544,6 +573,148 @@ public class UserStoreController {
 	    mav.addObject("BODY", "../userstore/orderDetail.jsp");
 
 	    return mav;
+	}
+	
+	@GetMapping(value="/userstore/goWriteReview")
+	public ModelAndView goWriteReview(HttpSession session, String orderId, String storeId) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index");
+	    }
+
+	    // 기본 페이지 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    mav.addObject("orderId", orderId);
+	    
+	    // 주문 정보 조회
+	    Map<String, Object> orderInfo = userStoreService.getOrderInfoByOrderId(orderId);
+	    mav.addObject("orderInfo", orderInfo);
+	    
+	    // 리뷰 객체 생성 및 초기값 설정
+	    Review review = new Review();
+	    mav.addObject("orderId", orderId);
+	    mav.addObject("storeId", storeId);
+	    mav.addObject(new Review());
+	    mav.addObject("BODY", "../userstore/writeReview.jsp");
+	    return mav;
+	}
+	
+	@PostMapping(value="/userstore/submitReview")
+	public ModelAndView submitReview(@Valid Review review, BindingResult br, HttpSession session, HttpServletRequest request) throws Exception  {
+		
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	    if (br.hasErrors()) {
+	        mav.getModel().putAll(br.getModel());
+	        br.getFieldErrors().forEach(error -> {
+	            System.out.println("Field: " + error.getField() + ", Error: " + error.getDefaultMessage());
+	        });
+	        return mav;
+	    }
+	    
+	    MultipartFile multiFile = review.getImage(); // 파일을 읽어온다 (업로드한 파일을 서버에서 받기 위해)
+	    String fileName = null;
+	    String path = null;
+	    OutputStream out = null;
+	    if(multiFile.getOriginalFilename() == "") {
+	    	fileName="";
+	    } else {
+	    fileName = review.getOrder_id() + "_"+multiFile.getOriginalFilename(); // 업로드된 원본 파일명 가져오기
+	    }
+	    
+	    if (!fileName.equals("")) { // 파일이 존재하는 경우, 이미지 파일을 변경
+	        ServletContext ctx = session.getServletContext();
+	        path = ctx.getRealPath("/upload/reviewProfile/" + fileName);
+	        System.out.println("업로드 위치" + path);
+	        BufferedInputStream bis = null;
+	        try {
+	            out = new FileOutputStream(path);
+	            bis = new BufferedInputStream(multiFile.getInputStream());
+	            byte[] buffer = new byte[8192];
+	            int read = 0;
+	            while ((read = bis.read(buffer)) > 0) {
+	                out.write(buffer, 0, read);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	            try {
+	                if (out != null) out.close();
+	                if (bis != null) bis.close();
+	            } catch (Exception e) {
+	            }
+	        }
+	    }
+	    review.setReview_image_name(fileName);
+	    review.setUser_id(loginUser.getUser_id());
+	    Integer maxCount = this.userStoreService.getMaxReviewId();
+	    if(maxCount == null) {
+	    	maxCount = 0;
+	    }
+	    review.setReview_id(maxCount+1);
+	    System.out.println("리뷰 아이디: "+ review.getReview_id());
+	    System.out.println("가게 아이디: "+ review.getStore_id());
+	    System.out.println("작성자 아이디: "+review.getUser_id());
+	    System.out.println("주문 아이디: "+review.getOrder_id());
+	    System.out.println("리뷰 내용: "+review.getReview_content());
+	    System.out.println("리뷰 이미지 이름: "+review.getReview_image_name());
+	    System.out.println("평점: "+review.getRating());
+		this.userStoreService.registerReview(review);
+		return new ModelAndView("redirect:/userstore/myOrderList");
+		
+	}
+	
+	@GetMapping("/userstore/myReviewList")
+	public ModelAndView myReviewList(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index");
+	    }
+
+	    // 사용자의 리뷰 목록 조회
+	    List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
+	    
+	    // 디버깅용 로그 추가
+	    System.out.println("리뷰 개수: " + (reviewList != null ? reviewList.size() : "null"));
+	    if (reviewList != null && !reviewList.isEmpty()) {
+	        System.out.println("첫 번째 리뷰 내용:");
+	        for (Map.Entry<String, Object> entry : reviewList.get(0).entrySet()) {
+	            System.out.println(entry.getKey() + ": " + entry.getValue());
+	        }
+	    } else {
+	        System.out.println("리뷰가 없습니다.");
+	    }
+	    
+	    mav.addObject("reviewList", reviewList);
+
+	    // 기본 페이지 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
+	    mav.addObject("BODY", "../userstore/reviewList.jsp");
+
+	    return mav;
+	}
+
+	@GetMapping("/userstore/deleteReview")
+	public String deleteReview(@RequestParam("reviewId") int reviewId, HttpSession session) {
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return "redirect:/user/index";
+	    }
+	    
+	    // 리뷰 삭제
+	    userStoreService.deleteReview(reviewId);
+	    
+	    return "redirect:/userstore/myReviewList";
 	}
 
 

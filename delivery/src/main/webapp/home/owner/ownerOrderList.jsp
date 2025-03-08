@@ -220,7 +220,7 @@ $(document).ready(function() {
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
+                    console.error("AJAX Error:", status, error);	
                     alert('주문 상태 변경 중 오류가 발생했습니다.');
                 }
             });

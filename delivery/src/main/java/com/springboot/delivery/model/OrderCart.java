@@ -1,10 +1,7 @@
 package com.springboot.delivery.model;
-
 import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
-
 @Getter
 @Setter
 public class OrderCart {
@@ -21,9 +18,12 @@ public class OrderCart {
     private Integer order_status;
     private Integer order_option_id;
     private Integer menu_item_id;
-    private Integer option_id;        // 이 필드 추가
-    private Integer option_group_id;  // 이 필드 추가
+    private Integer option_id;
+    private Integer option_group_id;
     private Integer quantity; 
     private List<OptionOrder> options;
     private Integer totalPrice;
+    private String owner_id;
+    private String user_address;
+    private String delivery_time;  // 이 필드 추가
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.springboot.delivery.mapper.UserMapper;
 import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
@@ -85,4 +86,11 @@ public class UserService {
 	public void userCardRegister(UserCard uc) {
 		this.userMapper.userCardRegister(uc);
 	}
+	
+	public Integer getOrderStatus(String orderId) {
+	    return userMapper.getOrderStatus(orderId);
+	}
+	
+	
+
 }

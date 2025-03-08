@@ -13,6 +13,7 @@ import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
+import com.springboot.delivery.model.Review;
 
 @Mapper
 public interface UserStoreMapper {
@@ -55,5 +56,15 @@ public interface UserStoreMapper {
 
 	// 주문의 메뉴 항목 조회
 	List<Map<String, Object>> getOrderItemsByOrderId(String orderId);
+	void registerReview(Review review);	
+	Integer getMaxReviewId();
+	
+	// 사용자의 리뷰 목록 조회
+	List<Map<String, Object>> getMyReviewList(String user_id);
+
+	// 리뷰 삭제
+	void deleteReview(Integer review_id);
+
+	OrderCart getOrderInfoWithAddress(String orderId);
 	
 }	

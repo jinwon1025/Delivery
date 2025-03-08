@@ -15,6 +15,7 @@ import com.springboot.delivery.model.OptionSet;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
+import com.springboot.delivery.model.Review;
 
 @Service
 public class UserStoreService {
@@ -155,7 +156,25 @@ public class UserStoreService {
 	public List<Map<String, Object>> getOrderItemsByOrderId(String orderId) {
 	    return this.userStoreMapper.getOrderItemsByOrderId(orderId);
 	}
+	
+	public void registerReview(Review review) {
+		this.userStoreMapper.registerReview(review);
+	}
 
+	public Integer getMaxReviewId() {
+		return this.userStoreMapper.getMaxReviewId();
+	}
+	
+	public List<Map<String, Object>> getMyReviewList(String userId) {
+	    return userStoreMapper.getMyReviewList(userId);
+	}
+
+	public void deleteReview(int reviewId) {
+	    userStoreMapper.deleteReview(reviewId);
+	}
+	public OrderCart getOrderInfoWithAddress(String orderId) {
+        return userStoreMapper.getOrderInfoWithAddress(orderId);
+    }
 	
 
 }

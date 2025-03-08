@@ -100,7 +100,9 @@
 		values (b_pay_tbl_seq.NEXTVAL, #{user_id}, #{card_number}, #{card_holder}, #{expiry_date}, #{card_type})
 	</insert>
 	
-
-
-
+	<select id="getOrderStatus" resultType="int" parameterType="string">
+    SELECT order_status
+    FROM b_order_detail_tbl
+    WHERE order_id = #{orderId}
+</select>
 </mapper>

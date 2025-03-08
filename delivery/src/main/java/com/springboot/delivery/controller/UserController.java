@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,7 +26,6 @@ import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.UserService;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -511,8 +510,30 @@ public class UserController {
 	        mav.addObject("BODY", "payRegister.jsp");
 	        return mav;
 	    }
+	    
+	    
 	}
 	
+	@GetMapping("/user/getOrderStatus")
+	@ResponseBody
+	public java.util.Map<String, Object> getOrderStatus(@RequestParam String orderId) {
+	    java.util.Map<String, Object> result = new java.util.HashMap<>();
+	    
+	    try {
+	        // 주문 상태 조회
+	        Integer status = userService.getOrderStatus(orderId);
+	        System.out.println("주문 ID: " + orderId + ", 상태: " + status); // 디버깅용
+	        result.put("status", status);
+	        result.put("success", true);
+	    } catch (Exception e) {
+	        System.err.println("주문 상태 조회 실패: " + e.getMessage()); // 디버깅용
+	        e.printStackTrace(); 
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+	    
+	    return result;
+	}
 	
 	
 

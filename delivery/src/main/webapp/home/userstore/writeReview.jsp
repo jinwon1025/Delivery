@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -177,6 +178,11 @@
         #fileInput {
             display: none;
         }
+        .error {
+            color: #ff3860;
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -186,10 +192,10 @@
             <a href="${pageContext.request.contextPath}/userstore/myOrderList" class="back-btn">← 목록으로</a>
         </div>
         
-        <form id="reviewForm" action="${pageContext.request.contextPath}/userstore/submitReview" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="orderId" value="${orderInfo.ORDER_ID}">
-            <input type="hidden" name="storeId" value="${orderInfo.STORE_ID}">
-            <input type="hidden" id="ratingValue" name="rating" value="0">
+        <form:form id="reviewForm" modelAttribute="review" action="/userstore/submitReview" method="post" enctype="multipart/form-data">
+            <form:hidden path="order_id" value="${orderId}"/>
+            <form:hidden path="store_id" value="${storeId}"/>
+            <form:hidden path="rating" id="ratingValue" value="0"/>
             
             <div class="review-card">
                 <div class="store-name">${orderInfo.STORE_NAME}</div>
@@ -204,6 +210,7 @@
                         <i class="far fa-star" data-rating="5"></i>
                     </div>
                     <div class="rating-value" id="ratingText">별점을 선택해주세요</div>
+                    <form:errors path="rating" cssClass="error"/>
                 </div>
                 
                 <div class="photo-upload">
@@ -211,123 +218,127 @@
                         <i class="fas fa-camera"></i>
                         <span>사진 첨부하기</span>
                     </label>
-                    <input type="file" id="fileInput" name="photo" accept="image/*">
+                    <input type="file" id="fileInput" name="image" >
                     <div class="photo-preview" id="photoPreview"></div>
                 </div>
                 
                 <div class="review-content">
-                    <textarea name="content" id="reviewContent" placeholder="음식의 맛, 양, 포장 상태 등 음식에 대한 솔직한 리뷰를 남겨주세요."></textarea>
+                    <form:textarea path="review_content" id="reviewContent" placeholder="음식의 맛, 양, 포장 상태 등 음식에 대한 솔직한 리뷰를 남겨주세요."/>
+                    <form:errors path="review_content" cssClass="error"/>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn" disabled>완료</button>
             </div>
-        </form>
+        </form:form>
     </div>
     
     <script>
-        // 별점 기능
-        const stars = document.querySelectorAll('#stars i');
-        const ratingValue = document.getElementById('ratingValue');
-        const ratingText = document.getElementById('ratingText');
-        const ratingTexts = ['매우 별로예요', '별로예요', '보통이에요', '좋아요', '매우 좋아요'];
-        
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                const rating = parseInt(star.getAttribute('data-rating'));
-                ratingValue.value = rating;
-                
-                // 별 채우기
-                stars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
-                });
-                
-                // 텍스트 변경
-                ratingText.textContent = `${rating}점 - ${ratingTexts[rating-1]}`;
-                validateForm();
-            });
+    // 별점 기능
+    const stars = document.querySelectorAll('#stars i');
+    const ratingValue = document.getElementById('ratingValue');
+    const ratingText = document.getElementById('ratingText');
+    const ratingTexts = ['매우 별로예요', '별로예요', '보통이에요', '좋아요', '매우 좋아요'];
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const rating = parseInt(star.getAttribute('data-rating'));
+            ratingValue.value = rating;
             
-            // 호버 효과
-            star.addEventListener('mouseover', () => {
-                const rating = parseInt(star.getAttribute('data-rating'));
-                stars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
-                });
-            });
-            
-            star.addEventListener('mouseout', () => {
-                const currentRating = parseInt(ratingValue.value);
-                stars.forEach((s, index) => {
-                    if (index < currentRating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
-                });
-            });
-        });
-        
-        // 사진 업로드 미리보기 (1개만 허용)
-        const fileInput = document.getElementById('fileInput');
-        const photoPreview = document.getElementById('photoPreview');
-        const photoLabel = document.getElementById('photoLabel');
-        
-        fileInput.addEventListener('change', function() {
-            photoPreview.innerHTML = '';
-            
-            if (this.files && this.files.length > 0) {
-                const file = this.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'photo-item';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    
-                    const removeBtn = document.createElement('div');
-                    removeBtn.className = 'photo-remove';
-                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    removeBtn.addEventListener('click', function() {
-                        div.remove();
-                        fileInput.value = ''; // 파일 입력 필드 초기화
-                        // 사진 첨부 버튼 다시 표시
-                        photoLabel.style.display = 'flex';
-                    });
-                    
-                    div.appendChild(img);
-                    div.appendChild(removeBtn);
-                    photoPreview.appendChild(div);
-                    
-                    // 사진이 첨부되면 사진 첨부 버튼 숨기기
-                    photoLabel.style.display = 'none';
+            // 별 채우기
+            stars.forEach((s, index) => {
+                if (index < rating) {
+                    s.className = 'fas fa-star';
+                } else {
+                    s.className = 'far fa-star';
                 }
-                
-                reader.readAsDataURL(file);
-            }
+            });
+            
+            // 텍스트 변경 (템플릿 리터럴 대신 문자열 연결 사용)
+            const ratingDescription = ratingTexts[rating-1] || '';
+            ratingText.textContent = rating + "점 - " + ratingDescription;
+            console.log("별점 선택:", rating, "설명:", ratingDescription);
+            
+            validateForm();
         });
         
-        // 폼 유효성 검사
-        const reviewContent = document.getElementById('reviewContent');
-        const submitBtn = document.getElementById('submitBtn');
+        // 호버 효과
+        star.addEventListener('mouseover', () => {
+            const rating = parseInt(star.getAttribute('data-rating'));
+            stars.forEach((s, index) => {
+                if (index < rating) {
+                    s.className = 'fas fa-star';
+                } else {
+                    s.className = 'far fa-star';
+                }
+            });
+        });
         
-        function validateForm() {
-            if (parseInt(ratingValue.value) > 0 && reviewContent.value.trim().length >= 10) {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
+        star.addEventListener('mouseout', () => {
+            const currentRating = parseInt(ratingValue.value);
+            stars.forEach((s, index) => {
+                if (index < currentRating) {
+                    s.className = 'fas fa-star';
+                } else {
+                    s.className = 'far fa-star';
+                }
+            });
+        });
+    });
+
+    // 사진 업로드 미리보기 (1개만 허용)
+    const fileInput = document.getElementById('fileInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoLabel = document.getElementById('photoLabel');
+
+    fileInput.addEventListener('change', function() {
+        photoPreview.innerHTML = '';
+        
+        if (this.files && this.files.length > 0) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'photo-item';
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'photo-remove';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.addEventListener('click', function() {
+                    div.remove();
+                    fileInput.value = ''; // 파일 입력 필드 초기화
+                    // 사진 첨부 버튼 다시 표시
+                    photoLabel.style.display = 'flex';
+                });
+                
+                div.appendChild(img);
+                div.appendChild(removeBtn);
+                photoPreview.appendChild(div);
+                
+                // 사진이 첨부되면 사진 첨부 버튼 숨기기
+                photoLabel.style.display = 'none';
             }
+            
+            reader.readAsDataURL(file);
         }
-        
-        reviewContent.addEventListener('input', validateForm);
+    });
+
+    // 폼 유효성 검사
+    const reviewContent = document.getElementById('reviewContent');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function validateForm() {
+        if (parseInt(ratingValue.value) > 0 && reviewContent.value.trim().length >= 1) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
+
+    reviewContent.addEventListener('input', validateForm);
     </script>
 </body>
 </html>

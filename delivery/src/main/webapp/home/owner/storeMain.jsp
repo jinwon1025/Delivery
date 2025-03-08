@@ -103,7 +103,7 @@
 				</a> <a href="/owner/orderList"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'order') ? 'active' : ''}">
 					<i class="fas fa-clipboard-list mr-2"></i> 주문 목록
-				</a> </a> <span class="nav-divider">|</span> <a href="#"
+				</a> <span class="nav-divider">|</span> <a href="/owner/reviewList"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'review') ? 'active' : ''}">
 					<i class="fas fa-star mr-2"></i> 리뷰 관리
 				</a> <span class="nav-divider">|</span> <a

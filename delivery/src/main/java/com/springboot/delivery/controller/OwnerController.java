@@ -18,7 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginOwner;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.service.OwnerService;
 
@@ -255,7 +257,7 @@ public class OwnerController {
 	// 주문 목록 조회 메소드 (오타 수정: /ower/orderList → /owner/orderList)
 	@GetMapping(value="/owner/orderList")
 	public ModelAndView orderList(HttpSession session) {
-		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		ModelAndView mav = new ModelAndView("owner/storeMain");
 		
 		// 세션에서 로그인한 업주 정보 가져오기
 		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
@@ -281,31 +283,54 @@ public class OwnerController {
 		return mav;
 	}
 	
-	// 주문 상세 정보 조회 메소드 (새로 추가)
-	@GetMapping("/owner/getOrderDetail")
-	public String getOrderDetail(@RequestParam String orderId, @RequestParam String storeId, Map<String, Object> model) {
-		// 주문 상품 목록 가져오기
-		List<Map<String, Object>> orderItems = ownerSerivce.getOrderItems(orderId, storeId);
-		
-		// 주문 기본 정보 가져오기
-		Map<String, Object> orderInfo = ownerSerivce.getOrderInfo(orderId);
-		
-		model.put("orderItems", orderItems);
-		model.put("orderInfo", orderInfo);
-		
-		return "owner/orderDetailFragment";
+	// 주문 상세 정보 조회 메소드 (ModelAndView 방식으로 수정)
+	@GetMapping(value="/owner/getOrderDetail")
+	public ModelAndView getOrderDetail(@RequestParam String orderId, @RequestParam String storeId) {
+	    ModelAndView mav = new ModelAndView("owner/orderDetailFragment");
+	    
+	    // 주문 상품 목록 가져오기
+	    List<Map<String, Object>> orderItems = ownerSerivce.getOrderItems(orderId, storeId);
+	    
+	    // 주문 기본 정보 가져오기
+	    Map<String, Object> orderInfo = ownerSerivce.getOrderInfo(orderId);
+	    
+	    mav.addObject("orderItems", orderItems);
+	    mav.addObject("orderInfo", orderInfo);
+	    
+	    return mav;
 	}
-	
-	// 주문 상태 업데이트 메소드 (새로 추가)
-	@PostMapping("/owner/updateOrderStatus")
+
+	@PostMapping(value="/owner/updateOrderStatus")
 	@ResponseBody
 	public String updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
-		try {
-			ownerSerivce.updateOrderStatus(orderId, status);
-			return "success";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "error";
-		}
+	    try {
+	        ownerSerivce.updateOrderStatus(orderId, status);
+	        return "success";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "error";
+	    }
+	}
+	
+	@GetMapping(value="/owner/reviewList")
+	public ModelAndView reviewList(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("owner/storeMain");
+	    OrderCart oc = new OrderCart();
+	    LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+	    Store currentStore = (Store) session.getAttribute("currentStore");
+	    oc.setOwner_id(loginOwner.getId());
+	    oc.setStore_id(currentStore.getStore_id());
+	    List<Review> reviewList = this.ownerSerivce.getReviewList(oc);
+	    
+	    // 디버깅: 리뷰 목록 크기 확인
+	    System.out.println("리뷰 목록 크기: " + (reviewList != null ? reviewList.size() : "null"));
+	    if(reviewList != null && !reviewList.isEmpty()) {
+	        System.out.println("첫 번째 리뷰: " + reviewList.get(0).toString());
+	    }
+	    
+	    mav.addObject("reviewList", reviewList);
+	    mav.addObject("BODY", "../owner/reviewList.jsp");
+	    
+	    return mav;
 	}
 }

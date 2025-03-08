@@ -29,22 +29,6 @@
             font-size: 20px;
             font-weight: 700;
         }
-        .order-tabs {
-            display: flex;
-            border-bottom: 1px solid #eee;
-            background: #fff;
-        }
-        .order-tab {
-            flex: 1;
-            text-align: center;
-            padding: 15px 0;
-            border-bottom: 2px solid transparent;
-            font-weight: 500;
-        }
-        .order-tab.active {
-            color: #3E90FF;
-            border-bottom: 2px solid #3E90FF;
-        }
         .order-list {
             padding: 15px;
         }
@@ -191,13 +175,6 @@
         <h1>주문 내역</h1>
     </div>
     
-    <div class="order-tabs">
-        <div class="order-tab active">배달·포장</div>
-        <div class="order-tab">B마트</div>
-        <div class="order-tab">장보기·쇼핑</div>
-        <div class="order-tab">대용량특가</div>
-    </div>
-    
     <div class="order-list">
         <c:choose>
             <c:when test="${empty orderList}">
@@ -253,7 +230,7 @@
                         
                         <div class="buttons">
                             <a href="${pageContext.request.contextPath}/userstore/orderDetail?orderId=${order.ORDER_ID}" class="btn btn-detail">주문 상세</a>
-                            <a href="${pageContext.request.contextPath}/userstore/writeReview?orderId=${order.ORDER_ID}" class="btn btn-review">리뷰쓰기(임시)</a>
+                            <a href="${pageContext.request.contextPath}/userstore/goWriteReview?orderId=${order.ORDER_ID}&storeId=${order.STORE_ID}" class="btn btn-review">리뷰쓰기</a>
                         </div>
                     </div>
                 </c:forEach>

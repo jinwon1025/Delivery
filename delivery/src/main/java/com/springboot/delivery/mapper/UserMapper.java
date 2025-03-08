@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.springboot.delivery.model.BookMarkStore;
 import com.springboot.delivery.model.LoginUser;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
@@ -27,4 +28,5 @@ public interface UserMapper {
 	void deleteBookMarkStore(BookMarkStore bms);
 	List<String> getBookMarkList(String user_id);
 	void userCardRegister(UserCard uc);
+	Integer getOrderStatus(String orderId);
 }	

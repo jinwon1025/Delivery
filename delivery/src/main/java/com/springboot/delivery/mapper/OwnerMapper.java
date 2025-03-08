@@ -6,7 +6,9 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.springboot.delivery.model.LoginOwner;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 
 @Mapper
@@ -24,4 +26,5 @@ public interface OwnerMapper {
     List<Map<String, Object>> getOrderItems(String orderId, String storeId);
     Map<String, Object> getOrderInfo(String orderId);
     void updateOrderStatus(String orderId, int status);
+    List<Review> getReviewList(OrderCart oc);
 }

@@ -132,8 +132,8 @@
                         
                         <div class="preview-container mt-3" id="image-preview-container">
                             <c:choose>
-                                <c:when test="${not empty store.image_name}">
-                                    <img id="preview-image" src="${pageContext.request.contextPath}/upload/storeProfile/${store.image_name}" alt="매장 이미지" class="rounded shadow-sm" style="max-width: 300px; max-height: 200px;">
+                                <c:when test="${not empty store.store_image_name}">
+                                    <img id="preview-image" src="${pageContext.request.contextPath}/upload/storeProfile/${store.store_image_name}" alt="매장 이미지" class="rounded shadow-sm" style="max-width: 300px; max-height: 200px;">
                                 </c:when>
                                 <c:otherwise>
                                     <div id="no-image" class="bg-gray-200 rounded d-flex align-items-center justify-content-center" style="width: 300px; height: 200px;">

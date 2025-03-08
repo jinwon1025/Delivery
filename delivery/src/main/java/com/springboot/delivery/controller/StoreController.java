@@ -147,17 +147,19 @@ public class StoreController {
    @GetMapping(value = "/store/goStoreModify")
    public ModelAndView goStoreModify(HttpSession session) {
        ModelAndView mav = new ModelAndView("owner/storeMain");
-       
-       // 세션에서 현재 가게 정보 가져오기
-       Store store = (Store) session.getAttribute("currentStore");
-       System.out.println(store.getDelivery_time());
-       
-       // 메인 카테고리 목록 가져오기
-       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-       
-       mav.addObject("store", store);
-       mav.addObject("maincategoryList", maincategoryList); // 카테고리 목록 추가
-       mav.addObject("BODY", "storeModify.jsp");
+       try {
+           Store currentStore = (Store) session.getAttribute("currentStore");
+           List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+           mav.addObject("maincategoryList", maincategoryList);
+           mav.addObject("store", currentStore);
+           mav.addObject("BODY", "../owner/storeModify.jsp");
+           System.out.println("모델 설정 완료: " + currentStore.getStore_id());
+       } catch (Exception e) {
+           e.printStackTrace();
+           // 오류 처리 로직
+           mav.addObject("errorMessage", "서버 오류가 발생했습니다: " + e.getMessage());
+           mav.addObject("BODY", "../error/error.jsp");
+       }
        return mav;
    }
 

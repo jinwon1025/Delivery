@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.OwnerMapper;
 import com.springboot.delivery.model.LoginOwner;
+import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 
 @Service
@@ -55,6 +57,10 @@ public class OwnerService {
 
 	public void updateOrderStatus(String orderId, int status) {
 	    this.ownerMapper.updateOrderStatus(orderId, status);
+	}
+	
+	public List<Review> getReviewList(OrderCart oc){
+		return this.ownerMapper.getReviewList(oc);
 	}
 
 }

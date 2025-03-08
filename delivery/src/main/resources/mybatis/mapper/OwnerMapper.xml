@@ -2,136 +2,195 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.springboot.delivery.mapper.OwnerMapper">
-	<insert id="registerOwner" parameterType="com.springboot.delivery.model.Owner">
-	Insert into b_owner_info values(#{owner_id}, #{owner_name}, #{owner_email}, #{owner_password},
-			#{owner_phone}, #{owner_image_name})
+	<insert id="registerOwner"
+		parameterType="com.springboot.delivery.model.Owner">
+		Insert into b_owner_info values(#{owner_id},
+		#{owner_name}, #{owner_email},
+		#{owner_password},
+		#{owner_phone},
+		#{owner_image_name})
 	</insert>
-	
+
 	<select id="idCheck" parameterType="String" resultType="Integer">
-	
-	select count(*) from b_owner_info where owner_id=#{user_id}
-	
+
+		select
+		count(*) from b_owner_info where owner_id=#{user_id}
+
 	</select>
-	
-	<select id="login" parameterType="com.springboot.delivery.model.LoginOwner" resultType="com.springboot.delivery.model.LoginOwner">
-	
-	select owner_id "id", owner_name "name", owner_password "password", owner_image_name "image_name" from b_owner_info where owner_id=#{id} and owner_password=#{password}
-	
+
+	<select id="login"
+		parameterType="com.springboot.delivery.model.LoginOwner"
+		resultType="com.springboot.delivery.model.LoginOwner">
+
+		select owner_id "id", owner_name "name", owner_password
+		"password",
+		owner_image_name "image_name" from b_owner_info where
+		owner_id=#{id}
+		and owner_password=#{password}
+
 	</select>
-	
-	<select id="getOwner" parameterType ="com.springboot.delivery.model.LoginOwner" resultType="com.springboot.delivery.model.Owner">
-	
-	select owner_name, owner_image_name from b_owner_info where owner_id=#{id} and owner_password=#{password}
-	
+
+	<select id="getOwner"
+		parameterType="com.springboot.delivery.model.LoginOwner"
+		resultType="com.springboot.delivery.model.Owner">
+
+		select owner_name, owner_image_name from b_owner_info where
+		owner_id=#{id}
+		and owner_password=#{password}
+
 	</select>
-	
-	<select id="getOwnerInfo" parameterType="String" resultType="com.springboot.delivery.model.Owner">
-	
-	select owner_id, owner_name, owner_email, owner_password, owner_phone, owner_image_name from b_owner_info
-	where owner_id=#{owner_id}
-	
+
+	<select id="getOwnerInfo" parameterType="String"
+		resultType="com.springboot.delivery.model.Owner">
+
+		select owner_id, owner_name, owner_email, owner_password,
+		owner_phone,
+		owner_image_name from b_owner_info
+		where
+		owner_id=#{owner_id}
+
 	</select>
-	
-	<update id="updateInfo" parameterType="com.springboot.delivery.model.Owner">
-	
-	update b_owner_info set owner_name = #{owner_name}, owner_email = #{owner_email}, owner_password=#{owner_password}, owner_phone=#{owner_phone},
-	 owner_image_name = #{owner_image_name}
-	
+
+	<update id="updateInfo"
+		parameterType="com.springboot.delivery.model.Owner">
+
+		update b_owner_info set owner_name = #{owner_name},
+		owner_email =
+		#{owner_email}, owner_password=#{owner_password},
+		owner_phone=#{owner_phone},
+		owner_image_name = #{owner_image_name}
+
 	</update>
-	
+
 	<!-- 수정된 쿼리: 업주의 모든 가게 목록 조회 -->
-    <select id="getOwnerStores" parameterType="String" resultType="com.springboot.delivery.model.Store">
-        SELECT s.store_id, s.store_name, s.store_address, s.store_image_name
-        FROM b_store_tbl s
-        WHERE s.owner_id = #{owner_id}
-    </select>
+	<select id="getOwnerStores" parameterType="String"
+		resultType="com.springboot.delivery.model.Store">
+		SELECT s.store_id, s.store_name, s.store_address,
+		s.store_image_name
+		FROM b_store_tbl s
+		WHERE s.owner_id = #{owner_id}
+	</select>
 
-    <!-- 수정된 쿼리: 업주의 모든 가게에 대한 주문 목록 조회 -->
-    <select id="getOrderList" parameterType="String" resultType="map">
-        SELECT 
-            o.order_id,
-            o.user_id,
-            o.order_time,
-            od.order_detail_id,
-            od.store_id,
-            od.store_address,
-            od.toowner as owner_request,
-            od.torider as rider_request,
-            od.order_status,
-            od.totalprice,
-            s.store_name
-        FROM 
-            b_order_tbl o
-        JOIN 
-            b_order_detail_tbl od ON o.order_id = od.order_id
-        JOIN 
-            b_store_tbl s ON od.store_id = s.store_id
-        WHERE 
-            s.owner_id = #{owner_id}
-        ORDER BY 
-            o.order_time DESC
-    </select>
-	
+	<!-- 수정된 쿼리: 업주의 모든 가게에 대한 주문 목록 조회 -->
+	<select id="getOrderList" parameterType="String"
+		resultType="map">
+		SELECT
+		o.order_id,
+		o.user_id,
+		o.order_time,
+		od.order_detail_id,
+		od.store_id,
+		od.store_address,
+		od.toowner as
+		owner_request,
+		od.torider as rider_request,
+		od.order_status,
+		od.totalprice,
+		s.store_name
+		FROM
+		b_order_tbl o
+		JOIN
+		b_order_detail_tbl od
+		ON o.order_id = od.order_id
+		JOIN
+		b_store_tbl s ON od.store_id =
+		s.store_id
+		WHERE
+		s.owner_id = #{owner_id}
+		ORDER BY
+		o.order_time DESC
+	</select>
+
 	<select id="getOrderItems" parameterType="map" resultType="map">
-    SELECT 
-        mi.menu_item_id,
-        mi.menu_name,
-        mi.price as menu_price,
-        mi.image_name,
-        oo.order_option_id,
-        oq.quantity,
-        LISTAGG(ot.option_name, ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_names,
-        LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP (ORDER BY ot.option_name) as option_prices,
-        SUM(COALESCE(ot.option_price, 0)) as total_option_price,
-        (mi.price + SUM(COALESCE(ot.option_price, 0))) * oq.quantity as item_total_price
-    FROM 
-        b_order_tbl o
-    JOIN 
-        b_order_detail_tbl od ON o.order_id = od.order_id
-    JOIN 
-        order_option_tbl oo ON oo.order_id = o.order_id
-    JOIN 
-        b_menu_item_tbl mi ON oo.menu_item_id = mi.menu_item_id
-    LEFT JOIN 
-        b_option_tbl ot ON ot.option_id = oo.option_id
-    LEFT JOIN 
-        order_quantity_tbl oq ON oq.order_option_id = oo.order_option_id
-    WHERE 
-        o.order_id = #{orderId}
-    AND 
-        mi.store_id = #{storeId}
-    GROUP BY 
-        mi.menu_item_id, mi.menu_name, mi.price, mi.image_name,
-        oo.order_option_id, oq.quantity
-    ORDER BY 
-        mi.menu_name
-    </select>
+		SELECT
+		mi.menu_item_id,
+		mi.menu_name,
+		mi.price as menu_price,
+		mi.image_name,
+		oo.order_option_id,
+		oq.quantity,
+		LISTAGG(ot.option_name,
+		', ') WITHIN GROUP (ORDER BY ot.option_name) as option_names,
+		LISTAGG(TO_CHAR(ot.option_price), ', ') WITHIN GROUP (ORDER BY
+		ot.option_name) as option_prices,
+		SUM(COALESCE(ot.option_price, 0)) as
+		total_option_price,
+		(mi.price + SUM(COALESCE(ot.option_price, 0))) *
+		oq.quantity as
+		item_total_price
+		FROM
+		b_order_tbl o
+		JOIN
+		b_order_detail_tbl
+		od ON o.order_id = od.order_id
+		JOIN
+		order_option_tbl oo ON oo.order_id =
+		o.order_id
+		JOIN
+		b_menu_item_tbl mi ON oo.menu_item_id = mi.menu_item_id
+		LEFT JOIN
+		b_option_tbl ot ON ot.option_id = oo.option_id
+		LEFT JOIN
+		order_quantity_tbl oq ON oq.order_option_id = oo.order_option_id
+		WHERE
+		o.order_id = #{orderId}
+		AND
+		mi.store_id = #{storeId}
+		GROUP BY
+		mi.menu_item_id, mi.menu_name, mi.price, mi.image_name,
+		oo.order_option_id, oq.quantity
+		ORDER BY
+		mi.menu_name
+	</select>
 
-    <select id="getOrderInfo" parameterType="String" resultType="map">
-        SELECT 
-            o.order_id,
-            o.user_id,
-            o.order_time,
-            od.store_address,
-            od.toowner as owner_request,
-            od.torider as rider_request,
-            od.order_status,
-            od.totalprice,
-            u.user_name,
-            u.user_phone
-        FROM 
-            b_order_tbl o
-        JOIN 
-            b_order_detail_tbl od ON o.order_id = od.order_id
-        JOIN 
-            b_user_info u ON o.user_id = u.user_id
-        WHERE 
-            o.order_id = #{orderId}
-    </select>
+	<select id="getOrderInfo" parameterType="String"
+		resultType="map">
+		SELECT
+		o.order_id,
+		o.user_id,
+		o.order_time,
+		od.store_address,
+		od.toowner as owner_request,
+		od.torider as rider_request,
+		od.order_status,
+		od.totalprice,
+		u.user_name,
+		u.user_phone
+		FROM
+		b_order_tbl
+		o
+		JOIN
+		b_order_detail_tbl od ON o.order_id = od.order_id
+		JOIN
+		b_user_info
+		u ON o.user_id = u.user_id
+		WHERE
+		o.order_id = #{orderId}
+	</select>
 
-    <update id="updateOrderStatus" parameterType="map">
-        UPDATE b_order_detail_tbl
-        SET order_status = #{status}
-        WHERE order_id = #{orderId}
-    </update>
+	<update id="updateOrderStatus" parameterType="map">
+		UPDATE
+		b_order_detail_tbl
+		SET order_status = #{status}
+		WHERE order_id =
+		#{orderId}
+	</update>
+
+
+	<select id="getReviewList"
+		parameterType="com.springboot.delivery.model.OrderCart"
+		resultType="com.springboot.delivery.model.Review">
+
+		SELECT r.ORDER_ID,
+		s.STORE_NAME,
+		r.RATING,
+		r.REVIEW_CONTENT,
+		r.WRITE_DATE
+		FROM B_REVIEW_TBL r
+		JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
+		WHERE s.STORE_ID = #{store_id}
+		AND s.OWNER_ID = #{owner_id}
+		ORDER BY r.ORDER_ID DESC
+
+	</select>
 </mapper>
