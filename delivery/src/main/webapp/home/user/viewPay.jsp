@@ -97,7 +97,7 @@
 			                        </div>
 			                    </div>
 			                    
-			                    <%-- 사이드 메뉴 추가 --%>
+			                    <%-- 사이드 메뉴 추가  --%>
 			                    <div class="card-side-menu">
 			                       <a href="javascript:void(0);" onclick="confirmDelete('${card.pay_id}')" class="btn btn-delete">
 								   	 <i class="fas fa-trash-alt"></i>
