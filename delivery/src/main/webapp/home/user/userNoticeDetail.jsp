@@ -8,7 +8,7 @@
     
     <!-- 간단한 브레드크럼 -->
     <nav class="breadcrumb">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0">
             <li class="breadcrumb-item"><a href="<c:url value='/user/index'/>">홈</a></li>
             <li class="breadcrumb-item"><a href="<c:url value='/user/notice'/>">공지사항</a></li>
             <li class="breadcrumb-item active">상세 보기</li>
@@ -16,22 +16,22 @@
     </nav>
 </div>
 
-<div class="notice-detail-container">
-    <div class="card">
+<div class="notice-container">
+    <div class="card shadow-sm">
         <div class="card-body">
             <!-- 공지사항 헤더 -->
-            <div class="notice-detail-header">
-                <div class="notice-detail-subject">
+            <div class="notice-detail-header border-bottom pb-3 mb-4">
+                <h4 class="notice-detail-subject mb-3">
                     <c:if test="${notice.important == 'Y'}">
                         <span class="notice-badge">중요</span>
                     </c:if>
                     ${notice.title}
-                </div>
-                <div class="notice-detail-info">
-                    <span>
+                </h4>
+                <div class="notice-detail-info d-flex text-muted">
+                    <span class="mr-3">
                         <i class="fas fa-user mr-1"></i> ${notice.writer}
                     </span>
-                    <span>
+                    <span class="mr-3">
                         <i class="fas fa-calendar mr-1"></i> 
                         <fmt:formatDate value="${notice.reg_date}" pattern="yyyy-MM-dd HH:mm"/>
                     </span>
@@ -42,11 +42,11 @@
             </div>
             
             <!-- 공지사항 내용 -->
-            <div class="notice-detail-content">
+            <div class="notice-detail-content pb-4">
                 ${notice.content}
             </div>
             
-            <!-- 이전/다음 글 (선택적) -->
+            <!-- 이전/다음 글 -->
             <c:if test="${not empty prevNextNotices}">
                 <div class="notice-nav mt-4 pt-3 border-top">
                     <c:if test="${not empty prevNextNotices.prev}">
@@ -70,8 +70,11 @@
             
             <!-- 하단 버튼 영역 -->
             <div class="notice-detail-buttons mt-4 text-center">
-                <a href="<c:url value='/user/notice'/>" class="btn btn-outline-gold">
+                <a href="<c:url value='/user/notice'/>" class="btn btn-primary btn-sm">
                     <i class="fas fa-list mr-1"></i> 목록으로
+                </a>
+                <a href="<c:url value='/user/index'/>" class="btn btn-outline-gold btn-sm ml-2">
+                    <i class="fas fa-home mr-1"></i> 홈으로
                 </a>
             </div>
         </div>
