@@ -50,22 +50,32 @@ public class UserController {
 	            mav.setViewName("redirect:/user/categoryStores"); // 일반 사용자는 카테고리 스토어 페이지로 리다이렉트
 	        }
 	    } else {
-	        // 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
+	        // 로그인되지 않은 상태이면 카테고리 스토어 페이지 표시
 	        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
 	        mav.addObject("maincategoryList", maincategoryList);
-	        mav.addObject("BODY", "index.jsp");
-	        mav.addObject(new LoginUser());
+	        
+	        List<Store> storeList = userService.getAllStore();
+	        String categoryName = "전체 가게";
+	        
+	        mav.addObject("storeList", storeList);
+	        mav.addObject("categoryName", categoryName);
+	        mav.addObject("BODY", "categoryStores.jsp");
+	        mav.addObject(new LoginUser()); // 로그인 폼에서 사용할 객체
 	    }
 	    return mav;
 	}
-
-	@GetMapping(value = "/user/register")
-	public ModelAndView insertRegister() {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		mav.addObject("BODY", "register.jsp");
-		mav.addObject(new User());
-		return mav;
+	
+	
+	
+	@GetMapping(value = "/user/loginForm")
+	public ModelAndView loginForm() {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    mav.addObject("BODY", "login.jsp");
+	    mav.addObject(new LoginUser());
+	    return mav;
 	}
+	
+	
 
 	@PostMapping(value = "/user/insertRegister")
 	public ModelAndView userRegister(@Valid User user, BindingResult br, HttpSession session) throws Exception {
