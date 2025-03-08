@@ -98,9 +98,9 @@
                         <label for="card_type">카드 종류:</label>
                         <form:select path="card_type" class="form-control">
                             <form:option value="" label="카드 종류 선택"/>
-                            <form:option value="Visa" label="Visa"/>
-                            <form:option value="MasterCard" label="MasterCard"/>
-                            <form:option value="American Express" label="American Express"/>
+                            <form:option value="Shinhan" label="신한은행"/>
+                            <form:option value="Kookmin" label="국민은행"/>
+                            <form:option value="Kakao" label="카카오뱅크"/>
                         </form:select>
                         <font color="red"><form:errors path="card_type" /></font>
                     </div>

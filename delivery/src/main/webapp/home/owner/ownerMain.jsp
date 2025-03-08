@@ -93,6 +93,8 @@
 					등록</a> <span class="nav-divider">|</span> <a
 					href="<c:url value='/owner/notice'/>"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'notice') ? 'active' : ''}">공지사항</a>
+				<a href="<c:url value='/owner/couponManagement'/>"
+					class="nav-item ${fn:contains(pageContext.request.requestURI, 'couponManagement') ? 'active' : ''}">쿠폰관리</a>
 			</div>
 		</div>
 	</nav>
@@ -208,10 +210,10 @@
 	<!-- JavaScript -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
-        // 페이지 로드 시 실행될 JavaScript 코드
-        $(document).ready(function() {
-            // 공통 기능 구현
-        });
-    </script>
+		// 페이지 로드 시 실행될 JavaScript 코드
+		$(document).ready(function() {
+			// 공통 기능 구현
+		});
+	</script>
 </body>
 </html>

@@ -15,5 +15,10 @@ public class Coupon {
     private String store_id;
     private String issued_date;        
     private String expire_date;         
-    private Integer total_quantity;      
+    private Integer total_quantity;
+    private Integer remaining_quantity; // 추가된 필드      
+    private String store_name; // 추가된 필드
+    
+   
+    
 }

@@ -49,22 +49,32 @@ public class UserController {
 	            mav.setViewName("redirect:/user/categoryStores"); // 일반 사용자는 카테고리 스토어 페이지로 리다이렉트
 	        }
 	    } else {
-	        // 로그인되지 않은 상태면 로그인 폼(index.jsp) 보여주기
+	        // 로그인되지 않은 상태이면 카테고리 스토어 페이지 표시
 	        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
 	        mav.addObject("maincategoryList", maincategoryList);
-	        mav.addObject("BODY", "index.jsp");
-	        mav.addObject(new LoginUser());
+	        
+	        List<Store> storeList = userService.getAllStore();
+	        String categoryName = "전체 가게";
+	        
+	        mav.addObject("storeList", storeList);
+	        mav.addObject("categoryName", categoryName);
+	        mav.addObject("BODY", "categoryStores.jsp");
+	        mav.addObject(new LoginUser()); // 로그인 폼에서 사용할 객체
 	    }
 	    return mav;
 	}
-
-	@GetMapping(value = "/user/register")
-	public ModelAndView insertRegister() {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		mav.addObject("BODY", "register.jsp");
-		mav.addObject(new User());
-		return mav;
+	
+	
+	
+	@GetMapping(value = "/user/loginForm")
+	public ModelAndView loginForm() {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    mav.addObject("BODY", "login.jsp");
+	    mav.addObject(new LoginUser());
+	    return mav;
 	}
+	
+	
 
 	@PostMapping(value = "/user/insertRegister")
 	public ModelAndView userRegister(@Valid User user, BindingResult br, HttpSession session) throws Exception {
@@ -444,6 +454,8 @@ public class UserController {
 	public ModelAndView viewPay(HttpSession session) {
 		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 		ModelAndView mav = new ModelAndView("user/userMain");
+		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
+		mav.addObject("cardList",uc);
 		mav.addObject("BODY","viewPay.jsp");
 		return mav;
 	}
@@ -513,6 +525,7 @@ public class UserController {
 	    
 	    
 	}
+<<<<<<< HEAD
 	
 	@GetMapping("/user/getOrderStatus")
 	@ResponseBody
@@ -533,6 +546,68 @@ public class UserController {
 	    }
 	    
 	    return result;
+=======
+	@GetMapping(value="/user/deleteCard")
+	public ModelAndView deleteCard(Integer payId) {
+		ModelAndView mav = new ModelAndView();
+		this.userService.deleteCard(payId);
+		mav.setViewName("redirect:/user/viewPay");
+		return mav;
+	}
+	@GetMapping(value="/user/paypassword")
+	public ModelAndView paypassword(HttpSession session) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		Integer payPassword = this.userService.getPayPassword(loginUser.getUser_id());
+		mav.addObject("payPassword", payPassword);
+		 // errorMsg가 있으면 가져오고 세션에서 제거
+	    if(session.getAttribute("errorMsg") != null) {
+	        mav.addObject("errorMsg", session.getAttribute("errorMsg"));
+	        session.removeAttribute("errorMsg"); // 세션에서 제거
+	    }
+	    
+	    // successMsg가 있으면 가져오고 세션에서 제거
+	    if(session.getAttribute("successMsg") != null) {
+	        mav.addObject("successMsg", session.getAttribute("successMsg"));
+	        session.removeAttribute("successMsg"); // 세션에서 제거
+	    }
+		mav.addObject("BODY","payPasswordRegister.jsp");
+		return mav;
+	}
+	@PostMapping(value="/user/registerPayPassword")
+	public ModelAndView registerpayPassword(HttpSession session, String payPassword) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		String user_id = loginUser.getUser_id();
+		Integer Password = Integer.parseInt(payPassword);
+		User user = new User();
+		user.setUser_id(user_id);
+		user.setPay_password(Password);
+		this.userService.payPasswordRegister(user);
+		mav.setViewName("redirect:/user/paypassword");
+		return mav;
+	}
+	@PostMapping(value="/user/updatePayPassword")
+	public ModelAndView updatePayPassword(HttpSession session, String currentPayPassword, String newPayPassword) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		User user = new User();
+		String user_id = loginUser.getUser_id();
+		Integer userPayPassword = this.userService.getPayPassword(user_id);
+		Integer currentPassword = Integer.parseInt(currentPayPassword);
+		if(!currentPassword.equals(userPayPassword)) {
+			session.setAttribute("errorMsg", "현재 비밀번호가 일치하지 않습니다.");
+            mav.setViewName("redirect:/user/paypassword");
+            return mav;
+		}
+		Integer Password = Integer.parseInt(newPayPassword);
+		user.setUser_id(user_id);
+		user.setPay_password(Password);
+		this.userService.payPasswordRegister(user);
+		session.setAttribute("successMsg", "비밀번호가 변경되었습니다.");
+		mav.setViewName("redirect:/user/paypassword");
+		return mav;
+>>>>>>> refs/remotes/origin/master
 	}
 	
 	

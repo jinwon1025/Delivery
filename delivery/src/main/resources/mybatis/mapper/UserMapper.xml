@@ -100,9 +100,32 @@
 		values (b_pay_tbl_seq.NEXTVAL, #{user_id}, #{card_number}, #{card_holder}, #{expiry_date}, #{card_type})
 	</insert>
 	
+<<<<<<< HEAD
 	<select id="getOrderStatus" resultType="int" parameterType="string">
     SELECT order_status
     FROM b_order_detail_tbl
     WHERE order_id = #{orderId}
 </select>
+=======
+	<select id="userCardList" parameterType="String" resultType="com.springboot.delivery.model.UserCard">
+	select pay_id, card_number, card_holder, expiry_date, card_type from b_pay_tbl where user_id=#{user_id}
+	</select>
+	
+	<delete id="deleteCard" parameterType="Integer">
+	delete from b_pay_tbl where pay_id=#{pay_id}
+	</delete>
+	
+	<select id="getPayPassword" parameterType="String" resultType="Integer">
+	select pay_password from b_user_info where user_id=#{user_id}
+	</select>
+	
+	<update id="payPasswordRegister" parameterType="com.springboot.delivery.model.User">
+	update b_user_info set pay_password = #{pay_password} where user_id=#{user_id}
+	</update>
+	
+	
+
+
+
+>>>>>>> refs/remotes/origin/master
 </mapper>

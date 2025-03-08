@@ -59,7 +59,11 @@
 		#{owner_email}, owner_password=#{owner_password},
 		owner_phone=#{owner_phone},
 		owner_image_name = #{owner_image_name}
+<<<<<<< HEAD
 
+=======
+		WHERE owner_id = #{owner_id}
+>>>>>>> refs/remotes/origin/master
 	</update>
 
 	<!-- 수정된 쿼리: 업주의 모든 가게 목록 조회 -->
@@ -177,6 +181,7 @@
 	</update>
 
 
+<<<<<<< HEAD
 	<select id="getReviewList"
 		parameterType="com.springboot.delivery.model.OrderCart"
 		resultType="com.springboot.delivery.model.Review">
@@ -193,4 +198,125 @@
 		ORDER BY r.ORDER_ID DESC
 
 	</select>
+=======
+	<!-- 사장님이 적용할 수 있는 쿠폰 목록 조회 -->
+	<select id="getAvailableCoupons" parameterType="String"
+		resultType="com.springboot.delivery.model.Coupon">
+		SELECT
+		owner_coupon_id,
+		cp_name,
+		sale_price,
+		minimum_purchase,
+		owner_id,
+		store_id,
+		TO_CHAR(issued_date, 'YYYY-MM-DD') as issued_date,
+		TO_CHAR(expire_date, 'YYYY-MM-DD') as expire_date,
+		total_quantity,
+		remaining_quantity
+		FROM
+		b_owner_coupon_tbl
+		WHERE
+		(owner_id = #{ownerId} OR
+		owner_id IS NULL)
+		AND
+		expire_date >= SYSDATE
+		ORDER BY
+		expire_date
+	</select>
+
+
+	<!-- 쿠폰 생성 (새로 추가) -->
+	<insert id="createCoupon"
+		parameterType="com.springboot.delivery.model.Coupon">
+		INSERT INTO b_owner_coupon_tbl (
+		owner_coupon_id,
+		cp_name,
+		sale_price,
+		minimum_purchase,
+		owner_id,
+		store_id,
+		issued_date,
+		expire_date,
+		total_quantity,
+		remaining_quantity
+		) VALUES (
+		owner_coupon_seq.NEXTVAL,
+		#{cp_name},
+		#{sale_price},
+		#{minimum_purchase},
+		#{owner_id},
+		#{store_id},
+		SYSDATE,
+		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
+		#{total_quantity},
+		#{remaining_quantity}
+		)
+	</insert>
+
+	<!-- 쿠폰 업데이트 (새로 추가) -->
+	<update id="updateCoupon"
+		parameterType="com.springboot.delivery.model.Coupon">
+		UPDATE b_owner_coupon_tbl
+		SET
+		cp_name = #{cp_name},
+		sale_price = #{sale_price},
+		minimum_purchase = #{minimum_purchase},
+		expire_date = TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
+		total_quantity =
+		#{total_quantity},
+		remaining_quantity = #{remaining_quantity}
+		WHERE
+		owner_coupon_id = #{owner_coupon_id}
+	</update>
+
+
+
+	<!-- 사장님이 이미 적용한 쿠폰 목록 조회 -->
+	<select id="getAppliedCoupons" parameterType="String"
+		resultType="com.springboot.delivery.model.Coupon">
+		SELECT
+		c.owner_coupon_id,
+		c.cp_name,
+		c.sale_price,
+		c.minimum_purchase,
+		c.owner_id,
+		c.store_id,
+		TO_CHAR(c.issued_date,
+		'YYYY-MM-DD') as issued_date,
+		TO_CHAR(c.expire_date, 'YYYY-MM-DD') as
+		expire_date,
+		c.total_quantity,
+		c.remaining_quantity,
+		s.store_name
+		FROM
+		b_owner_coupon_tbl c
+		JOIN
+		b_store_tbl s ON c.store_id = s.store_id
+		WHERE
+		c.owner_id = #{ownerId}
+		AND
+		c.store_id IS NOT NULL
+		AND
+		c.expire_date >=
+		SYSDATE
+		ORDER BY
+		s.store_name, c.expire_date
+	</select>
+
+
+	<delete id="deleteCoupon" parameterType="Integer">
+		DELETE FROM
+		b_owner_coupon_tbl
+		WHERE owner_coupon_id = #{couponId}
+	</delete>
+
+	<select id="checkStoreOwnership" resultType="int">
+		SELECT COUNT(*)
+		FROM b_store_tbl
+		WHERE store_id = #{storeId}
+		AND owner_id = #{ownerId}
+	</select>
+
+
+>>>>>>> refs/remotes/origin/master
 </mapper>
