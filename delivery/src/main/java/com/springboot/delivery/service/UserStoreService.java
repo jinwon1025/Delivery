@@ -183,7 +183,10 @@ public class UserStoreService {
 	public List<Map<String, Object>> getUserCoupons(String userId) {
 	    return this.userStoreMapper.getUserCoupons(userId);
 	}
-
+	
+	public List<MenuItem> getAllMenusByStoreId(String store_id) {
+	    return this.userStoreMapper.getAllMenusByStoreId(store_id);
+	}
 	
 
 }

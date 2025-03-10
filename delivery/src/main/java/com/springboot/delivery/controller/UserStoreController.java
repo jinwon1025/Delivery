@@ -89,7 +89,7 @@ public class UserStoreController {
 
 		if (!mc.isEmpty()) {
 			Integer firstCategoryId = mc.get(0).getMenu_category_id();
-			List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
+			List<MenuItem> menuList = userStoreService.getAllMenusByStoreId(store_id);
 			mav.addObject("menuList", menuList);
 			mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
 		}

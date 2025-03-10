@@ -584,4 +584,8 @@
     ORDER BY 
         oc.sale_price DESC
 </select>
+
+<select id="getAllMenusByStoreId" parameterType="String" resultType="com.springboot.delivery.model.MenuItem">
+    select * from b_menu_item_tbl where store_id = #{store_id}
+</select>
 </mapper>

@@ -74,4 +74,6 @@ public interface UserStoreMapper {
 
 	List<Map<String, Object>> getUserCoupons(String userId);
 	
+	List<MenuItem> getAllMenusByStoreId(String store_id);
+	
 }	
