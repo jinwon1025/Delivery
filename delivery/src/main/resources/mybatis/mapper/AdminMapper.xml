@@ -13,7 +13,9 @@
 		owner_id,
 		issued_date,
 		expire_date,
-		total_quantity
+		total_quantity,
+		store_used_quantity,
+		user_used_quantity
 		) VALUES (
 		#{owner_coupon_id},
 		#{cp_name},
@@ -21,7 +23,9 @@
 		#{owner_id},
 		SYSDATE,
 		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
-		#{total_quantity}
+		#{total_quantity},
+		0,
+		0
 		)
 	</insert>
 	

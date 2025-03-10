@@ -93,6 +93,7 @@
 					등록</a> <span class="nav-divider">|</span> <a
 					href="<c:url value='/owner/notice'/>"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'notice') ? 'active' : ''}">공지사항</a>
+					<span class="nav-divider">|</span>
 				<a href="<c:url value='/owner/couponManagement'/>"
 					class="nav-item ${fn:contains(pageContext.request.requestURI, 'couponManagement') ? 'active' : ''}">쿠폰관리</a>
 			</div>

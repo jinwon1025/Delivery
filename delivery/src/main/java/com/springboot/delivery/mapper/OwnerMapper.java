@@ -12,6 +12,7 @@ import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.StoreCoupon;
 
 @Mapper
 public interface OwnerMapper {
@@ -47,6 +48,13 @@ public interface OwnerMapper {
     
 
     List<Review> getReviewList(OrderCart oc);
+    
+    Integer getMaxStoreCouponId();
+    
+    void registerCoupon(StoreCoupon sc);
+    void updateOwnerCouponQuantity(Coupon c);
+    List<Map<String, Object>> getAppliedStoreCoupons(String ownerId);
+    
 }
 
 

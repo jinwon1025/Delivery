@@ -13,6 +13,7 @@ import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.StoreCoupon;
 
 @Service
 public class OwnerService {
@@ -86,9 +87,8 @@ public class OwnerService {
 	}
 
 	// 사장님이 이미 적용한 쿠폰 목록 조회
-	public List<Coupon> getAppliedCoupons(String ownerId) {
-		return this.ownerMapper.getAppliedCoupons(ownerId);
-
+	public List<Map<String, Object>> getAppliedStoreCoupons(String ownerId) {
+	    return ownerMapper.getAppliedStoreCoupons(ownerId);
 	}
 
 	public void removeCouponFromStore(Integer couponId, String storeId, String ownerId) {
@@ -135,6 +135,18 @@ public class OwnerService {
 	
 	public List<Review> getReviewList(OrderCart oc){
 		return this.ownerMapper.getReviewList(oc);
+	}
+	
+	public Integer getMaxStoreCouponId() {
+		return this.ownerMapper.getMaxStoreCouponId();
+	}
+	
+	public void registerCoupon(StoreCoupon sc) {
+		this.ownerMapper.registerCoupon(sc);
+	}
+	
+	public void updateOwnerCouponQuantity(Coupon c) {
+		this.ownerMapper.updateOwnerCouponQuantity(c);
 	}
 
 }

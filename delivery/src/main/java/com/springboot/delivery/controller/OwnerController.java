@@ -23,6 +23,7 @@ import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.service.OwnerService;
 
 import jakarta.servlet.ServletContext;
@@ -338,6 +339,7 @@ public class OwnerController {
 	}
 
 	// 쿠폰 관리 페이지
+	// 쿠폰 관리 페이지
 	@GetMapping("/owner/couponManagement")
 	public ModelAndView couponManagement(HttpSession session) {
 	    ModelAndView mav = new ModelAndView("owner/ownerMain");
@@ -348,22 +350,18 @@ public class OwnerController {
 	        // 해당 사장님이 적용할 수 있는 쿠폰 목록 가져오기
 	        List<Coupon> availableCoupons = ownerSerivce.getAvailableCoupons(loginOwner.getId());
 	        
-	        // 해당 사장님이 이미 적용한 쿠폰 목록 가져오기
-	        List<Coupon> appliedCoupons = ownerSerivce.getAppliedCoupons(loginOwner.getId());
+	        // 해당 사장님이 가게에 적용한 쿠폰 목록 가져오기
+	        List<Map<String, Object>> appliedStoreCoupons = ownerSerivce.getAppliedStoreCoupons(loginOwner.getId());
+	        System.out.println("적용된 쿠폰 목록 크기: " + (appliedStoreCoupons != null ? appliedStoreCoupons.size() : "null"));
+	        if(appliedStoreCoupons != null && !appliedStoreCoupons.isEmpty()) {
+	            System.out.println("첫 번째 쿠폰: " + appliedStoreCoupons.get(0));
+	        }
 
 	        // 사장님의 가게 목록 가져오기
 	        List<Store> storeList = ownerSerivce.getOwnerStores(loginOwner.getId());
-	        
-	        // 각 가게 정보 자세히 출력
-	        System.out.println("=== 가게 상세 정보 ===");
-	        for(Store store : storeList) {
-	            System.out.println("가게ID: " + store.getStore_id() + 
-	                              ", 가게명: " + store.getStore_name() + 
-	                              ", 주소: " + store.getStore_address());
-	        }
 
 	        mav.addObject("availableCoupons", availableCoupons);
-	        mav.addObject("appliedCoupons", appliedCoupons);
+	        mav.addObject("appliedStoreCoupons", appliedStoreCoupons);
 	        mav.addObject("storeList", storeList);
 	        mav.addObject("BODY", "ownerCouponManagement.jsp");
 	    } else {
@@ -375,69 +373,44 @@ public class OwnerController {
 
 	// 쿠폰 적용하기 (기존 쿠폰 업데이트 또는 새 쿠폰 생성)
 	@PostMapping("/owner/applyCoupon")
-	public String applyCoupon(@RequestParam(required = false) Integer couponId, 
-	                          @RequestParam String storeId,
-	                          @RequestParam String couponName,
-	                          @RequestParam Integer salePrice,
-	                          @RequestParam Integer minimumPurchase,
-	                          @RequestParam String expireDate,
-	                          @RequestParam Integer quantity,
-	                          HttpSession session) {
-	    
-	    System.out.println("쿠폰 적용 요청: couponId=" + couponId + ", storeId=" + storeId 
-	        + ", couponName=" + couponName + ", salePrice=" + salePrice 
-	        + ", minimumPurchase=" + minimumPurchase + ", expireDate=" + expireDate 
-	        + ", quantity=" + quantity);
-	    
-	    LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
-	    
-	    if (loginOwner == null) {
-	        return "redirect:/owner/index";
-	    }
-	    
-	    try {
-	        // 가게 소유권 확인을 직접 수행
-	        Integer ownershipCount = ownerSerivce.checkStoreOwnership(storeId, loginOwner.getId());
-	        System.out.println("가게 소유권 확인 결과: " + ownershipCount);
-	        
-	        if (ownershipCount <= 0) {
-	            System.out.println("가게 소유자가 아닙니다! storeId=" + storeId + ", ownerId=" + loginOwner.getId());
-	            // 여기서 오류 페이지로 리다이렉트하거나 메시지를 표시할 수 있습니다
-	            return "redirect:/owner/couponManagement?error=ownership";
-	        }
-	        
-	        // 쿠폰 객체 생성
-	        Coupon coupon = new Coupon();
-	        if (couponId != null) {
-	            coupon.setOwner_coupon_id(couponId);
-	        }
-	        coupon.setCp_name(couponName);
-	        coupon.setSale_price(salePrice);
-	        coupon.setMinimum_purchase(minimumPurchase);
-	        coupon.setOwner_id(loginOwner.getId());
-	        coupon.setStore_id(storeId);
-	        coupon.setExpire_date(expireDate);
-	        coupon.setTotal_quantity(quantity);
-	        coupon.setRemaining_quantity(quantity);
-	        
-	        System.out.println("쿠폰 객체 생성 완료: " + coupon.getCp_name() + ", storeId=" + coupon.getStore_id());
-	        
-	        // 소유권 확인 로직을 우회하는 단순 적용 로직
-	        if (coupon.getOwner_coupon_id() != null) {
-	            ownerSerivce.updateCouponDirectly(coupon);
-	        } else {
-	            ownerSerivce.createCouponDirectly(coupon);
-	        }
-	        
-	        System.out.println("쿠폰 적용 완료!");
-	        
-	    } catch (Exception e) {
-	        System.err.println("쿠폰 적용 중 오류 발생: " + e.getMessage());
-	        e.printStackTrace();
-	        return "redirect:/owner/couponManagement?error=application";
-	    }
-	    
-	    return "redirect:/owner/couponManagement?success=true";
+	public ModelAndView applyCoupon(HttpSession session, String couponId, String couponName, String salePrice, String expireDate
+			,String storeId, String owner_coupon_id, String quantity,
+			String totalQuantity, String minimumPurchase) {
+		
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		
+		LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
+		
+		StoreCoupon sc = new StoreCoupon();
+		Integer maxCount = this.ownerSerivce.getMaxStoreCouponId();
+		if(maxCount == null) {
+			maxCount = 0;
+		}
+		sc.setStore_coupon_id(maxCount+1);
+		sc.setStore_id(storeId);
+		sc.setOwner_coupon_id(Integer.parseInt(owner_coupon_id));
+		sc.setQuantity(Integer.parseInt(quantity));
+		sc.setExpire_date(expireDate);
+		sc.setOwner_id(loginOwner.getId());
+		sc.setCp_name(couponName);
+		sc.setUsed_quantity(0);
+		System.out.println("최소주문금액" +minimumPurchase);
+		sc.setMinimum_purchase(Integer.parseInt(minimumPurchase));
+		
+		//b_store_coupon_tbl에 등록
+		this.ownerSerivce.registerCoupon(sc);
+		
+		Coupon c = new Coupon();
+		c.setOwner_coupon_id(Integer.parseInt(owner_coupon_id));
+		c.setStore_used_quantity(Integer.parseInt(quantity));
+		
+		
+		//등록한 쿠폰 개수만큼 owner_coupon_tbl에서 깎기
+		this.ownerSerivce.updateOwnerCouponQuantity(c);
+		mav.setViewName("redirect:/owner/couponManagement");
+		return mav;
+		
+		
 	}
 
 	@PostMapping("/owner/removeCoupon")
@@ -457,5 +430,6 @@ public class OwnerController {
 
 		return "redirect:/owner/couponManagement";
 	}
+	
 
 }

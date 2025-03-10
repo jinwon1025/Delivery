@@ -18,6 +18,9 @@ public class Coupon {
     private Integer total_quantity;
     private Integer remaining_quantity; // 추가된 필드      
     private String store_name; // 추가된 필드
+    private Integer store_used_quantity;
+    private Integer user_used_quantity;
+    
     
    
     

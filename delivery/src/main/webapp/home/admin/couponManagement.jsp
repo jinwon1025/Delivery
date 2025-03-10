@@ -86,7 +86,7 @@
 						<td>${coupon.owner_coupon_id}</td>
 						<td>${coupon.cp_name}</td>
 						<td><fmt:formatNumber value="${coupon.sale_price}"
-								type="currency" currencySymbol="₩" /></td>
+								type="currency" currencySymbol="₩" maxFractionDigits="0" /></td>
 						<td>${coupon.owner_id}</td>
 						<td>${coupon.issued_date}</td>
 						<td>${coupon.expire_date}</td>
