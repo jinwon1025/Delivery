@@ -9,6 +9,7 @@ import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
+import com.springboot.delivery.model.UserCoupon;
 
 @Mapper
 public interface UserMapper {
@@ -47,5 +48,13 @@ public interface UserMapper {
 	void payPasswordRegister(User user);
 	
 	Integer getOrderStatus(String orderId);
+	
+	Integer getMaxUserCouponId();
+	
+	// 쿠폰 다운로드
+	void downloadCoupon(UserCoupon userCoupon);
+	
+	void increaseStoreCouponQuantity(Integer storeCouponId);
+	void increaseOwnerCouponQuantity(Integer ownerCouponId);
 
 }

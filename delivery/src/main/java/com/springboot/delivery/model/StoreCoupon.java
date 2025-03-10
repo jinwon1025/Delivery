@@ -18,6 +18,7 @@ public class StoreCoupon {
 	private String cp_name;
 	private Integer minimum_purchase;
 	private Integer used_quantity;
+	private String user_id;
     
    
     

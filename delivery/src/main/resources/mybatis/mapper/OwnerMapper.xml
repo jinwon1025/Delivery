@@ -327,7 +327,7 @@
 		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
 		#{owner_id},
 		#{cp_name},
-		#{minimum_purchase}
+		#{minimum_purchase},
 		#{used_quantity}
 		)
 	

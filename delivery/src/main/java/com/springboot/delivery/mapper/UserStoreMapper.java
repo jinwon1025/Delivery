@@ -14,6 +14,8 @@ import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
+import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UserCoupon;
 
 @Mapper
 public interface UserStoreMapper {
@@ -66,5 +68,9 @@ public interface UserStoreMapper {
 	void deleteReview(Integer review_id);
 
 	OrderCart getOrderInfoWithAddress(String orderId);
+	
+	// 가게별 사용 가능한 쿠폰 목록 조회
+	List<Map<String, Object>> getStoreCouponList(StoreCoupon sc);
+
 	
 }	

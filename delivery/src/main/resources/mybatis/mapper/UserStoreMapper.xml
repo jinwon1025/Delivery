@@ -37,7 +37,8 @@
 		LEFT JOIN
 		b_option_group_tbl g
 		ON
-		o.option_group_id = g.option_group_id
+		o.option_group_id =
+		g.option_group_id
 		WHERE
 		o.menu_item_id = #{menu_item_id}
 	</select>
@@ -536,4 +537,30 @@
 		WHERE o.ORDER_ID = #{orderId}
 	</select>
 
+	
+<select id="getStoreCouponList" parameterType="map" resultType="map">
+    SELECT
+        sc.store_coupon_id,
+        sc.cp_name,
+        oc.sale_price,
+        sc.minimum_purchase,
+        sc.expire_date,
+        sc.owner_coupon_id,  <!-- 추가된 부분 -->
+        CASE WHEN (SELECT COUNT(*) FROM b_user_coupon_tbl uc
+            WHERE uc.store_coupon_id = sc.store_coupon_id
+            AND uc.user_id = #{user_id}) > 0
+        THEN 1
+        ELSE 0
+        END AS isDownloaded
+    FROM
+        b_store_coupon_tbl sc
+    JOIN
+        b_owner_coupon_tbl oc ON sc.owner_coupon_id = oc.owner_coupon_id
+    WHERE
+        sc.store_id = #{store_id}
+        AND sc.expire_date > SYSDATE
+        AND (sc.quantity - sc.used_quantity) > 0
+    ORDER BY
+        sc.expire_date ASC
+</select>
 </mapper>

@@ -11,6 +11,7 @@ import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
+import com.springboot.delivery.model.UserCoupon;
 
 @Service
 public class UserService {
@@ -105,5 +106,21 @@ public class UserService {
 	public void payPasswordRegister(User user) {
 		this.userMapper.payPasswordRegister(user);
 	}
-
+	
+	public Integer getMaxUserCouponId() {
+		return this.userMapper.getMaxUserCouponId();
+	}
+	
+	// 쿠폰 다운로드
+	public void downloadCoupon(UserCoupon userCoupon) {
+	    this.userMapper.downloadCoupon(userCoupon);
+	}
+	
+	public void increaseStoreCouponQuantity(Integer storeCouponId) {
+	    this.userMapper.increaseStoreCouponQuantity(storeCouponId);
+	}
+	
+	public void increaseOwnerCouponQuantity(Integer ownerCouponId) {
+		this.userMapper.increaseOwnerCouponQuantity(ownerCouponId);
+	}
 }

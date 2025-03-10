@@ -31,6 +31,7 @@ import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
+import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
 import com.springboot.delivery.service.UserStoreService;
@@ -55,22 +56,46 @@ public class UserStoreController {
 
 	@GetMapping(value = "/userstore/detail")
 	public ModelAndView storeDetial(String store_id, HttpSession session) {
-		Store currentStore = (Store) storeService.getStore(store_id);
-		session.setAttribute("currentStore", currentStore);
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
-		ModelAndView mav = new ModelAndView("user/userMain");
-		mav.addObject("maincategoryList", maincategoryList);
-		mav.addObject("storeCategory", mc);
-		mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+	    Store currentStore = (Store) storeService.getStore(store_id);
+	    session.setAttribute("currentStore", currentStore);
+	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	    
+	    // 현재 로그인한 사용자 ID 가져오기
+	    String userId = (String) session.getAttribute("userId");
+	    
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
+	    
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    mav.addObject("maincategoryList", maincategoryList);
+	    mav.addObject("storeCategory", mc);
+	    mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+	    
+	    StoreCoupon sc = new StoreCoupon();
+	    sc.setStore_id(currentStore.getStore_id());
+	    sc.setUser_id(loginUser.getUser_id());
+	    
+	    
+	    // 사용 가능한 쿠폰 목록 조회
+	    List<Map<String, Object>> availableCoupons = userStoreService.getStoreCouponList(sc);
+	    mav.addObject("availableCoupons", availableCoupons);
+	    System.out.println("=== 조회된 쿠폰 정보 ===");
+	    System.out.println("조회된 쿠폰 수: " + (availableCoupons != null ? availableCoupons.size() : "null"));
 
-		if (!mc.isEmpty()) {
-			Integer firstCategoryId = mc.get(0).getMenu_category_id();
-			List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
-			mav.addObject("menuList", menuList);
-			mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
-		}
-		return mav;
+	    if (availableCoupons != null && !availableCoupons.isEmpty()) {
+	        for (Map<String, Object> coupon : availableCoupons) {
+	            System.out.println(coupon);
+	        }
+	    }
+	    
+	    if (!mc.isEmpty()) {
+	        Integer firstCategoryId = mc.get(0).getMenu_category_id();
+	        List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
+	        mav.addObject("menuList", menuList);
+	        mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
+	    }
+	    
+	    return mav;
 	}
 
 	@GetMapping(value = "/userstore/menuList")

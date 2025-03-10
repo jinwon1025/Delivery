@@ -16,6 +16,8 @@ import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
+import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UserCoupon;
 
 @Service
 public class UserStoreService {
@@ -175,6 +177,11 @@ public class UserStoreService {
 	public OrderCart getOrderInfoWithAddress(String orderId) {
         return userStoreMapper.getOrderInfoWithAddress(orderId);
     }
+	
+	public List<Map<String, Object>> getStoreCouponList(StoreCoupon sc) {
+	    return this.userStoreMapper.getStoreCouponList(sc);
+	}
+
 	
 
 }

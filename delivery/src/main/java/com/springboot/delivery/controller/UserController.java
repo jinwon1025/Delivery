@@ -4,13 +4,17 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import com.springboot.delivery.model.Maincategory;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
+import com.springboot.delivery.model.UserCoupon;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.UserService;
 
@@ -606,6 +611,52 @@ public class UserController {
 		session.setAttribute("successMsg", "비밀번호가 변경되었습니다.");
 		mav.setViewName("redirect:/user/paypassword");
 		return mav;
+	}
+	
+	@PostMapping(value="/user/downloadCoupon")
+	@ResponseBody
+	public Map<String, Object> downloadCoupon(
+	        HttpSession session,
+	        @RequestBody Map<String, Object> request) {
+
+	    Map<String, Object> response = new HashMap<>();
+
+	    try {
+	        LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	        
+	        // JSON 요청에서 파라미터 추출
+	        Integer storeCouponId = Integer.parseInt(request.get("storeCouponId").toString());
+	        Integer ownerCouponId = Integer.parseInt(request.get("ownerCouponId").toString());
+	        
+	        // userStoreService.getStoreCouponInfo(storeCouponId) 호출 불필요
+
+	        Integer maxCount = this.userService.getMaxUserCouponId();
+	        if(maxCount == null) {
+	            maxCount = 0;
+	        }
+
+	        UserCoupon uc = new UserCoupon();
+	        uc.setUser_cp_id(maxCount+1);
+	        uc.setUser_id(loginUser.getUser_id());
+	        uc.setStore_coupon_id(storeCouponId);
+	        uc.setOwner_coupon_id(ownerCouponId);
+	        uc.setDownload_date(new String());
+	        uc.setStatus(1);  // 0: 사용 가능
+	        
+	        this.userService.increaseStoreCouponQuantity(storeCouponId);
+	        this.userService.increaseOwnerCouponQuantity(ownerCouponId);
+	        
+	        // 쿠폰 다운로드 처리
+	        userService.downloadCoupon(uc);
+
+	        response.put("success", true);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.put("success", false);
+	        response.put("message", "쿠폰 다운로드 중 오류가 발생했습니다.");
+	    }
+
+	    return response;
 	}
 	
 	
