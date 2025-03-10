@@ -56,8 +56,10 @@ h2 {
 
 .option-list li {
 	list-style: none; /* 목록 스타일 제거 */
-	padding: 0; /* 기본 패딩 제거 */
+	padding: 8px 0; /* 패딩 수정 - 위아래 여백 추가 */
 	margin: 0; /* 기본 마진 제거 */
+	display: flex; /* 추가: 플렉스 디스플레이 */
+	align-items: center; /* 추가: 세로 중앙 정렬 */
 }
 
 .price {
@@ -125,68 +127,122 @@ h2 {
 
 /* 모달 스타일 변경 */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
 }
 
 .modal-content {
-    background: white;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 350px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+	background: white;
+	border-radius: 10px;
+	width: 90%;
+	max-width: 350px;
+	padding: 20px;
+	text-align: center;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .modal-content p {
-    color: #333;
-    line-height: 1.5;
-    margin-bottom: 15px;
+	color: #333;
+	line-height: 1.5;
+	margin-bottom: 15px;
 }
 
 .modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 20px;
 }
 
 .modal-buttons button {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+	flex: 1;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	font-weight: bold;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s;
 }
 
 .cancel-btn {
-    background-color: #f1f1f1;
-    color: #333;
-    margin-right: 10px;
+	background-color: #f1f1f1;
+	color: #333;
+	margin-right: 10px;
 }
 
 .confirm-btn {
-    background-color: #2196F3;
-    color: white;
+	background-color: #2196F3;
+	color: white;
 }
 
 .cancel-btn:hover {
-    background-color: #e0e0e0;
+	background-color: #e0e0e0;
 }
 
 .confirm-btn:hover {
-    background-color: #1976D2;
+	background-color: #1976D2;
+}
+
+/* 라디오 버튼과 체크박스의 커스텀 스타일 */
+input[type="radio"],
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 3px;
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+/* 체크박스와 라디오버튼이 선택됐을 때의 스타일 */
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+  background-color: #ff5722;
+  border-color: #ff5722;
+}
+
+/* 체크 표시 스타일 */
+input[type="radio"]:checked::after,
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 라디오 버튼만의 추가 스타일 - 둥근 모양 */
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+/* 옵션 텍스트 스타일 */
+.option-list label {
+  cursor: pointer;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* 옵션 텍스트 스타일 */
+.option-list label span {
+  margin-left: 5px;
 }
 </style>
 </head>
@@ -210,32 +266,51 @@ h2 {
 				<p>${menuDetail.content}</p>
 				<hr>
 				<!-- 옵션 그룹 -->
-				<div class="option-group">
-					<ul class="option-list">
-						<c:forEach var="entry" items="${optionGroups}">
-							<h3>[${entry.key}]</h3>
-							<ul>
-								<c:forEach var="option" items="${entry.value}">
-									<li><input type="checkbox" name="selectedOptions"
-										value="${option.option_id}"> ${option.option_name}
-										(+${option.option_price} 원) <!-- 체크된 항목에 대한 옵션 데이터 저장 --> <input
-										type="hidden" name="allOptionIds" value="${option.option_id}">
-										<input type="hidden" name="allOptionGroupIds"
-										value="${option.option_group_id}"></li>
-								</c:forEach>
-							</ul>
-						</c:forEach>
-					</ul>
-				</div>
+				<!-- 수정할 부분 - 옵션 그룹 부분 -->
+<div class="option-group">
+    <ul class="option-list">
+        <c:forEach var="entry" items="${optionGroups}">
+        <c:set var="selectionType" value="${entry.value[0].selection_type}" />
+            <h3>
+                <span>[${entry.key}]</span>
+                <c:choose>
+                    <c:when test="${selectionType eq 'single' }">
+                        <span>(단일 선택)</span>
+                    </c:when>
+                    <c:otherwise>
+                        <span>(중복 선택)</span>
+                    </c:otherwise>
+                </c:choose>
+            </h3>
+            
+            <ul>
+                <c:forEach var="option" items="${entry.value}">
+                    <li>
+                        <c:choose>
+                            <c:when test="${selectionType eq 'single'}">
+                                <input type="radio" name="optionGroup_${option.option_group_id}" value="${option.option_id}" id="option_${option.option_id}">
+                            </c:when>
+                            <c:otherwise>
+                                <input type="checkbox" name="selectedOptions" value="${option.option_id}" id="option_${option.option_id}">
+                            </c:otherwise>
+                        </c:choose>
+                        <label for="option_${option.option_id}">
+                            ${option.option_name} (+${option.option_price} 원)
+                        </label>
+                        <input type="hidden" name="allOptionIds" value="${option.option_id}">
+                        <input type="hidden" name="allOptionGroupIds" value="${option.option_group_id}">
+                    </li>
+                </c:forEach>
+            </ul>
+        </c:forEach>
+    </ul>
+</div>
 
 				<!-- 수량 선택 컨트롤 추가 -->
 				<div class="quantity-container">
-					<button type="button" class="quantity-btn"
-						onclick="decreaseQuantity()">-</button>
-					<input type="number" id="quantity" name="quantity"
-						class="quantity-input" value="1" min="1" max="10">
-					<button type="button" class="quantity-btn"
-						onclick="increaseQuantity()">+</button>
+					<button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+					<input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" max="10">
+					<button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
 				</div>
 
 				<!-- 장바구니 버튼 -->

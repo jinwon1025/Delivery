@@ -151,6 +151,9 @@ body {
 	margin-bottom: 5px;
 	padding-left: 10px;
 	display: block;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
 }
 
 .select-all-container {
@@ -663,32 +666,6 @@ body {
 			checkbox.setAttribute('data-quantity', quantity); // 수량 데이터 속성 업데이트
 
 			updateTotalPrice(); // 총 가격 업데이트
-		}
-
-		// 페이지 로드 시 실행할 초기화 함수
-		window.onload = function() {
-			// 개별 체크박스에 이벤트 리스너 추가
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			for (let i = 0; i < checkboxes.length; i++) { // 모든 체크박스 순회
-				checkboxes[i].addEventListener('change', updateTotalPrice); // 체크박스 변경 시 총 가격 업데이트 함수 호출
-			}
-
-			// hidden 입력 필드 업데이트
-			updateSelectedItemsHidden(); // 선택된 아이템에 대한 숨겨진 입력 필드 초기화
-
-			// 초기 전체선택 체크박스 상태 업데이트
-			updateSelectAllCheckbox(); // 전체 선택 체크박스 상태 초기화
-
-			// 수량 입력 필드에 변경 이벤트 리스너 추가
-			const quantityInputs = document.querySelectorAll('.quantity-input'); // 모든 수량 입력 필드 가져오기
-			for (let i = 0; i < quantityInputs.length; i++) { // 모든 수량 입력 필드 순회
-				quantityInputs[i].addEventListener('change', function() { // 수량 변경 시 실행할 이벤트 리스너 추가
-					updateItemPrice(this); // 아이템 가격 업데이트 함수 호출
-				});
-			}
-
-			// 초기 총 가격 계산
-			updateTotalPrice(); // 페이지 로드 시 총 가격 업데이트
 		}
 	</script>
 </body>

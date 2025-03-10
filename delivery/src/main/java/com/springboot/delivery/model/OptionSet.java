@@ -14,6 +14,7 @@ public class OptionSet {
 	private Integer menu_item_id;  //b_option_tbl;
 	private Integer option_group_id; // 조인
 	private String option_group_name; //b_option_group_tbl;
+	private String selection_type;
 	
 	
 	

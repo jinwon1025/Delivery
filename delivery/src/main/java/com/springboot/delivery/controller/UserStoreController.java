@@ -132,6 +132,28 @@ public class UserStoreController {
 	    for (OptionSet option : os) {
 	        groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
 	    }
+	    
+	 // 옵션 정보 로깅
+	    System.out.println("====== 옵션 정보 ======");
+	    for (OptionSet option : os) {
+	        System.out.println("옵션 ID: " + option.getOption_id() 
+	            + ", 이름: " + option.getOption_name() 
+	            + ", 가격: " + option.getOption_price()
+	            + ", 그룹 ID: " + option.getOption_group_id() 
+	            + ", 그룹 이름: " + option.getOption_group_name()
+	            + ", 선택 타입: " + option.getSelection_type());
+	    }
+
+	    // 그룹화된 옵션 정보 로깅
+	    System.out.println("\n====== 그룹화된 옵션 정보 ======");
+	    for (Map.Entry<String, List<OptionSet>> entry : groupedOptions.entrySet()) {
+	        System.out.println("그룹 이름: " + entry.getKey());
+	        System.out.println("옵션 개수: " + entry.getValue().size());
+	        if (!entry.getValue().isEmpty()) {
+	            System.out.println("선택 타입: " + entry.getValue().get(0).getSelection_type());
+	        }
+	        System.out.println("------");
+	    }
 
 	    mav.addObject("menuDetail", mi);
 	    mav.addObject("optionGroups", groupedOptions);
