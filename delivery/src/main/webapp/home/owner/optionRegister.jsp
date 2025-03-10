@@ -81,8 +81,8 @@
 							<h4 class="card-title">옵션 카테고리 추가</h4>
 						</div>
 						<div class="card-body">
-							<form id="addOptionCategoryForm" action="/store/addOption" method="post"
-								class="d-flex align-items-center flex-wrap"
+							<form id="addOptionCategoryForm" action="/store/addOption"
+								method="post" class="d-flex align-items-center flex-wrap"
 								onsubmit="return categoryCheck(this)">
 								<input type="hidden" name="menu_category_id"
 									value="${menuInfo.menu_category_id}" />
@@ -172,18 +172,19 @@
 
 									<!-- 하위 옵션 추가 폼 -->
 									<div class="mt-3 pt-3 border-top">
-										<form id="addSubOptionForm_${category.option_group_id}" action="/store/addSubOption" method="post"
+										<form id="addSubOptionForm_${category.option_group_id}"
+											action="/store/addSubOption" method="post"
 											class="d-flex align-items-center"
 											onsubmit="return valueCheck(this)">
 											<input type="hidden" name="option_group_id"
 												value="${category.option_group_id}" />
 											<div class="form-group mr-2 mb-0" style="flex: 2;">
-												<input type="text" name="option_name" 
-													placeholder="하위 옵션 이름" class="form-control">
+												<input type="text" name="option_name" placeholder="하위 옵션 이름"
+													class="form-control">
 											</div>
 											<div class="form-group mr-2 mb-0" style="flex: 1;">
-												<input type="text" name="option_price" 
-													placeholder="추가 가격" class="form-control">
+												<input type="text" name="option_price" placeholder="추가 가격"
+													class="form-control">
 											</div>
 											<button type="submit" class="btn btn-primary">하위 옵션
 												추가</button>
@@ -217,58 +218,113 @@
 	<!-- JavaScript -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
-        function deleteCheck() {
-            return confirm("정말로 이 옵션을 삭제하시겠습니까?");
-        }
-        
-        function deleteOptionCategory() {
-            return confirm("이 옵션 카테고리와 관련된 모든 하위 옵션이 삭제됩니다.\n정말로 삭제하시겠습니까?");
-        }
-        
-        function categoryCheck(form) {
-            const categoryNameInput = form.querySelector('[name="category_name"]');
-            const singleRadio = document.getElementById('single-selection');
-            const multipleRadio = document.getElementById('multiple-selection');
-            
-            if(!categoryNameInput || categoryNameInput.value.trim() === '') {
-                alert("카테고리명을 입력해주세요.");
-                if(categoryNameInput) categoryNameInput.focus();
-                return false;
-            }
-            
-            if(!singleRadio.checked && !multipleRadio.checked) {
-                alert("단일선택 또는 중복선택 중 하나를 선택해주세요.");
-                return false;
-            }
-            
-            return true;
-        }
-        
-        function valueCheck(form) {
-            const optionNameInput = form.querySelector('[name="option_name"]');
-            const optionPriceInput = form.querySelector('[name="option_price"]');
-            
-            if(!optionNameInput || optionNameInput.value.trim() === '') {
-                alert("옵션명을 입력해주세요.");
-                if(optionNameInput) optionNameInput.focus();
-                return false;
-            }
-            
-            if(!optionPriceInput || optionPriceInput.value.trim() === '') {
-                alert("옵션 가격을 입력해주세요.");
-                if(optionPriceInput) optionPriceInput.focus();
-                return false;
-            }
-            
-            // 숫자만 입력되었는지 확인
-            if(isNaN(optionPriceInput.value)) {
-                alert("옵션 가격은 숫자만 입력해주세요.");
-                optionPriceInput.focus();
-                return false;
-            }
-            
-            return true;
-        }
-    </script>
+		function deleteCheck() {
+			return confirm("정말로 이 옵션을 삭제하시겠습니까?");
+		}
+
+		function deleteOptionCategory() {
+			return confirm("이 옵션 카테고리와 관련된 모든 하위 옵션이 삭제됩니다.\n정말로 삭제하시겠습니까?");
+		}
+
+		function categoryCheck(form) {
+			const categoryNameInput = form
+					.querySelector('[name="category_name"]');
+			const singleRadio = document.getElementById('single-selection');
+			const multipleRadio = document.getElementById('multiple-selection');
+
+			if (!categoryNameInput || categoryNameInput.value.trim() === '') {
+				alert("카테고리명을 입력해주세요.");
+				if (categoryNameInput)
+					categoryNameInput.focus();
+				return false;
+			}
+
+			if (!singleRadio.checked && !multipleRadio.checked) {
+				alert("단일선택 또는 중복선택 중 하나를 선택해주세요.");
+				return false;
+			}
+
+			// 기존 카테고리 이름들과 비교
+			const existingCategories = [];
+
+			// 여기에 JSTL로 기존 카테고리를 JavaScript 배열에 추가
+			<c:forEach var="category" items="${optionList}">
+			existingCategories.push("${category.option_group_name}");
+			</c:forEach>
+
+			// 중복 체크
+			if (existingCategories.includes(categoryNameInput.value.trim())) {
+				alert("이미 존재하는 카테고리 이름입니다. 다른 이름을 입력해주세요.");
+				categoryNameInput.focus();
+				return false;
+			}
+
+			return true;
+		}
+		function categoryCheck(form) {
+			const categoryNameInput = form
+					.querySelector('[name="category_name"]');
+			const singleRadio = document.getElementById('single-selection');
+			const multipleRadio = document.getElementById('multiple-selection');
+
+			if (!categoryNameInput || categoryNameInput.value.trim() === '') {
+				alert("카테고리명을 입력해주세요.");
+				if (categoryNameInput)
+					categoryNameInput.focus();
+				return false;
+			}
+
+			if (!singleRadio.checked && !multipleRadio.checked) {
+				alert("단일선택 또는 중복선택 중 하나를 선택해주세요.");
+				return false;
+			}
+
+			// 기존 카테고리 이름들과 비교
+			const existingCategories = [];
+
+			// 여기에 JSTL로 기존 카테고리를 JavaScript 배열에 추가
+			<c:forEach var="category" items="${optionList}">
+			existingCategories.push("${category.option_group_name}");
+			</c:forEach>
+
+			// 중복 체크
+			if (existingCategories.includes(categoryNameInput.value.trim())) {
+				alert("이미 존재하는 카테고리 이름입니다. 다른 이름을 입력해주세요.");
+				categoryNameInput.focus();
+				return false;
+			}
+
+			return true;
+		}
+
+		function valueCheck(form) {
+			const optionNameInput = form.querySelector('[name="option_name"]');
+			const optionPriceInput = form
+					.querySelector('[name="option_price"]');
+
+			if (!optionNameInput || optionNameInput.value.trim() === '') {
+				alert("옵션명을 입력해주세요.");
+				if (optionNameInput)
+					optionNameInput.focus();
+				return false;
+			}
+
+			if (!optionPriceInput || optionPriceInput.value.trim() === '') {
+				alert("옵션 가격을 입력해주세요.");
+				if (optionPriceInput)
+					optionPriceInput.focus();
+				return false;
+			}
+
+			// 숫자만 입력되었는지 확인
+			if (isNaN(optionPriceInput.value)) {
+				alert("옵션 가격은 숫자만 입력해주세요.");
+				optionPriceInput.focus();
+				return false;
+			}
+
+			return true;
+		}
+	</script>
 </body>
 </html>
