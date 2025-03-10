@@ -81,13 +81,13 @@
 							<h4 class="card-title">옵션 카테고리 추가</h4>
 						</div>
 						<div class="card-body">
-							<form action="/store/addOption" method="post"
+							<form id="addOptionCategoryForm" action="/store/addOption" method="post"
 								class="d-flex align-items-center flex-wrap"
-								onsubmit="return categoryCheck()">
+								onsubmit="return categoryCheck(this)">
 								<input type="hidden" name="menu_category_id"
 									value="${menuInfo.menu_category_id}" />
 								<div class="form-group mr-3 mb-0" style="flex: 1;">
-									<input type="text" id="category_name" name="category_name"
+									<input type="text" name="category_name"
 										placeholder="카테고리 이름 (예: 소스 선택)" class="form-control">
 								</div>
 								<div class="d-flex align-items-center mr-3">
@@ -172,17 +172,17 @@
 
 									<!-- 하위 옵션 추가 폼 -->
 									<div class="mt-3 pt-3 border-top">
-										<form action="/store/addSubOption" method="post"
+										<form id="addSubOptionForm_${category.option_group_id}" action="/store/addSubOption" method="post"
 											class="d-flex align-items-center"
-											onsubmit="return valueCheck()">
+											onsubmit="return valueCheck(this)">
 											<input type="hidden" name="option_group_id"
 												value="${category.option_group_id}" />
 											<div class="form-group mr-2 mb-0" style="flex: 2;">
-												<input type="text" name="option_name" id="option_name"
+												<input type="text" name="option_name" 
 													placeholder="하위 옵션 이름" class="form-control">
 											</div>
 											<div class="form-group mr-2 mb-0" style="flex: 1;">
-												<input type="text" name="option_price" id="option_price"
+												<input type="text" name="option_price" 
 													placeholder="추가 가격" class="form-control">
 											</div>
 											<button type="submit" class="btn btn-primary">하위 옵션
@@ -225,13 +225,14 @@
             return confirm("이 옵션 카테고리와 관련된 모든 하위 옵션이 삭제됩니다.\n정말로 삭제하시겠습니까?");
         }
         
-        function categoryCheck() {
-            const newCategoryName = document.getElementById('category_name').value;
+        function categoryCheck(form) {
+            const categoryNameInput = form.querySelector('[name="category_name"]');
             const singleRadio = document.getElementById('single-selection');
             const multipleRadio = document.getElementById('multiple-selection');
             
-            if(newCategoryName.trim() === '') {
+            if(!categoryNameInput || categoryNameInput.value.trim() === '') {
                 alert("카테고리명을 입력해주세요.");
+                if(categoryNameInput) categoryNameInput.focus();
                 return false;
             }
             
@@ -243,23 +244,26 @@
             return true;
         }
         
-        function valueCheck() {
-            const newOptionName = document.getElementById('option_name').value;
-            const newOptionPrice = document.getElementById('option_price').value;
+        function valueCheck(form) {
+            const optionNameInput = form.querySelector('[name="option_name"]');
+            const optionPriceInput = form.querySelector('[name="option_price"]');
             
-            if(newOptionName.trim() === '') {
+            if(!optionNameInput || optionNameInput.value.trim() === '') {
                 alert("옵션명을 입력해주세요.");
+                if(optionNameInput) optionNameInput.focus();
                 return false;
             }
             
-            if(newOptionPrice.trim() === '') {
+            if(!optionPriceInput || optionPriceInput.value.trim() === '') {
                 alert("옵션 가격을 입력해주세요.");
+                if(optionPriceInput) optionPriceInput.focus();
                 return false;
             }
             
             // 숫자만 입력되었는지 확인
-            if(isNaN(newOptionPrice)) {
+            if(isNaN(optionPriceInput.value)) {
                 alert("옵션 가격은 숫자만 입력해주세요.");
+                optionPriceInput.focus();
                 return false;
             }
             
