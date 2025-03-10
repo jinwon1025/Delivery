@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -203,6 +204,7 @@ pageEncoding="UTF-8"%>
         <input type="hidden" id="order_Id" name="order_Id" value="${order_Id}">
         <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="신용카드">
         <input type="hidden" id="couponValueHidden" name="couponValue" value="0">
+        <input type="hidden" id="selectedCouponIdHidden" name="selectedCouponId" value="0">
         <input type="hidden" id="pointValueHidden" name="pointValue" value="0">
         <input type="hidden" id="finalTotalHidden" name="finalTotal" value="${totalPrice + deliveryFee}">
         <input type="hidden" id="menuPriceHidden" value="${totalPrice}">
@@ -301,10 +303,15 @@ pageEncoding="UTF-8"%>
                 <label for="coupon">할인쿠폰</label>
                 <div class="coupon-select">
                     <select id="coupon">
-                        <option value="">사용 가능한 쿠폰 (3개)</option>
-                        <option value="1000">첫 주문 1,000원 할인</option>
-                        <option value="2000">신규가입 2,000원 할인</option>
-                        <option value="3000">이벤트 3,000원 할인</option>
+                        <option value="0">사용 가능한 쿠폰 (${userCoupons.size()}개)</option>
+                        <c:forEach var="coupon" items="${userCoupons}">
+                            <option value="${coupon.STORE_COUPON_ID}" 
+                                    data-discount="${coupon.SALE_PRICE}" 
+                                    data-min-order="${coupon.MINIMUM_PURCHASE}" 
+                                    data-name="${coupon.CP_NAME}">
+                                ${coupon.CP_NAME} (<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###"/>원 할인, 최소주문 <fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###"/>원)
+                            </option>
+                        </c:forEach>
                     </select>
                 </div>
             </div>
@@ -354,7 +361,7 @@ pageEncoding="UTF-8"%>
         <button type="submit" class="order-btn" id="orderButton">결제하기</button>
     </form>
     
-   <script>
+    <script>
     // JSP 변수를 JavaScript 변수로 직접 할당
     const totalPrice = ${totalPrice};
     const deliveryFee = ${deliveryFee};
@@ -405,16 +412,37 @@ pageEncoding="UTF-8"%>
         });
     });
     
-    // 쿠폰 선택시 금액 변경
+    // 쿠폰 선택시 금액 변경 및 최소 주문금액 체크
     document.getElementById('coupon').addEventListener('change', function() {
-        const couponValue = this.value ? parseInt(this.value) : 0;
+        const selectedOption = this.options[this.selectedIndex];
         
-        // 쿠폰 금액 표시 업데이트
-        const couponDisplay = document.getElementById('couponDisplay');
-        couponDisplay.textContent = '-' + couponValue.toLocaleString() + '원';
+        if (this.value === "0") {
+            // 쿠폰 선택 안함
+            document.getElementById('couponDisplay').textContent = '-0원';
+            document.getElementById('couponValueHidden').value = 0;
+            document.getElementById('selectedCouponIdHidden').value = 0;
+            updateTotalPrice();
+            return;
+        }
         
-        // 쿠폰 값 hidden 필드에 저장
-        document.getElementById('couponValueHidden').value = couponValue;
+        const couponId = this.value;
+        const discountAmount = parseInt(selectedOption.getAttribute('data-discount'));
+        const minOrderAmount = parseInt(selectedOption.getAttribute('data-min-order'));
+        const couponName = selectedOption.getAttribute('data-name');
+        
+        // 최소 주문금액 체크
+        if (totalPrice < minOrderAmount) {
+            alert(`'${couponName}' 쿠폰은 ${minOrderAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`);
+            this.value = "0"; // 쿠폰 선택 초기화
+            document.getElementById('couponDisplay').textContent = '-0원';
+            document.getElementById('couponValueHidden').value = 0;
+            document.getElementById('selectedCouponIdHidden').value = 0;
+        } else {
+            // 쿠폰 적용
+            document.getElementById('couponDisplay').textContent = '-' + discountAmount.toLocaleString() + '원';
+            document.getElementById('couponValueHidden').value = discountAmount;
+            document.getElementById('selectedCouponIdHidden').value = couponId;
+        }
         
         updateTotalPrice();
     });
@@ -422,20 +450,30 @@ pageEncoding="UTF-8"%>
     // 포인트 입력시 금액 변경
     document.getElementById('point').addEventListener('input', function() {
         const pointValue = this.value ? parseInt(this.value) : 0;
+        const availablePointText = document.querySelector('.available-point').textContent;
+        const availablePoint = parseInt(availablePointText.match(/\d+/)[0]);
         
-        // 포인트 사용 금액 표시 업데이트
-        const pointDisplay = document.getElementById('pointDisplay');
-        pointDisplay.textContent = '-' + pointValue.toLocaleString() + '원';
-        
-        // 포인트 값 hidden 필드에 저장
-        document.getElementById('pointValueHidden').value = pointValue;
+        // 사용 가능 포인트 초과 체크
+        if (pointValue > availablePoint) {
+            alert(`사용 가능한 포인트를 초과했습니다. 최대 ${availablePoint.toLocaleString()}P까지 사용 가능합니다.`);
+            this.value = availablePoint;
+            document.getElementById('pointDisplay').textContent = '-' + availablePoint.toLocaleString() + '원';
+            document.getElementById('pointValueHidden').value = availablePoint;
+        } else {
+            // 포인트 사용 금액 표시 업데이트
+            const pointDisplay = document.getElementById('pointDisplay');
+            pointDisplay.textContent = '-' + pointValue.toLocaleString() + '원';
+            
+            // 포인트 값 hidden 필드에 저장
+            document.getElementById('pointValueHidden').value = pointValue;
+        }
         
         updateTotalPrice();
     });
     
     // 전액사용 버튼
     document.querySelector('.point-btn').addEventListener('click', function() {
-        // 사용 가능 포인트 가져오기 (예: "사용 가능 포인트: 5,000P" 에서 "5000" 추출)
+        // 사용 가능 포인트 가져오기
         const availablePointText = document.querySelector('.available-point').textContent;
         const availablePoint = parseInt(availablePointText.match(/\d+/)[0]);
         
@@ -467,6 +505,26 @@ pageEncoding="UTF-8"%>
         document.getElementById('finalTotalHidden').value = finalTotal;
     }
     
+    // 폼 제출 전 최종 확인
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+        const couponSelect = document.getElementById('coupon');
+        
+        if (couponSelect.value !== "0") {
+            const selectedOption = couponSelect.options[couponSelect.selectedIndex];
+            const minOrderAmount = parseInt(selectedOption.getAttribute('data-min-order'));
+            
+            if (totalPrice < minOrderAmount) {
+                event.preventDefault();
+                alert(`선택한 쿠폰은 ${minOrderAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`);
+                couponSelect.value = "0";
+                document.getElementById('couponDisplay').textContent = '-0원';
+                document.getElementById('couponValueHidden').value = 0;
+                document.getElementById('selectedCouponIdHidden').value = 0;
+                updateTotalPrice();
+            }
+        }
+    });
+    
     // 페이지 로드 시 초기화
     window.addEventListener('DOMContentLoaded', function() {
         // 메뉴 가격과 배달팁 표시 업데이트
@@ -476,7 +534,6 @@ pageEncoding="UTF-8"%>
         // 초기 총 결제금액 업데이트
         updateTotalPrice();
     });
-    	
-</script>
+    </script>
 </body>
 </html>

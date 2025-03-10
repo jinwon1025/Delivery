@@ -123,4 +123,5 @@ public class UserService {
 	public void increaseOwnerCouponQuantity(Integer ownerCouponId) {
 		this.userMapper.increaseOwnerCouponQuantity(ownerCouponId);
 	}
+	
 }

@@ -350,8 +350,12 @@ body {
 													${name}
 													<c:if
 														test="${not empty optionPrices[optStatus.index] && optionPrices[optStatus.index] != '0'}">
-                                        (+${optionPrices[optStatus.index]}원)
-                                    </c:if>
+                    (+${optionPrices[optStatus.index]}원)
+                </c:if>
+													<c:if
+														test="${empty optionPrices[optStatus.index] || optionPrices[optStatus.index] == '0'}">
+                    (+0원)
+                </c:if>
 												</div>
 											</c:forEach>
 										</c:if>

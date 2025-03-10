@@ -563,4 +563,25 @@
     ORDER BY
         sc.expire_date ASC
 </select>
+
+<select id="getUserCoupons" parameterType="String" resultType="map">
+    SELECT 
+        uc.user_cp_id,
+        uc.store_coupon_id,
+        sc.cp_name,
+        oc.sale_price,
+        sc.minimum_purchase,
+        uc.status
+    FROM 
+        b_user_coupon_tbl uc
+    JOIN 
+        b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+    JOIN 
+        b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+    WHERE 
+        uc.user_id = #{userId}
+        AND uc.status = 1  <!-- 사용 가능한 쿠폰만 -->
+    ORDER BY 
+        oc.sale_price DESC
+</select>
 </mapper>

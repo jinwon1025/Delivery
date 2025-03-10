@@ -72,5 +72,6 @@ public interface UserStoreMapper {
 	// 가게별 사용 가능한 쿠폰 목록 조회
 	List<Map<String, Object>> getStoreCouponList(StoreCoupon sc);
 
+	List<Map<String, Object>> getUserCoupons(String userId);
 	
 }	

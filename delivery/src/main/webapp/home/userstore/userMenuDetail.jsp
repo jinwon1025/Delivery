@@ -288,10 +288,10 @@ input[type="radio"] {
                     <li>
                         <c:choose>
                             <c:when test="${selectionType eq 'single'}">
-                                <input type="radio" name="optionGroup_${option.option_group_id}" value="${option.option_id}" id="option_${option.option_id}">
+                                <input type="radio" name="optionGroup_${option.option_group_id}" value="${option.option_id}" id="option_${option.option_id}" data-group-id="${option.option_group_id}">
                             </c:when>
                             <c:otherwise>
-                                <input type="checkbox" name="selectedOptions" value="${option.option_id}" id="option_${option.option_id}">
+                                <input type="checkbox" name="selectedOptions" value="${option.option_id}" id="option_${option.option_id}" data-group-id="${option.option_group_id}">
                             </c:otherwise>
                         </c:choose>
                         <label for="option_${option.option_id}">
@@ -348,6 +348,60 @@ input[type="radio"] {
 		}
 		
 		function submitForm() {
+		    // 폼 제출 전에 각 옵션 그룹에서 라디오 버튼이 선택되었는지 확인
+		    const form = document.getElementById('cartForm');
+		    const optionGroups = {};
+		    
+		    // 폼에서 이전에 추가된 hidden input 제거
+		    document.querySelectorAll('input[name="selectedOptions"][type="hidden"]').forEach(el => {
+		        el.remove();
+		    });
+		    
+		    // 모든 라디오 버튼을 확인하여 그룹별로 분류
+		    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+		        const groupId = radio.getAttribute('data-group-id');
+		        if (!optionGroups[groupId]) {
+		            optionGroups[groupId] = {
+		                name: groupId,
+		                hasSelection: false
+		            };
+		        }
+		        
+		        if (radio.checked) {
+		            optionGroups[groupId].hasSelection = true;
+		            
+		            // 선택된 라디오 버튼의 값을 hidden input으로 추가
+		            const hiddenInput = document.createElement('input');
+		            hiddenInput.type = 'hidden';
+		            hiddenInput.name = 'selectedOptions';
+		            hiddenInput.value = radio.value;
+		            form.appendChild(hiddenInput);
+		        }
+		    });
+		    
+		    // 모든 단일 선택 옵션 그룹에 선택이 있는지 확인
+		    let allGroupsHaveSelection = true;
+		    for (const groupId in optionGroups) {
+		        if (!optionGroups[groupId].hasSelection) {
+		            allGroupsHaveSelection = false;
+		            // 그룹 이름 찾기
+		            let groupName = `옵션 그룹 ${groupId}`;
+		            const groupElements = document.querySelectorAll('h3');
+		            for (const el of groupElements) {
+		                if (el.nextElementSibling && el.nextElementSibling.querySelector(`input[data-group-id="${groupId}"]`)) {
+		                    groupName = el.textContent.trim();
+		                    break;
+		                }
+		            }
+		            alert(`${groupName}에서 옵션을 선택해주세요.`);
+		            break;
+		        }
+		    }
+		    
+		    if (!allGroupsHaveSelection) {
+		        return;
+		    }
+		    
 		    // 컨트롤러에서 이미 비교 작업이 수행되었으므로 
 		    // showModal이 true인 경우 모달을 표시하고, 아니면 바로 폼 제출
 		    if (${showModal}) {
