@@ -10,24 +10,26 @@
 		owner_coupon_id,
 		cp_name,
 		sale_price,
-		minimum_purchase,
 		owner_id,
-		store_id,
 		issued_date,
 		expire_date,
 		total_quantity
 		) VALUES (
-		owner_coupon_seq.NEXTVAL,
+		#{owner_coupon_id},
 		#{cp_name},
 		#{sale_price},
-		#{minimum_purchase},
 		#{owner_id},
-		#{store_id},
 		SYSDATE,
 		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
 		#{total_quantity}
 		)
 	</insert>
+	
+	<select id="getMaxCouponId" resultType="Integer">
+	
+	select max(owner_coupon_id) from b_owner_coupon_tbl
+	
+	</select>
 
 	<!-- 전체 쿠폰 조회 -->
 	<select id="getAllCoupons"
@@ -36,9 +38,7 @@
 		owner_coupon_id,
 		cp_name,
 		sale_price,
-		minimum_purchase,
 		owner_id,
-		store_id,
 		TO_CHAR(issued_date, 'YYYY-MM-DD') as issued_date,
 		TO_CHAR(expire_date, 'YYYY-MM-DD') as expire_date,
 		total_quantity
@@ -114,6 +114,13 @@
 	<select id="getUserCount" resultType="int">
 		SELECT COUNT(*) FROM
 		b_user_info
+	</select>
+	
+	<select id="getAllOwner" resultType="com.springboot.delivery.model.Owner">
+	
+	select owner_id from b_owner_info
+	
+	
 	</select>
 
 

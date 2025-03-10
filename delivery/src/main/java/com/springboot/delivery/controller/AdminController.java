@@ -1,6 +1,5 @@
 package com.springboot.delivery.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
+import com.springboot.delivery.model.Owner;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.service.AdminService;
 
@@ -108,10 +108,14 @@ public class AdminController {
             mav.setViewName("redirect:/user/index");
             return mav;
         }
-
+        
+        //사업자 총 목록 가져오기
+       List<Owner> ownerList = this.adminService.getAllOwner();
+        
         // 쿠폰 목록을 가져와서 모델에 추가
         List<Coupon> couponList = adminService.getAllCoupons();
         mav.addObject("couponList", couponList);
+        mav.addObject("ownerList", ownerList);
         mav.addObject("activeMenu", "couponManagement");
         mav.addObject("contentPage", "../admin/couponManagement.jsp");
         
@@ -162,7 +166,12 @@ public class AdminController {
             mav.setViewName("redirect:/user/index");
             return mav;
         }
-        
+        Integer maxCount = this.adminService.getMaxCouponId();
+        if(maxCount == null) {
+        	maxCount=0;
+        	
+        }
+        coupon.setOwner_coupon_id(maxCount+1);
         coupon.setIssued_date(new String());  // 생성일자 설정
         adminService.createCoupon(coupon);        
         return mav;

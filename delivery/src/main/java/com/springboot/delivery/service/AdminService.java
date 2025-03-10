@@ -9,6 +9,7 @@ import com.springboot.delivery.mapper.AdminMapper;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.Maincategory;
+import com.springboot.delivery.model.Owner;
 
 @Service  
 public class AdminService{
@@ -52,8 +53,16 @@ public class AdminService{
     public void deleteMaincategory(Integer main_category_id) {
         adminMapper.deleteMaincategory(main_category_id);
     }
-    public int getUserCount() {
+    public Integer getUserCount() {
         return adminMapper.getUserCount();
+    }
+    
+    public Integer getMaxCouponId() {
+    	return adminMapper.getMaxCouponId();
+    }
+    
+    public List<Owner> getAllOwner(){
+    	return adminMapper.getAllOwner();
     }
 
     
