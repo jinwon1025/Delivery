@@ -515,7 +515,7 @@ public class UserStoreController {
 
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
-			String finalTotal) {
+			String finalTotal, String selectedCouponId) {
 		ModelAndView mav = new ModelAndView("user/userMain");
 
 		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
@@ -543,11 +543,17 @@ public class UserStoreController {
 			oc.setOrder_id(order_Id);
 			oc.setOrder_status(1);
 			oc.setTotalPrice(Integer.parseInt(finalTotal));
-
+			
+			//
 			this.userStoreService.insertPay(oc);
+			
 			mav.addObject("orderCart", oc);
 		}
-
+		//b_order_tbl에 user_cp_id 넣기
+		
+		
+		//b_user_coupon_tbl의 status 변경
+		
 		// 추가 정보 모델에 추가
 		mav.addObject("TOTALPRICE", finalTotal);
 		mav.addObject("BODY", "../userstore/end.jsp");
@@ -557,25 +563,34 @@ public class UserStoreController {
 
 	@GetMapping(value = "/userstore/myOrderList")
 	public ModelAndView myOrderList(HttpSession session) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-		// 로그인 체크
-		if (loginUser == null) {
-			return new ModelAndView("redirect:/user/index");
-		}
+	    // 로그인 체크
+	    if (loginUser == null) {
+	        return new ModelAndView("redirect:/user/index");
+	    }
 
-		// 기본 페이지 설정
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		mav.addObject("maincategoryList", maincategoryList);
+	    // 기본 페이지 설정
+	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	    mav.addObject("maincategoryList", maincategoryList);
 
-		// 주문 목록 가져오기
-		List<Map<String, Object>> orderList = userStoreService.getOrderListByUserId(loginUser.getUser_id());
+	    // 주문 목록 가져오기
+	    List<Map<String, Object>> orderList = userStoreService.getOrderListByUserId(loginUser.getUser_id());
+	    
+	    for (Map<String, Object> order : orderList) {
+	        String orderId = (String) order.get("ORDER_ID");
+	        System.out.println(orderId);
+	        Integer reviewCount = userStoreService.checkReviewExists(orderId);
+	        System.out.println(reviewCount);
+	        boolean hasReview = (reviewCount != null && reviewCount > 0);
+	        order.put("HAS_REVIEW", hasReview);
+	    }
 
-		mav.addObject("orderList", orderList);
-		mav.addObject("BODY", "../userstore/myOrderList.jsp");
+	    mav.addObject("orderList", orderList);
+	    mav.addObject("BODY", "../userstore/myOrderList.jsp");
 
-		return mav;
+	    return mav;
 	}
 
 	@GetMapping(value = "/userstore/orderDetail")
@@ -644,6 +659,8 @@ public class UserStoreController {
 		Review review = new Review();
 		mav.addObject("orderId", orderId);
 		mav.addObject("storeId", storeId);
+		System.out.println("보내는 오더 아이디: "+orderId);
+		System.out.println("보내는 가게 아이디:" +storeId);
 		mav.addObject(new Review());
 		mav.addObject("BODY", "../userstore/writeReview.jsp");
 		return mav;
@@ -653,6 +670,7 @@ public class UserStoreController {
 	public ModelAndView submitReview(@Valid Review review, BindingResult br, HttpSession session,
 			HttpServletRequest request) throws Exception {
 
+		System.out.println("받은 가게 아이디: "+review.getStore_id());
 		ModelAndView mav = new ModelAndView("user/userMain");
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 		if (br.hasErrors()) {
@@ -717,7 +735,7 @@ public class UserStoreController {
 
 	}
 
-	@GetMapping("/userstore/myReviewList")
+	@GetMapping(value="/userstore/myReviewList")
 	public ModelAndView myReviewList(HttpSession session) {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -751,7 +769,7 @@ public class UserStoreController {
 		return mav;
 	}
 
-	@GetMapping("/userstore/deleteReview")
+	@GetMapping(value="/userstore/deleteReview")
 	public String deleteReview(@RequestParam("reviewId") int reviewId, HttpSession session) {
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
@@ -764,6 +782,16 @@ public class UserStoreController {
 		userStoreService.deleteReview(reviewId);
 
 		return "redirect:/userstore/myReviewList";
+	}
+	
+	@GetMapping(value="/userstore/viewReview")
+	public ModelAndView viewReview(String orderId) {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		Review review = this.userStoreService.getReviewDetail(orderId);
+		mav.addObject("review", review);
+		mav.addObject("BODY", "../userstore/reviewDetail.jsp");
+		return mav;
+		
 	}
 
 }

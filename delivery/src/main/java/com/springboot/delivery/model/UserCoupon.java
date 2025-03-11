@@ -13,4 +13,6 @@ public class UserCoupon {
 	private String download_date;
 	private Integer status;
 	private Integer store_coupon_id;
+	
+	private String order_id;
 }

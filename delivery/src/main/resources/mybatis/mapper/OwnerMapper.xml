@@ -182,16 +182,10 @@
 		parameterType="com.springboot.delivery.model.OrderCart"
 		resultType="com.springboot.delivery.model.Review">
 
-		SELECT r.ORDER_ID,
-		s.STORE_NAME,
-		r.RATING,
-		r.REVIEW_CONTENT,
-		r.WRITE_DATE
-		FROM B_REVIEW_TBL r
-		JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
-		WHERE s.STORE_ID = #{store_id}
-		AND s.OWNER_ID = #{owner_id}
-		ORDER BY r.ORDER_ID DESC
+		SELECT REVIEW_ID, ORDER_ID, REVIEW_CONTENT, RATING,
+		WRITE_DATE
+		FROM B_REVIEW_TBL
+		WHERE STORE_ID = #{store_id}
 
 	</select>
 
@@ -229,7 +223,8 @@
 		issued_date,
 		expire_date,
 		total_quantity
-		) VALUES (
+		)
+		VALUES (
 		owner_coupon_seq.NEXTVAL,
 		#{cp_name},
 		#{sale_price},
@@ -262,30 +257,31 @@
 
 
 	<!-- 사장님이 이미 적용한 쿠폰 목록 조회 -->
-<select id="getAppliedStoreCoupons" parameterType="String" resultType="map">
-    SELECT
-        MAX(sc.store_coupon_id) as store_coupon_id,
-        sc.store_id,
-        MAX(s.store_name) as store_name,
-        sc.owner_coupon_id,
-        MAX(sc.cp_name) as cp_name,
-        MAX(sc.quantity) as quantity,
-        MAX(NVL(sc.used_quantity, 0)) as used_qty,
-        MAX(sc.quantity - NVL(sc.used_quantity, 0)) as remaining_qty,
-        MAX(sc.minimum_purchase) as minimum_purchase,
-        MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')) as expire_date
-    FROM
-        b_store_coupon_tbl sc
-    JOIN
-        b_store_tbl s ON sc.store_id = s.store_id
-    WHERE
-        sc.owner_id = #{ownerId}
-        AND sc.expire_date >= SYSDATE
-    GROUP BY
-        sc.store_id, sc.owner_coupon_id
-    ORDER BY
-        MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')), MAX(s.store_name)
-</select>
+	<select id="getAppliedStoreCoupons" parameterType="String"
+		resultType="map">
+		SELECT
+		MAX(sc.store_coupon_id) as store_coupon_id,
+		sc.store_id,
+		MAX(s.store_name) as store_name,
+		sc.owner_coupon_id,
+		MAX(sc.cp_name) as cp_name,
+		MAX(sc.quantity) as quantity,
+		MAX(NVL(sc.used_quantity, 0)) as used_qty,
+		MAX(sc.quantity - NVL(sc.used_quantity, 0)) as remaining_qty,
+		MAX(sc.minimum_purchase) as minimum_purchase,
+		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')) as expire_date
+		FROM
+		b_store_coupon_tbl sc
+		JOIN
+		b_store_tbl s ON sc.store_id = s.store_id
+		WHERE
+		sc.owner_id = #{ownerId}
+		AND sc.expire_date >= SYSDATE
+		GROUP BY
+		sc.store_id, sc.owner_coupon_id
+		ORDER BY
+		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')), MAX(s.store_name)
+	</select>
 
 	<delete id="deleteCoupon" parameterType="Integer">
 		DELETE FROM
@@ -295,20 +291,22 @@
 
 	<select id="checkStoreOwnership" resultType="int">
 		SELECT COUNT(*)
-		FROM b_store_tbl
+		FROM
+		b_store_tbl
 		WHERE store_id = #{storeId}
 		AND owner_id = #{ownerId}
 	</select>
-	
+
 	<select id="getMaxStoreCouponId" resultType="Integer">
-	
-	select max(store_coupon_id)
-	from b_store_coupon_tbl
-	
+
+		select max(store_coupon_id)
+		from b_store_coupon_tbl
+
 	</select>
-	
-	<insert id="registerCoupon" parameterType="com.springboot.delivery.model.StoreCoupon">
-	
+
+	<insert id="registerCoupon"
+		parameterType="com.springboot.delivery.model.StoreCoupon">
+
 		INSERT INTO b_store_coupon_tbl (
 		store_coupon_id,
 		store_id,
@@ -319,7 +317,8 @@
 		cp_name,
 		minimum_purchase,
 		used_quantity
-		) VALUES (
+		)
+		VALUES (
 		#{store_coupon_id},
 		#{store_id},
 		#{owner_coupon_id},
@@ -330,16 +329,17 @@
 		#{minimum_purchase},
 		#{used_quantity}
 		)
-	
-	
+
+
 	</insert>
-	
-	<update id="updateOwnerCouponQuantity" parameterType="com.springboot.delivery.model.Coupon">
-	update b_owner_coupon_tbl
-	set store_used_quantity = #{store_used_quantity}
-	where owner_coupon_id = #{owner_coupon_id}
-	
-	
+
+	<update id="updateOwnerCouponQuantity"
+		parameterType="com.springboot.delivery.model.Coupon">
+		update b_owner_coupon_tbl
+		set store_used_quantity = #{store_used_quantity}
+		where owner_coupon_id = #{owner_coupon_id}
+
+
 	</update>
 
 

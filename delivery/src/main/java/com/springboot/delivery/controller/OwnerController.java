@@ -322,8 +322,8 @@ public class OwnerController {
 	    OrderCart oc = new OrderCart();
 	    LoginOwner loginOwner = (LoginOwner)session.getAttribute("loginOwner");
 	    Store currentStore = (Store) session.getAttribute("currentStore");
-	    oc.setOwner_id(loginOwner.getId());
 	    oc.setStore_id(currentStore.getStore_id());
+	    System.out.println("가게 아이디:"+currentStore.getStore_id());
 	    List<Review> reviewList = this.ownerSerivce.getReviewList(oc);
 	    
 	    // 디버깅: 리뷰 목록 크기 확인

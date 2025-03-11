@@ -76,4 +76,8 @@ public interface UserStoreMapper {
 	
 	List<MenuItem> getAllMenusByStoreId(String store_id);
 	
+	Integer checkReviewExists(String order_id);
+	
+	Review getReviewDetail(String orderId);
+	
 }	

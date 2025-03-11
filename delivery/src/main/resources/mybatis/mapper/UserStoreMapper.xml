@@ -358,27 +358,37 @@
 		b.ORDER_ID,
 		b.ORDER_TIME,
 		d.ORDER_STATUS,
+		s.STORE_ID,
 		s.STORE_NAME,
+		s.STORE_IMAGE_NAME,
 		d.TOTALPRICE,
 		(SELECT MIN(m.MENU_NAME)
-		FROM order_option_tbl o
+		FROM
+		order_option_tbl o
 		JOIN
-		b_menu_item_tbl m ON o.MENU_ITEM_ID = m.MENU_ITEM_ID
+		b_menu_item_tbl m ON o.MENU_ITEM_ID =
+		m.MENU_ITEM_ID
 		WHERE o.ORDER_ID =
 		b.ORDER_ID) AS main_menu_name,
-		(SELECT COUNT(DISTINCT m.MENU_NAME) - 1
+		(SELECT
+		COUNT(DISTINCT m.MENU_NAME) - 1
 		FROM order_option_tbl o
-		JOIN b_menu_item_tbl m ON o.MENU_ITEM_ID =
+		JOIN
+		b_menu_item_tbl m ON o.MENU_ITEM_ID =
 		m.MENU_ITEM_ID
-		WHERE o.ORDER_ID = b.ORDER_ID) AS additional_menu_count
+		WHERE o.ORDER_ID =
+		b.ORDER_ID) AS additional_menu_count
 		FROM
 		b_order_tbl b
-		JOIN b_order_detail_tbl d ON b.ORDER_ID = d.ORDER_ID
-		JOIN b_store_tbl s ON d.STORE_ID = s.STORE_ID
+		JOIN
+		b_order_detail_tbl d ON b.ORDER_ID = d.ORDER_ID
+		JOIN b_store_tbl s ON
+		d.STORE_ID = s.STORE_ID
 		WHERE
 		b.USER_ID =
 		#{user_id}
-		AND d.ORDER_STATUS > 0
+		AND d.ORDER_STATUS >
+		0
 		AND d.ORDER_STATUS != 5
 		ORDER BY
 		b.ORDER_TIME DESC
@@ -537,55 +547,87 @@
 		WHERE o.ORDER_ID = #{orderId}
 	</select>
 
-	
-<select id="getStoreCouponList" parameterType="map" resultType="map">
-    SELECT
-        sc.store_coupon_id,
-        sc.cp_name,
-        oc.sale_price,
-        sc.minimum_purchase,
-        sc.expire_date,
-        sc.owner_coupon_id,  <!-- 추가된 부분 -->
-        CASE WHEN (SELECT COUNT(*) FROM b_user_coupon_tbl uc
-            WHERE uc.store_coupon_id = sc.store_coupon_id
-            AND uc.user_id = #{user_id}) > 0
-        THEN 1
-        ELSE 0
-        END AS isDownloaded
-    FROM
-        b_store_coupon_tbl sc
-    JOIN
-        b_owner_coupon_tbl oc ON sc.owner_coupon_id = oc.owner_coupon_id
-    WHERE
-        sc.store_id = #{store_id}
-        AND sc.expire_date > SYSDATE
-        AND (sc.quantity - sc.used_quantity) > 0
-    ORDER BY
-        sc.expire_date ASC
-</select>
 
-<select id="getUserCoupons" parameterType="String" resultType="map">
-    SELECT 
-        uc.user_cp_id,
-        uc.store_coupon_id,
-        sc.cp_name,
-        oc.sale_price,
-        sc.minimum_purchase,
-        uc.status
-    FROM 
-        b_user_coupon_tbl uc
-    JOIN 
-        b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
-    JOIN 
-        b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
-    WHERE 
-        uc.user_id = #{userId}
-        AND uc.status = 1  <!-- 사용 가능한 쿠폰만 -->
-    ORDER BY 
-        oc.sale_price DESC
-</select>
+	<select id="getStoreCouponList" parameterType="map"
+		resultType="map">
+		SELECT
+		sc.store_coupon_id,
+		sc.cp_name,
+		oc.sale_price,
+		sc.minimum_purchase,
+		sc.expire_date,
+		sc.owner_coupon_id,  <!-- 추가된 부분 -->
+		CASE WHEN (SELECT COUNT(*) FROM b_user_coupon_tbl uc
+		WHERE
+		uc.store_coupon_id = sc.store_coupon_id
+		AND uc.user_id = #{user_id}) >
+		0
+		THEN 1
+		ELSE 0
+		END AS isDownloaded
+		FROM
+		b_store_coupon_tbl sc
+		JOIN
+		b_owner_coupon_tbl oc ON sc.owner_coupon_id = oc.owner_coupon_id
+		WHERE
+		sc.store_id = #{store_id}
+		AND sc.expire_date > SYSDATE
+		AND (sc.quantity
+		- sc.used_quantity) > 0
+		ORDER BY
+		sc.expire_date ASC
+	</select>
 
-<select id="getAllMenusByStoreId" parameterType="String" resultType="com.springboot.delivery.model.MenuItem">
-    select * from b_menu_item_tbl where store_id = #{store_id}
-</select>
+	<select id="getUserCoupons" parameterType="String"
+		resultType="map">
+		SELECT
+		uc.user_cp_id,
+		uc.store_coupon_id,
+		sc.cp_name,
+		oc.sale_price,
+		sc.minimum_purchase,
+		uc.status
+		FROM
+		b_user_coupon_tbl uc
+		JOIN
+		b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+		JOIN
+		b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+		WHERE
+		uc.user_id = #{userId}
+		AND uc.status = 1  <!-- 사용 가능한 쿠폰만 -->
+		ORDER BY
+		oc.sale_price DESC
+	</select>
+
+	<select id="getAllMenusByStoreId" parameterType="String"
+		resultType="com.springboot.delivery.model.MenuItem">
+		select * from b_menu_item_tbl where store_id = #{store_id}
+	</select>
+
+	<update id="insertCouponId"
+		parameterType="com.springboot.delivery.model.UserCoupon">
+
+		update b_order_tbl set user_cp_id=#{user_cp_id} where
+		user_id = #{user_id}
+		and order_id = #{order_id}
+
+	</update>
+
+	<select id="checkReviewExists" parameterType="String"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM b_review_tbl
+		WHERE ORDER_ID =
+		#{order_id}
+	</select>
+	<select id="getReviewDetail" parameterType="String"
+		resultType="com.springboot.delivery.model.Review">
+
+		SELECT review_id, order_id, review_content, rating, write_date
+		FROM B_REVIEW_TBL
+		WHERE order_id = #{order_id}
+
+	</select>
+
 </mapper>

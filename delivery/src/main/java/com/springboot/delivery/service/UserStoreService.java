@@ -188,5 +188,12 @@ public class UserStoreService {
 	    return this.userStoreMapper.getAllMenusByStoreId(store_id);
 	}
 	
+	public Integer checkReviewExists(String order_id) {
+		return this.userStoreMapper.checkReviewExists(order_id);
+	}
+	
+	public Review getReviewDetail(String orderId) {
+		return this.userStoreMapper.getReviewDetail(orderId);
+	}
 
 }
