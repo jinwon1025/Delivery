@@ -104,7 +104,7 @@
 	border: 1px solid #ff6b6b;
 }
 
-/* 별점 표시 */
+/* 별점  표시 */
 .stars {
 	display: inline-block;
 }
