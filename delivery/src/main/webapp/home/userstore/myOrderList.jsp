@@ -297,7 +297,7 @@ body {
 								</c:when>
 								<c:otherwise>
 									<span class="btn btn-review-disabled"
-										title="배달 완료 후 리뷰를 작성할 수 있습니다">리뷰쓰기</span>
+										title="배달이 완료되어야 리뷰를 작성할 수 있습니다">리뷰쓰기</span>
 								</c:otherwise>
 							</c:choose>
 						</div>
