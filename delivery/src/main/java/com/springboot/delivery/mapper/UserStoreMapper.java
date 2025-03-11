@@ -78,6 +78,6 @@ public interface UserStoreMapper {
 	
 	Integer checkReviewExists(String order_id);
 	
-	Review getReviewDetail(String orderId);
+	Map<String, Object> getReviewDetail(String orderId);
 	
 }	

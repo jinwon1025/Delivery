@@ -7,82 +7,106 @@
   
   <!-- 리뷰 목록 -->
   <div class="review-list">
-    <c:forEach var="review" items="${reviewList}">
-      <div class="review-item mb-4 pb-4 border-bottom">
-        <!-- 가게 정보 및 별점 -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 class="mb-0">${review.store_name} <i class="fas fa-chevron-right"></i></h5>
-            <!-- 별점 표시 -->
-            <div class="stars">
-              <c:forEach begin="1" end="5" var="i">
-                <c:choose>
-                  <c:when test="${i <= review.rating}">
-                    <span class="text-warning">★</span>
-                  </c:when>
-                  <c:otherwise>
-                    <span class="text-warning">☆</span>
-                  </c:otherwise>
-                </c:choose>
-              </c:forEach>
-              <span class="ml-2 text-muted">
-                ${review.write_date}
-              </span>
+    <c:choose>
+      <c:when test="${empty rarList}">
+        <!-- 리뷰가 하나도 없는 경우 -->
+        <div class="text-center py-5">
+          <p class="text-muted">작성된 리뷰가 없습니다.</p>
+        </div>
+      </c:when>
+      <c:otherwise>
+        <!-- 리뷰가 있는 경우 -->
+        <c:forEach var="review" items="${rarList}">
+          <div class="review-item mb-4 pb-4 border-bottom">
+            <!-- 가게 정보 및 별점 -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="mb-0">${review.storeName} <i class="fas fa-chevron-right"></i></h5>
+                <!-- 별점 표시 -->
+                <div class="stars">
+                  <c:forEach begin="1" end="5" var="i">
+                    <c:choose>
+                      <c:when test="${i <= review.rating}">
+                        <span class="text-warning">★</span>
+                      </c:when>
+                      <c:otherwise>
+                        <span class="text-warning">☆</span>
+                      </c:otherwise>
+                    </c:choose>
+                  </c:forEach>
+                  <span class="ml-2 text-muted">
+                    <fmt:formatDate value="${review.reviewDate}" pattern="yyyy-MM-dd HH:mm" />
+                  </span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-light rounded-pill delete-btn">삭제</button>
             </div>
+            
+            <!-- 리뷰 작성자 정보 -->
+            <div class="reviewer-info mb-2">
+              <span class="reviewer-name">${review.userName}님</span>
+            </div>
+            
+            <!-- 리뷰 제목 (있는 경우) -->
+            <c:if test="${not empty review.reviewTitle}">
+              <div class="review-title mb-2">
+                <h6>${review.reviewTitle}</h6>
+              </div>
+            </c:if>
+            
+            <!-- 리뷰 내용 -->
+            <div class="review-content mb-3">
+              <p>${review.reviewContent}</p>
+            </div>
+            
+            <!-- 리뷰 이미지 (있는 경우) -->
+            <c:if test="${not empty review.reviewImageName}">
+              <div class="review-image mb-3">
+                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.reviewImageName}" 
+                     class="img-fluid rounded" style="max-height: 200px;" alt="리뷰 이미지">
+              </div>
+            </c:if>
+            
+            <!-- 사업자 답변 (있는 경우) - 말풍선 형태로 변경 -->
+            <c:if test="${review.replyId != null}">
+              <div class="reply-container">
+                <div class="owner-info">
+                  <div class="owner-name">${review.ownerName} 사장님</div>
+                  <c:if test="${not empty review.ownerImageName}">
+                    <img src="${pageContext.request.contextPath}/upload/ownerProfile/${review.ownerImageName}" 
+                        alt="사장님 이미지" class="owner-image">
+                  </c:if>
+                </div>
+                <div class="reply-bubble">
+                  <div class="reply-content">
+                    ${review.replyContent}
+                  </div>
+                </div>
+                <div class="reply-date">
+                  <fmt:formatDate value="${review.replyDate}" pattern="yyyy-MM-dd HH:mm" />
+                </div>
+              </div>
+            </c:if>
+            
+            <!-- 답글 버튼 (답변이 없는 경우에만 표시) -->
+            <c:if test="${review.replyId == null}">
+              <div class="text-right mt-3">
+                <button type="button" class="btn btn-warning btn-sm open-reply-btn" 
+                        onclick="openReplyModal(
+                          '${review.reviewId}', 
+                          '${review.storeId}', 
+                          '${review.ownerId}', 
+                          '${review.userId}',
+                          '${review.orderId}'
+                        )">
+                  답글 등록
+                </button>
+              </div>
+            </c:if>
           </div>
-          <button class="btn btn-sm btn-light rounded-pill delete-btn">삭제</button>
-        </div>
-        
-        <!-- 리뷰 작성자 정보 -->
-        <div class="reviewer-info mb-2">
-          <span class="reviewer-name">${review.user_name}님</span>
-        </div>
-        
-        <!-- 리뷰 제목 (있는 경우) -->
-        <c:if test="${not empty review.review_title}">
-          <div class="review-title mb-2">
-            <h6>${review.review_title}</h6>
-          </div>
-        </c:if>
-        
-        <!-- 리뷰 내용 -->
-        <div class="review-content mb-3">
-          <p>${review.review_content}</p>
-        </div>
-        
-        <!-- 리뷰 이미지 (있는 경우) -->
-        <c:if test="${not empty review.review_image_name}">
-          <div class="review-image mb-3">
-            <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.review_image_name}" 
-                 class="img-fluid rounded" style="max-height: 200px;" alt="리뷰 이미지">
-          </div>
-        </c:if>
-        
-        <!-- 답글 버튼 -->
-        <div class="text-right mt-3">
-          <button type="button" class="btn btn-warning btn-sm open-reply-btn" 
-                  onclick="openReplyModal(
-                    '${review.review_id}', 
-                    '${review.store_id}', 
-                    '${review.owner_id}', 
-                    '${review.user_id}', 
-                    '${review.group_id}', 
-                    '${review.parent_id}', 
-                    '${review.order_no}',
-                    '${review.order_id}'
-                  )">
-            답글 등록
-          </button>
-        </div>
-      </div>
-    </c:forEach>
-    
-    <!-- 리뷰가 없는 경우 -->
-    <c:if test="${empty reviewList}">
-      <div class="text-center py-5">
-        <p class="text-muted">아직 등록된 리뷰가 없습니다.</p>
-      </div>
-    </c:if>
+        </c:forEach>
+      </c:otherwise>
+    </c:choose>
   </div>
 </div>
 
@@ -96,6 +120,10 @@
     <div class="modal-body">
       <div class="owner-info d-flex align-items-center mb-3">
         <div>
+          <c:if test="${not empty owner_image_name}">
+            <img src="${pageContext.request.contextPath}/upload/ownerProfile/${owner_image_name}" 
+                 class="rounded-circle mr-2" style="width: 30px; height: 30px;" alt="사장님 이미지">
+          </c:if>
           <h6 class="mb-0">사장님</h6>
         </div>
       </div>
@@ -105,9 +133,6 @@
         <input type="hidden" id="modalStoreId" name="storeId" value="">
         <input type="hidden" id="modalOwnerId" name="ownerId" value="">
         <input type="hidden" id="modalUserId" name="userId" value="">
-        <input type="hidden" id="modalGroupId" name="groupId" value="">
-        <input type="hidden" id="modalParentId" name="parentId" value="">
-        <input type="hidden" id="modalOrderNo" name="orderNo" value="">
         <input type="hidden" id="modalOrderId" name="orderId" value="">
         
         <div class="form-group">
@@ -124,15 +149,12 @@
 
 <!-- JavaScript -->
 <script>
-function openReplyModal(reviewId, storeId, ownerId, userId, groupId, parentId, orderNo, orderId) {
+function openReplyModal(reviewId, storeId, ownerId, userId, orderId) {
   // 모달 폼 데이터 설정
   document.getElementById('modalReviewId').value = reviewId;
   document.getElementById('modalStoreId').value = storeId;
   document.getElementById('modalOwnerId').value = ownerId;
   document.getElementById('modalUserId').value = userId;
-  document.getElementById('modalGroupId').value = groupId;
-  document.getElementById('modalParentId').value = parentId;
-  document.getElementById('modalOrderNo').value = orderNo;
   document.getElementById('modalOrderId').value = orderId;
   
   // 모달 표시
@@ -174,16 +196,75 @@ document.addEventListener('DOMContentLoaded', function() {
 .review-item {
   position: relative;
 }
-.owner-reply {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
 .delete-btn {
   font-size: 0.8rem;
 }
 .reviewer-name {
   font-weight: bold;
   color: #333;
+}
+
+/* 답변 말풍선 스타일 */
+.reply-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.owner-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.owner-name {
+  font-size: 0.9rem;
+  color: #666;
+  margin-right: 10px;
+}
+
+.owner-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.reply-bubble {
+  position: relative;
+  background-color: #e8f4ff;
+  border-radius: 15px;
+  padding: 15px;
+  max-width: 80%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+}
+
+.reply-bubble:after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: -10px;
+  border-width: 10px 0 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent #e8f4ff;
+}
+
+.reply-content {
+  line-height: 1.6;
+  color: #333;
+  word-break: break-word;
+}
+
+.reply-date {
+  color: #888;
+  font-size: 0.8rem;
+  text-align: right;
+  margin-top: 5px;
+  width: 80%;
 }
 
 /* 커스텀 모달 스타일 */

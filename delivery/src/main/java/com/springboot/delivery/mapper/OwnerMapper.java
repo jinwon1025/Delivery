@@ -10,6 +10,7 @@ import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Reply;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
@@ -59,6 +60,11 @@ public interface OwnerMapper {
     void insertOwnerReply(Review r);
     
     List<Review> getReviewReplies(Review r);
+    
+    void writeOwnerReply(Reply r);
+    
+    Integer getMaxReplyId();
+    List<Map<String, Object>> getStoreReviews(String storeId);
 }
 
 

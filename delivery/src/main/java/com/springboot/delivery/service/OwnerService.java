@@ -11,6 +11,7 @@ import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
+import com.springboot.delivery.model.Reply;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
@@ -153,11 +154,15 @@ public class OwnerService {
 		return this.ownerMapper.getMaxReviewId();
 	}
 	
-	public void insertOwnerReply(Review r) {
-		this.ownerMapper.insertOwnerReply(r);
+	public void writeOwnerReply(Reply r) {
+		this.ownerMapper.writeOwnerReply(r);
 	}
 	
-	public List<Review> getReviewReplies(Review r){
-		return this.ownerMapper.getReviewReplies(r);
+	public Integer getMaxReplyId() {
+		return this.ownerMapper.getMaxReplyId();
+	}
+	
+	public List<Map<String, Object>> getStoreReviews(String storeId){
+		return this.ownerMapper.getStoreReviews(storeId);
 	}
 }

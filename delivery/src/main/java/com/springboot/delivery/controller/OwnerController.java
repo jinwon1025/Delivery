@@ -21,7 +21,7 @@ import com.springboot.delivery.model.Coupon;
 import com.springboot.delivery.model.LoginOwner;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.Owner;
-import com.springboot.delivery.model.Review;
+import com.springboot.delivery.model.Reply;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.service.OwnerService;
@@ -324,25 +324,51 @@ public class OwnerController {
 	    Store currentStore = (Store) session.getAttribute("currentStore");
 	    oc.setStore_id(currentStore.getStore_id());
 	    System.out.println("가게 아이디:"+currentStore.getStore_id());
-	    //사용자가 입력한 글 가져오기
-	    List<Review> reviewList = this.ownerSerivce.getReviewList(oc);
-	    //사업자가 입력한 답글 가져오기
-	    Review r = new Review();
 
-	    // 디버깅: 리뷰 목록 크기 확인
-	    System.out.println("리뷰 목록 크기: " + (reviewList != null ? reviewList.size() : "null"));
-	    if(reviewList != null && !reviewList.isEmpty()) {
-	        System.out.println("첫 번째 리뷰: " + reviewList.get(0).toString());
+	    List<Map<String, Object>> rarList = this.ownerSerivce.getStoreReviews(currentStore.getStore_id());
+
+	    // 리뷰 리스트 정보 출력
+	    System.out.println("총 리뷰 수: " + rarList.size());
+
+	    // 각 리뷰 정보 출력
+	    for (int i = 0; i < rarList.size(); i++) {
+	        Map<String, Object> review = rarList.get(i);
+	        System.out.println("===================== 리뷰 #" + (i+1) + " =====================");
+	        System.out.println("리뷰 ID: " + review.get("reviewId"));
+	        System.out.println("가게 ID: " + review.get("storeId"));
+	        System.out.println("가게 이름: " + review.get("storeName"));
+	        System.out.println("사용자 ID: " + review.get("userId"));
+	        System.out.println("사용자 이름: " + review.get("userName"));
+	        System.out.println("주문 ID: " + review.get("orderId"));
+	        System.out.println("리뷰 제목: " + review.get("reviewTitle"));
+	        System.out.println("리뷰 내용: " + review.get("reviewContent"));
+	        System.out.println("리뷰 이미지: " + review.get("reviewImageName"));
+	        System.out.println("별점: " + review.get("rating"));
+	        System.out.println("리뷰 작성일: " + review.get("reviewDate"));
+	        
+	        // 답변 정보 출력 (있는 경우)
+	        if (review.get("replyId") != null) {
+	            System.out.println("---- 답변 정보 ----");
+	            System.out.println("답변 ID: " + review.get("replyId"));
+	            System.out.println("사업자 ID: " + review.get("ownerId"));
+	            System.out.println("사업자 이름: " + review.get("ownerName"));
+	            System.out.println("사업자 이미지: " + review.get("ownerImageName"));
+	            System.out.println("답변 내용: " + review.get("replyContent"));
+	            System.out.println("답변 작성일: " + review.get("replyDate"));
+	        } else {
+	            System.out.println("---- 답변 정보: 답변 없음 ----");
+	        }
+	        System.out.println("====================================================");
 	    }
-	    
-	    mav.addObject("reviewList", reviewList);
+
+	    mav.addObject("rarList", rarList);
 	    mav.addObject("owner_image_name", loginOwner.getImage_name());
 	    System.out.println(loginOwner.getImage_name());
 	    mav.addObject("BODY", "../owner/reviewList.jsp");
-	    
+
 	    return mav;
 	}
-
+	
 	// 쿠폰 관리 페이지
 	// 쿠폰 관리 페이지
 	@GetMapping("/owner/couponManagement")
@@ -437,27 +463,23 @@ public class OwnerController {
 	}
 	
 	@PostMapping(value="/owner/addReviewReply")
-	public ModelAndView addReviewReply(String reviewId, String storeId, String ownerId, String groupId, String parentId, String orderNo
-			,String user_id, String orderId, String replyContent) {
+	public ModelAndView addReviewReply(String storeId, String ownerId,
+ 			String user_id, String orderId, String replyContent) {
 		
 		ModelAndView mav = new ModelAndView("owner/ownerMain");
-		Review r = new Review();
-		Integer maxCount = this.ownerSerivce.getMaxReviewId();
-		if(maxCount == null) {
+		Reply r = new Reply();
+		Integer maxCount = this.ownerSerivce.getMaxReplyId();
+		if(maxCount== null) {
 			maxCount = 0;
 		}
-		
-		r.setReview_id(maxCount+1);
-		r.setGroup_id(Integer.parseInt(reviewId));
-		r.setParent_id(Integer.parseInt(reviewId));
-		r.setOrder_no(Integer.parseInt(orderNo)+1);
+		r.setReply_id(maxCount+1);
 		r.setStore_id(storeId);
+		r.setOwner_id(ownerId);
 		r.setOrder_id(orderId);
-		r.setReview_content(replyContent);
+		r.setReply_content(replyContent);
 		r.setWrite_date(new String());
-		r.setRating(0);
 		
-		this.ownerSerivce.insertOwnerReply(r);
+		this.ownerSerivce.writeOwnerReply(r);
 		mav.setViewName("redirect:/owner/reviewList");
 		return mav;
 		

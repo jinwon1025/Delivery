@@ -192,7 +192,7 @@ public class UserStoreService {
 		return this.userStoreMapper.checkReviewExists(order_id);
 	}
 	
-	public Review getReviewDetail(String orderId) {
+	public Map<String, Object> getReviewDetail(String orderId) {
 		return this.userStoreMapper.getReviewDetail(orderId);
 	}
 

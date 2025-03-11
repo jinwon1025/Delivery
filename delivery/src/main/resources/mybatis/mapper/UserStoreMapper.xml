@@ -483,9 +483,6 @@
 
 		INSERT INTO b_review_tbl (
 		REVIEW_ID,
-		GROUP_ID,
-		PARENT_ID,
-		ORDER_NO,
 		STORE_ID,
 		USER_ID,
 		ORDER_ID,
@@ -494,7 +491,7 @@
 		WRITE_DATE,
 		RATING
 		) VALUES (
-		#{review_id},#{group_id}, #{parent_id}, #{order_no}, #{store_id}, #{user_id}, #{order_id},
+		#{review_id}, #{store_id}, #{user_id}, #{order_id},
 		#{review_content}
 		,#{review_image_name}, sysdate, #{rating}
 		)
@@ -508,26 +505,31 @@
 		from b_review_tbl
 	</select>
 
-	<select id="getMyReviewList" parameterType="String"
-		resultType="map">
-		SELECT
-		r.REVIEW_ID,
-		r.STORE_ID,
-		r.ORDER_ID,
-		r.REVIEW_CONTENT,
-		r.REVIEW_IMAGE_NAME,
-		r.WRITE_DATE,
-		r.RATING,
-		s.STORE_NAME
-		FROM
-		b_review_tbl r
-		LEFT JOIN
-		b_store_tbl s ON r.STORE_ID = s.STORE_ID
-		WHERE
-		r.USER_ID = #{user_id}
-		ORDER BY
-		r.WRITE_DATE DESC
-	</select>
+<select id="getMyReviewList" parameterType="string" resultType="map">
+    SELECT
+        r.REVIEW_ID as "reviewId", 
+        r.STORE_ID as "storeId", 
+        r.USER_ID as "userId", 
+        r.ORDER_ID as "orderId",
+        r.REVIEW_TITLE as "reviewTitle", 
+        r.REVIEW_CONTENT as "reviewContent", 
+        r.REVIEW_IMAGE_NAME as "reviewImageName",
+        r.WRITE_DATE as "reviewDate", 
+        r.RATING as "rating",
+        p.REPLY_ID as "replyId", 
+        p.REPLY_CONTENT as "replyContent", 
+        p.WRITE_DATE as "replyDate",
+        p.OWNER_ID as "ownerId",
+        s.STORE_NAME as "storeName",
+        o.OWNER_NAME as "ownerName",
+        o.OWNER_IMAGE_NAME as "ownerImageName"
+    FROM b_review_tbl r
+    LEFT JOIN b_store_tbl s ON r.STORE_ID = s.STORE_ID
+    LEFT JOIN b_reply_tbl p ON r.ORDER_ID = p.ORDER_ID
+    LEFT JOIN b_owner_info o ON p.OWNER_ID = o.OWNER_ID
+    WHERE r.USER_ID = #{userId}
+    ORDER BY r.WRITE_DATE DESC
+</select>
 
 	<!-- 리뷰 삭제 -->
 	<delete id="deleteReview" parameterType="Integer">
@@ -624,13 +626,29 @@
 		WHERE ORDER_ID =
 		#{order_id}
 	</select>
-	<select id="getReviewDetail" parameterType="String"
-		resultType="com.springboot.delivery.model.Review">
-
-		SELECT review_id, order_id, review_content, rating, write_date
-		FROM B_REVIEW_TBL
-		WHERE order_id = #{order_id}
-
-	</select>
+<select id="getReviewDetail" parameterType="String" resultType="map">
+    SELECT
+        r.REVIEW_ID as "reviewId", 
+        r.STORE_ID as "storeId", 
+        r.USER_ID as "userId", 
+        r.ORDER_ID as "orderId", 
+        r.REVIEW_TITLE as "reviewTitle", 
+        r.REVIEW_CONTENT as "reviewContent", 
+        r.REVIEW_IMAGE_NAME as "reviewImageName", 
+        r.WRITE_DATE as "reviewDate", 
+        r.RATING as "rating",
+        p.REPLY_ID as "replyId", 
+        p.STORE_ID as "replyStoreId",
+        p.OWNER_ID as "ownerId", 
+        p.ORDER_ID as "replyOrderId", 
+        p.REPLY_CONTENT as "replyContent", 
+        p.WRITE_DATE as "replyDate"
+    FROM 
+        B_REVIEW_TBL r
+    LEFT JOIN 
+        B_REPLY_TBL p ON r.ORDER_ID = p.ORDER_ID
+    WHERE 
+        r.ORDER_ID = #{order_id}
+</select>
 
 </mapper>

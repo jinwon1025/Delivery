@@ -796,7 +796,7 @@ public class UserStoreController {
 	@GetMapping(value="/userstore/viewReview")
 	public ModelAndView viewReview(String orderId) {
 		ModelAndView mav = new ModelAndView("user/userMain");
-		Review review = this.userStoreService.getReviewDetail(orderId);
+		Map<String, Object> review = this.userStoreService.getReviewDetail(orderId);
 		mav.addObject("review", review);
 		mav.addObject("BODY", "../userstore/reviewDetail.jsp");
 		return mav;

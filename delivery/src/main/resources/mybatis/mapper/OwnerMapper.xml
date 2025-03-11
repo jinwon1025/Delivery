@@ -178,18 +178,19 @@
 	</update>
 
 
-<select id="getReviewList"
-parameterType="com.springboot.delivery.model.OrderCart"
-resultType="com.springboot.delivery.model.Review">
-    SELECT r.REVIEW_ID, r.GROUP_ID, r.PARENT_ID, r.ORDER_NO, r.ORDER_ID, r.REVIEW_CONTENT, r.RATING, r.WRITE_DATE,
-           r.STORE_ID, r.USER_ID, r.REVIEW_TITLE, r.REVIEW_IMAGE_NAME,
-           s.STORE_NAME, u.USER_NAME, o.OWNER_IMAGE_NAME, o.OWNER_ID
-    FROM B_REVIEW_TBL r
-    JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
-    LEFT JOIN B_USER_INFO u ON r.USER_ID = u.USER_ID
-    LEFT JOIN B_OWNER_INFO o ON s.STORE_ID = o.OWNER_ID
-    WHERE r.STORE_ID = #{store_id}
-</select>
+	<select id="getReviewList"
+		parameterType="com.springboot.delivery.model.OrderCart"
+		resultType="com.springboot.delivery.model.Review">
+		SELECT r.REVIEW_ID, r.GROUP_ID, r.PARENT_ID, r.ORDER_NO, r.ORDER_ID,
+		r.REVIEW_CONTENT, r.RATING, r.WRITE_DATE,
+		r.STORE_ID, r.USER_ID, r.REVIEW_TITLE, r.REVIEW_IMAGE_NAME,
+		s.STORE_NAME, u.USER_NAME, o.OWNER_IMAGE_NAME, o.OWNER_ID
+		FROM B_REVIEW_TBL r
+		JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
+		LEFT JOIN B_USER_INFO u ON r.USER_ID = u.USER_ID
+		LEFT JOIN B_OWNER_INFO o ON s.STORE_ID = o.OWNER_ID
+		WHERE r.STORE_ID = #{store_id}
+	</select>
 
 	<!-- 사장님이 적용할 수 있는 쿠폰 목록 조회 -->
 	<select id="getAvailableCoupons" parameterType="String"
@@ -269,13 +270,17 @@ resultType="com.springboot.delivery.model.Review">
 		MAX(sc.cp_name) as cp_name,
 		MAX(sc.quantity) as quantity,
 		MAX(NVL(sc.used_quantity, 0)) as used_qty,
-		MAX(sc.quantity - NVL(sc.used_quantity, 0)) as remaining_qty,
-		MAX(sc.minimum_purchase) as minimum_purchase,
-		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')) as expire_date
+		MAX(sc.quantity -
+		NVL(sc.used_quantity, 0)) as remaining_qty,
+		MAX(sc.minimum_purchase) as
+		minimum_purchase,
+		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')) as
+		expire_date
 		FROM
 		b_store_coupon_tbl sc
 		JOIN
-		b_store_tbl s ON sc.store_id = s.store_id
+		b_store_tbl s ON sc.store_id =
+		s.store_id
 		WHERE
 		sc.owner_id = #{ownerId}
 		AND sc.expire_date >= SYSDATE
@@ -301,7 +306,8 @@ resultType="com.springboot.delivery.model.Review">
 
 	<select id="getMaxStoreCouponId" resultType="Integer">
 
-		select max(store_coupon_id)
+		select
+		max(store_coupon_id)
 		from b_store_coupon_tbl
 
 	</select>
@@ -325,7 +331,8 @@ resultType="com.springboot.delivery.model.Review">
 		#{store_id},
 		#{owner_coupon_id},
 		#{quantity},
-		TO_DATE(#{expire_date}, 'YYYY-MM-DD'),
+		TO_DATE(#{expire_date},
+		'YYYY-MM-DD'),
 		#{owner_id},
 		#{cp_name},
 		#{minimum_purchase},
@@ -338,58 +345,65 @@ resultType="com.springboot.delivery.model.Review">
 	<update id="updateOwnerCouponQuantity"
 		parameterType="com.springboot.delivery.model.Coupon">
 		update b_owner_coupon_tbl
-		set store_used_quantity = #{store_used_quantity}
+		set store_used_quantity =
+		#{store_used_quantity}
 		where owner_coupon_id = #{owner_coupon_id}
 
 
 	</update>
-	
+
 	<select id="getMaxReviewId">
-	
-	select max(review_id) from b_review_tbl
-	
+
+		select max(review_id) from b_review_tbl
+
 	</select>
-	
-	<insert id="insertOwnerReply" parameterType="com.springboot.delivery.model.Review">
-	
-	INSERT INTO b_review_tbl (
-		review_id,
-		group_id,
-		parent_id,
-		order_no,
-		store_id,
-		order_id,
-		review_content,
-		write_date,
-		rating
-		)
-		VALUES (
-		#{review_id},
-		#{group_id},
-		#{parent_id},
-		#{order_no},
-		#{store_id},
-		#{order_id},
-		#{review_content},
-		sysdate,
-		#{rating}
-		)
-		
+
+	<insert id="writeOwnerReply"
+		parameterType="com.springboot.delivery.model.Reply">
+
+		insert into b_reply_tbl (reply_id, store_id, owner_id, order_id,
+		reply_content, write_date)
+		values (#{reply_id}, #{store_id}, #{owner_id}, #{order_id},
+		#{reply_content}, sysdate)
+
 	</insert>
-	
-	<select id="getReviewReplyList" 
-       parameterType="com.springboot.delivery.model.OrderCart" 
-       resultType="com.springboot.delivery.model.Review">
-   SELECT r.REVIEW_ID, r.GROUP_ID, r.PARENT_ID, r.ORDER_NO, r.ORDER_ID, 
-          r.REVIEW_CONTENT, r.RATING, r.WRITE_DATE,
-          r.STORE_ID, r.USER_ID, r.REVIEW_TITLE, r.REVIEW_IMAGE_NAME,
-          s.STORE_NAME, u.USER_NAME, o.OWNER_IMAGE_NAME, o.OWNER_ID
-   FROM B_REVIEW_TBL r
-   JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
-   LEFT JOIN B_USER_INFO u ON r.USER_ID = u.USER_ID
-   LEFT JOIN B_OWNER_INFO o ON s.STORE_ID = o.OWNER_ID
-   WHERE r.STORE_ID = #{store_id} AND r.ORDER_NO = 1 AND r.PARENT_ID = #{parent_id}
-</select>
+
+	<select id="getMaxReplyId" resultType="Integer">
+
+		select max(reply_id) from b_reply_tbl
+
+
+	</select>
+
+	<select id="getStoreReviews" parameterType="string"
+		resultType="map">
+		SELECT
+		r.REVIEW_ID as "reviewId",
+		r.STORE_ID as "storeId",
+		r.USER_ID as "userId",
+		r.ORDER_ID as "orderId",
+		r.REVIEW_TITLE as "reviewTitle",
+		r.REVIEW_CONTENT as "reviewContent",
+		r.REVIEW_IMAGE_NAME as "reviewImageName",
+		r.WRITE_DATE as "reviewDate",
+		r.RATING as "rating",
+		p.REPLY_ID as "replyId",
+		p.REPLY_CONTENT as "replyContent",
+		p.WRITE_DATE as "replyDate",
+		p.OWNER_ID as "ownerId",
+		s.STORE_NAME as "storeName",
+		u.USER_NAME as "userName",
+		o.OWNER_NAME as "ownerName",
+		o.OWNER_IMAGE_NAME as "ownerImageName"
+		FROM b_review_tbl r
+		LEFT JOIN b_store_tbl s ON r.STORE_ID = s.STORE_ID
+		LEFT JOIN b_user_info u ON r.USER_ID = u.USER_ID
+		LEFT JOIN b_reply_tbl p ON r.ORDER_ID = p.ORDER_ID
+		LEFT JOIN b_owner_info o ON p.OWNER_ID = o.OWNER_ID
+		WHERE r.STORE_ID = #{storeId}
+		ORDER BY r.WRITE_DATE DESC
+	</select>
+
 
 
 </mapper>
