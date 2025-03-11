@@ -32,8 +32,10 @@ import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
+import com.springboot.delivery.service.UserService;
 import com.springboot.delivery.service.UserStoreService;
 
 import jakarta.servlet.ServletContext;
@@ -49,6 +51,8 @@ public class UserStoreController {
 	private StoreService storeService;
 	@Autowired
 	private AdminService adminService;
+	@Autowired
+	private UserService userService;
 
 	public String generateOrderId() {
 		return UUID.randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "").substring(0, 10);
@@ -502,6 +506,8 @@ public class UserStoreController {
 		mav.addObject("BODY", "../userstore/startOrder.jsp");
 		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
 		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(loginUser.getUser_id());
+		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
+		mav.addObject("cardList",uc);
 		mav.addObject("userCoupons", userCoupons);
 		mav.addObject("userInfo", cu);
 		mav.addObject("totalPrice", totalPrice);
