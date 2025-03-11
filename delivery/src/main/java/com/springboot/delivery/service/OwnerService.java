@@ -148,5 +148,16 @@ public class OwnerService {
 	public void updateOwnerCouponQuantity(Coupon c) {
 		this.ownerMapper.updateOwnerCouponQuantity(c);
 	}
-
+	
+	public Integer getMaxReviewId() {
+		return this.ownerMapper.getMaxReviewId();
+	}
+	
+	public void insertOwnerReply(Review r) {
+		this.ownerMapper.insertOwnerReply(r);
+	}
+	
+	public List<Review> getReviewReplies(Review r){
+		return this.ownerMapper.getReviewReplies(r);
+	}
 }

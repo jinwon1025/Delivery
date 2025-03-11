@@ -54,7 +54,11 @@ public interface OwnerMapper {
     void registerCoupon(StoreCoupon sc);
     void updateOwnerCouponQuantity(Coupon c);
     List<Map<String, Object>> getAppliedStoreCoupons(String ownerId);
+    Integer getMaxReviewId();
     
+    void insertOwnerReply(Review r);
+    
+    List<Review> getReviewReplies(Review r);
 }
 
 

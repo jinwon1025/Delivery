@@ -324,8 +324,11 @@ public class OwnerController {
 	    Store currentStore = (Store) session.getAttribute("currentStore");
 	    oc.setStore_id(currentStore.getStore_id());
 	    System.out.println("가게 아이디:"+currentStore.getStore_id());
+	    //사용자가 입력한 글 가져오기
 	    List<Review> reviewList = this.ownerSerivce.getReviewList(oc);
-	    
+	    //사업자가 입력한 답글 가져오기
+	    Review r = new Review();
+
 	    // 디버깅: 리뷰 목록 크기 확인
 	    System.out.println("리뷰 목록 크기: " + (reviewList != null ? reviewList.size() : "null"));
 	    if(reviewList != null && !reviewList.isEmpty()) {
@@ -333,6 +336,8 @@ public class OwnerController {
 	    }
 	    
 	    mav.addObject("reviewList", reviewList);
+	    mav.addObject("owner_image_name", loginOwner.getImage_name());
+	    System.out.println(loginOwner.getImage_name());
 	    mav.addObject("BODY", "../owner/reviewList.jsp");
 	    
 	    return mav;
@@ -429,6 +434,35 @@ public class OwnerController {
 		}
 
 		return "redirect:/owner/couponManagement";
+	}
+	
+	@PostMapping(value="/owner/addReviewReply")
+	public ModelAndView addReviewReply(String reviewId, String storeId, String ownerId, String groupId, String parentId, String orderNo
+			,String user_id, String orderId, String replyContent) {
+		
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		Review r = new Review();
+		Integer maxCount = this.ownerSerivce.getMaxReviewId();
+		if(maxCount == null) {
+			maxCount = 0;
+		}
+		
+		r.setReview_id(maxCount+1);
+		r.setGroup_id(Integer.parseInt(reviewId));
+		r.setParent_id(Integer.parseInt(reviewId));
+		r.setOrder_no(Integer.parseInt(orderNo)+1);
+		r.setStore_id(storeId);
+		r.setOrder_id(orderId);
+		r.setReview_content(replyContent);
+		r.setWrite_date(new String());
+		r.setRating(0);
+		
+		this.ownerSerivce.insertOwnerReply(r);
+		mav.setViewName("redirect:/owner/reviewList");
+		return mav;
+		
+		
+		
 	}
 	
 

@@ -483,6 +483,9 @@
 
 		INSERT INTO b_review_tbl (
 		REVIEW_ID,
+		GROUP_ID,
+		PARENT_ID,
+		ORDER_NO,
 		STORE_ID,
 		USER_ID,
 		ORDER_ID,
@@ -491,7 +494,7 @@
 		WRITE_DATE,
 		RATING
 		) VALUES (
-		#{review_id}, #{store_id}, #{user_id}, #{order_id},
+		#{review_id},#{group_id}, #{parent_id}, #{order_no}, #{store_id}, #{user_id}, #{order_id},
 		#{review_content}
 		,#{review_image_name}, sysdate, #{rating}
 		)

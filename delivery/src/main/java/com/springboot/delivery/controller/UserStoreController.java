@@ -729,6 +729,9 @@ public class UserStoreController {
 			maxCount = 0;
 		}
 		review.setReview_id(maxCount + 1);
+		review.setGroup_id(maxCount+1);
+		review.setOrder_no(0);
+		review.setParent_id(0);
 		System.out.println("리뷰 아이디: " + review.getReview_id());
 		System.out.println("가게 아이디: " + review.getStore_id());
 		System.out.println("작성자 아이디: " + review.getUser_id());
