@@ -8,6 +8,7 @@
 <title>주문하기</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="<c:url value='/static/user/user-pages.css'/>">
 <style>
     * {
         box-sizing: border-box;
@@ -84,28 +85,6 @@
     textarea {
         height: 80px;
         resize: none;
-    }
-    
-    .payment-methods {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    
-    .payment-method {
-        flex: 1 0 calc(50% - 10px);
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .payment-method.selected {
-        border-color: #fa0050;
-        background-color: #fff0f5;
     }
     
     .coupon-select {
@@ -191,6 +170,252 @@
         color: #666;
         margin-top: 5px;
     }
+    
+    /* 결제 타입 선택 스타일 */
+    .payment-type-selector {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+    
+    .payment-type {
+        flex: 1;
+        text-align: center;
+        padding: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #666;
+        position: relative;
+        transition: all 0.2s;
+    }
+    
+    .payment-type.selected {
+        color: #fa0050;
+        font-weight: bold;
+    }
+    
+    .payment-type.selected:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #fa0050;
+    }
+    
+    .payment-type i {
+        margin-right: 5px;
+    }
+    
+    /* 결제 섹션 스타일 */
+    .payment-section {
+        display: none;
+        padding: 10px 0;
+    }
+    
+    .payment-section.active {
+        display: block;
+    }
+    
+    /* 만나서 결제 정보 스타일 */
+    .cash-payment-info {
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    .cash-payment-info i {
+        font-size: 24px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    
+    .cash-notice {
+        font-size: 0.9rem;
+        color: #fa0050;
+        margin-top: 10px;
+    }
+    
+    /* 비어있는 카드 컨테이너 스타일 */
+    .empty-card-container {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .empty-card-icon {
+        font-size: 30px;
+        color: #ddd;
+        margin-bottom: 10px;
+    }
+    
+    /* 카드 추가 버튼 스타일 */
+    .add-new-card {
+        text-align: center;
+        padding: 12px;
+        border: 1px dashed #ddd;
+        border-radius: 8px;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 15px;
+    }
+    
+    .add-new-card:hover {
+        background-color: #f9f9f9;
+        color: #fa0050;
+    }
+    
+    .add-new-card a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    /* 카드 슬라이더 스타일 수정 - viewPay와 일치하도록 */
+
+	/* 카드 슬라이더 컨테이너 */
+	.card-slider-container {
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    position: relative;
+	    width: 100%;
+	    padding: 20px 0;
+	}
+	
+	/* 카드 슬라이더 */
+	.card-slider {
+	    width: 70%;
+	    overflow: hidden;
+	    position: relative;
+	}
+	
+	/* 카드 슬라이드 */
+	.payment-card-slide {
+	    display: none;
+	    flex-direction: column;
+	    align-items: center;
+	    transition: transform 0.3s ease;
+	}
+	
+	.payment-card-slide.active {
+	    display: flex;
+	}
+	
+	/* 카드 스타일 - viewPay와 동일하게 */
+	.payment-card {
+	    width: 320px;
+	    height: 200px;
+	    border-radius: 12px;
+	    padding: 20px;
+	    position: relative;
+	    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	    margin-bottom: 15px;
+	    display: flex;
+	    flex-direction: column;
+	    background: linear-gradient(135deg, #1e88e5, #1565c0);
+	    color: white;
+	}
+	
+	/* 카드 칩 스타일 */
+	.card-chip {
+	    width: 40px;
+	    height: 30px;
+	    background: linear-gradient(135deg, #fdd835, #f9a825);
+	    border-radius: 5px;
+	    margin-bottom: 20px;
+	    position: relative;
+	    overflow: hidden;
+	}
+	
+	.card-chip:before {
+	    content: "";
+	    position: absolute;
+	    left: 50%;
+	    top: 50%;
+	    width: 60%;
+	    height: 80%;
+	    transform: translate(-50%, -50%);
+	    background: linear-gradient(90deg, transparent 33%, rgba(255, 255, 255, 0.3) 35%, transparent 37%);
+	}
+	
+	/* 카드 정보 스타일 */
+	.card-info {
+	    flex-grow: 1;
+	}
+	
+	.card-label {
+	    font-size: 0.7rem;
+	    opacity: 0.8;
+	    margin-bottom: 3px;
+	}
+	
+	.card-name {
+	    font-size: 1.2rem;
+	    font-weight: bold;
+	    margin-bottom: 15px;
+	}
+	
+	.card-number {
+	    font-size: 1rem;
+	    letter-spacing: 2px;
+	    margin-bottom: 15px;
+	}
+	
+	.card-details {
+	    display: flex;
+	    justify-content: space-between;
+	    font-size: 0.8rem;
+	}
+	
+	/* 화살표 스타일 */
+	.slider-arrow {
+	    background-color: #f8f9fa;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    cursor: pointer;
+	    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	    transition: all 0.2s;
+	    margin: 0 15px;
+	}
+	
+	.slider-arrow:hover {
+	    background-color: #e9ecef;
+	}
+	
+	/* 인디케이터 스타일 */
+	.card-indicator {
+	    display: flex;
+	    justify-content: center;
+	    margin-top: 20px;
+	}
+	
+	.indicator-dot {
+	    width: 8px;
+	    height: 8px;
+	    border-radius: 50%;
+	    background-color: #ced4da;
+	    margin: 0 5px;
+	    cursor: pointer;
+	    transition: background-color 0.3s;
+	}
+	
+	.indicator-dot.active {
+	    background-color: #fa0050;
+	}
+	
+	/* 카드 액션 버튼 스타일 */
+	.card-actions {
+	    display: flex;
+	    justify-content: center;
+	    width: 100%;
+	}
 </style>
 </head>
 <body>
@@ -202,7 +427,7 @@
         <input type="hidden" id="riderRequestHidden" name="riderRequest" value="">
         <input type="hidden" id="storeRequestHidden" name="storeRequest" value=""> 
         <input type="hidden" id="order_Id" name="order_Id" value="${order_Id}">
-        <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="신용카드">
+        <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="card">
         <input type="hidden" id="couponValueHidden" name="couponValue" value="0">
         <input type="hidden" id="selectedCouponIdHidden" name="selectedCouponId" value="0">
         <input type="hidden" id="pointValueHidden" name="pointValue" value="0">
@@ -273,22 +498,88 @@
                 <i class="fas fa-credit-card"></i> 결제수단
             </div>
             
-            <div class="payment-methods">
-                <div class="payment-method selected" data-payment="신용카드">
-                    <i class="fas fa-credit-card"></i>
-                    <div>신용카드</div>
+            <div class="payment-methods-container">
+                <!-- 결제 방식 선택 타입 -->
+                <div class="payment-type-selector">
+                    <div class="payment-type selected" data-type="card">
+                        <i class="fas fa-credit-card"></i> 내 카드결제
+                    </div>
+                    <div class="payment-type" data-type="cash">
+                        <i class="fas fa-money-bill-wave"></i> 만나서결제
+                    </div>
                 </div>
-                <div class="payment-method" data-payment="계좌이체">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <div>계좌이체</div>
+                
+                <!-- 내 카드 목록 -->
+                <div id="cardPaymentSection" class="payment-section active">
+                    <c:choose>
+                        <c:when test="${not empty cardList}">
+                            <div class="card-slider-container">
+                                <!-- 왼쪽 화살표 -->
+                                <div class="slider-arrow prev-arrow" id="prevCard">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                                
+                                <!-- 카드 슬라이더 -->
+                                <div class="card-slider">
+                                    <c:forEach var="card" items="${cardList}" varStatus="status">
+                                        <div class="payment-card-slide" data-index="${status.index}" data-payment="card-${card.pay_id}">
+                                            <div class="payment-card">
+                                                <div class="card-icon">
+                                                    <i class="fas fa-credit-card"></i>
+                                                </div>
+                                                <div class="card-info">
+                                                    <div class="card-name">${card.card_type}</div>
+                                                    <div class="card-number">**** **** **** ${card.card_number.substring(card.card_number.length() - 4)}</div>
+                                                </div>
+                                                <div class="card-check">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                
+                                <!-- 오른쪽 화살표 -->
+                                <div class="slider-arrow next-arrow" id="nextCard">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- 카드 인디케이터 -->
+                            <div class="card-indicator">
+                                <c:forEach var="card" items="${cardList}" varStatus="status">
+                                    <span class="indicator-dot" data-index="${status.index}"></span>
+                                </c:forEach>
+                            </div>
+                            
+                            <!-- 새 카드 추가하기 버튼 -->
+                            <div class="add-new-card">
+                                <a href="/user/payRegister">
+                                    <i class="fas fa-plus-circle"></i> 새 카드 추가하기
+                                </a>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-card-container">
+                                <div class="empty-card-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <p class="text-muted">등록된 카드가 없습니다.</p>
+                                <a href="/user/payRegister" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus-circle"></i> 카드 등록하기
+                                </a>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
-                <div class="payment-method" data-payment="휴대폰결제">
-                    <i class="fas fa-mobile-alt"></i>
-                    <div>휴대폰결제</div>
-                </div>
-                <div class="payment-method" data-payment="간편결제">
-                    <i class="fab fa-paypal"></i>
-                    <div>간편결제</div>
+                
+                <!-- 만나서 결제 섹션 -->
+                <div id="cashPaymentSection" class="payment-section">
+                    <div class="cash-payment-info">
+                        <i class="fas fa-info-circle"></i>
+                        <p>라이더에게 현금으로 직접 결제합니다.</p>
+                        <p class="cash-notice">* 만나서결제 시 쿠폰 및 포인트 사용이 제한될 수 있습니다.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -362,10 +653,32 @@
     </form>
     
     <script>
-    // JSP 변수를 JavaScript 변수로 직접 할당
-    const totalPrice = ${totalPrice};
-    const deliveryFee = ${deliveryFee};
+// JSP 변수를 JavaScript 변수로 직접 할당
+const totalPrice = ${totalPrice};
+const deliveryFee = ${deliveryFee};
+
+// 페이지 로드 직후 실행
+document.addEventListener('DOMContentLoaded', function() {
+    // 메뉴 가격과 배달팁 표시 업데이트
+    document.getElementById('menuPriceDisplay').textContent = totalPrice.toLocaleString() + '원';
+    document.getElementById('deliveryFeeDisplay').textContent = deliveryFee.toLocaleString() + '원';
+    document.getElementById('totalDisplay').textContent = (totalPrice + deliveryFee).toLocaleString() + '원';
     
+    // 카드 슬라이더 초기화
+    initCardSlider();
+    
+    // 라이더 요청사항 직접 입력 토글 설정
+    setupRequestHandlers();
+    
+    // 결제 타입 선택 설정
+    setupPaymentTypeHandlers();
+    
+    // 쿠폰 및 포인트 핸들러 설정
+    setupDiscountHandlers();
+});
+
+// 라이더 및 가게 요청사항 핸들러 설정
+function setupRequestHandlers() {
     // 라이더 요청사항 직접 입력 토글
     document.getElementById('riderRequest').addEventListener('change', function() {
         const directInput = document.getElementById('riderRequestDirect');
@@ -399,19 +712,44 @@
     document.getElementById('storeRequestDirect').addEventListener('input', function() {
         document.getElementById('storeRequestHidden').value = this.value;
     });
+}
+
+// 결제 타입 선택 핸들러 설정
+function setupPaymentTypeHandlers() {
+    const paymentTypes = document.querySelectorAll('.payment-type');
+    const cardSection = document.getElementById('cardPaymentSection');
+    const cashSection = document.getElementById('cashPaymentSection');
     
-    // 결제수단 선택
-    const paymentMethods = document.querySelectorAll('.payment-method');
-    paymentMethods.forEach(method => {
-        method.addEventListener('click', function() {
-            paymentMethods.forEach(m => m.classList.remove('selected'));
+    // 결제 타입 변경 이벤트
+    paymentTypes.forEach(type => {
+        type.addEventListener('click', function() {
+            paymentTypes.forEach(t => t.classList.remove('selected'));
             this.classList.add('selected');
             
-            // 선택된 결제수단 hidden 필드에 저장
-            document.getElementById('paymentMethodHidden').value = this.getAttribute('data-payment');
+            const selectedType = this.getAttribute('data-type');
+            
+            if (selectedType === 'card') {
+                cardSection.classList.add('active');
+                cashSection.classList.remove('active');
+                
+                // 카드 결제 선택 시 현재 선택된 카드의 payment 값 가져오기
+                const activeSlide = document.querySelector('.payment-card-slide.active');
+                if (activeSlide) {
+                    document.getElementById('paymentMethodHidden').value = activeSlide.getAttribute('data-payment');
+                } else {
+                    document.getElementById('paymentMethodHidden').value = 'card';
+                }
+            } else {
+                cardSection.classList.remove('active');
+                cashSection.classList.add('active');
+                document.getElementById('paymentMethodHidden').value = 'cash';
+            }
         });
     });
-    
+}
+
+// 할인 핸들러 설정 (쿠폰, 포인트)
+function setupDiscountHandlers() {
     // 쿠폰 선택시 금액 변경 및 최소 주문금액 체크
     document.getElementById('coupon').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
@@ -489,22 +827,6 @@
         updateTotalPrice();
     });
     
-    // 총 결제금액 업데이트
-    function updateTotalPrice() {
-        const couponValue = document.getElementById('couponValueHidden').value ? parseInt(document.getElementById('couponValueHidden').value) : 0;
-        const pointValue = document.getElementById('pointValueHidden').value ? parseInt(document.getElementById('pointValueHidden').value) : 0;
-        
-        // 최종 계산된 금액
-        const finalTotal = totalPrice + deliveryFee - couponValue - pointValue;
-        
-        // 총 결제금액 업데이트
-        const totalDisplay = document.getElementById('totalDisplay');
-        totalDisplay.textContent = finalTotal.toLocaleString() + '원';
-             
-        // 최종 금액 hidden 필드에 저장
-        document.getElementById('finalTotalHidden').value = finalTotal;
-    }
-    
     // 폼 제출 전 최종 확인
     document.getElementById('orderForm').addEventListener('submit', function(event) {
         const couponSelect = document.getElementById('coupon');
@@ -524,16 +846,90 @@
             }
         }
     });
+}
+
+// 총 결제금액 업데이트
+function updateTotalPrice() {
+    const couponValue = document.getElementById('couponValueHidden').value ? parseInt(document.getElementById('couponValueHidden').value) : 0;
+    const pointValue = document.getElementById('pointValueHidden').value ? parseInt(document.getElementById('pointValueHidden').value) : 0;
     
-    // 페이지 로드 시 초기화
-    window.addEventListener('DOMContentLoaded', function() {
-        // 메뉴 가격과 배달팁 표시 업데이트
-        document.getElementById('menuPriceDisplay').textContent = totalPrice.toLocaleString() + '원';
-        document.getElementById('deliveryFeeDisplay').textContent = deliveryFee.toLocaleString() + '원';
+    // 최종 계산된 금액
+    const finalTotal = totalPrice + deliveryFee - couponValue - pointValue;
+    
+    // 총 결제금액 업데이트
+    const totalDisplay = document.getElementById('totalDisplay');
+    totalDisplay.textContent = finalTotal.toLocaleString() + '원';
+         
+    // 최종 금액 hidden 필드에 저장
+    document.getElementById('finalTotalHidden').value = finalTotal;
+}
+
+// 카드 슬라이더 초기화 함수
+function initCardSlider() {
+    const slides = document.querySelectorAll('.payment-card-slide');
+    const dots = document.querySelectorAll('.indicator-dot');
+    const prevBtn = document.getElementById('prevCard');
+    const nextBtn = document.getElementById('nextCard');
+    let currentIndex = 0;
+    
+    // 초기 상태 설정 - 첫 번째 슬라이드와 인디케이터 활성화
+    if (slides.length > 0) {
+        // 첫 번째 슬라이드 활성화
+        slides[0].classList.add('active');
         
-        // 초기 총 결제금액 업데이트
-        updateTotalPrice();
+        // 첫 번째 인디케이터 활성화
+        if (dots.length > 0) {
+            dots[0].classList.add('active');
+        }
+        
+        // 첫 번째 카드의 결제 ID를 hidden 필드에 설정
+        document.getElementById('paymentMethodHidden').value = slides[0].getAttribute('data-payment');
+    }
+    
+    // 이전 카드 버튼 클릭 이벤트
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateSlider();
+        });
+    }
+    
+    // 다음 카드 버튼 클릭 이벤트
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlider();
+        });
+    }
+    
+    // 인디케이터 클릭 이벤트
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            currentIndex = parseInt(this.getAttribute('data-index'));
+            updateSlider();
+        });
     });
-    </script>
-</body>
-</html>
+    
+    // 슬라이더 업데이트 함수
+    function updateSlider() {
+        // 모든 슬라이드 비활성화
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+        });
+        
+        // 모든 인디케이터 비활성화
+        dots.forEach(dot => {
+            dot.classList.remove('active');
+        });
+        
+        // 현재 슬라이드와 인디케이터 활성화
+        slides[currentIndex].classList.add('active');
+        if (dots.length > 0) {
+            dots[currentIndex].classList.add('active');
+        }
+        
+        // 선택된 카드 정보 업데이트
+        document.getElementById('paymentMethodHidden').value = slides[currentIndex].getAttribute('data-payment');
+    }
+}
+</script>
