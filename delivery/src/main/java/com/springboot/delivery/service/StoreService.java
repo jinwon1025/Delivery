@@ -1,7 +1,6 @@
 package com.springboot.delivery.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionCategory;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.Rating;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
 
@@ -189,5 +189,13 @@ public class StoreService {
 	
 	public void updateStoreStatus(String storeId, Integer status) {
 	    this.storeMapper.updateStoreStatus(storeId, status);
+	}
+	
+	public Integer getCountMenuFromStore(String storeId) {
+		return this.storeMapper.getCountMenuFromStore(storeId);
+	}
+	
+	public Rating getRatingFromStore(String store_id) {
+		return this.storeMapper.getRatingFromStore(store_id);
 	}
 }

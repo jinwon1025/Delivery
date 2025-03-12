@@ -1,5 +1,6 @@
 package com.springboot.delivery.mapper;
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -7,6 +8,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionCategory;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.Rating;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
 @Mapper
@@ -57,4 +59,6 @@ public interface StoreMapper {
 
 	void updateStoreStatus(@Param("storeId") String storeId, @Param("status") Integer status);
 	
+	Integer getCountMenuFromStore(String storeId);
+	Rating getRatingFromStore(String store_id);
 }

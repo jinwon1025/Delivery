@@ -24,6 +24,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionCategory;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.Rating;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.SubOption;
 import com.springboot.delivery.service.AdminService;
@@ -143,6 +144,20 @@ public class StoreController {
 		}
 
 		mav.addObject("store", store);
+
+		// 오늘 주문 가져오기
+
+		// 가게 메뉴 수 가져오기
+		Store menuStore = (Store)session.getAttribute("currentStore");
+		Integer menuCount = this.storeService.getCountMenuFromStore(menuStore.getStore_id());
+
+		// 평균 평점 가져오기
+		Rating r = this.storeService.getRatingFromStore(menuStore.getStore_id());
+		Double averageRating = r.getSum().doubleValue() / r.getCount();
+		// 오늘 매출 가져오기
+
+		mav.addObject("menuCount", menuCount);
+		mav.addObject("averageRating", averageRating);
 		return mav;
 	}
 
@@ -492,8 +507,8 @@ public class StoreController {
 		so.setOption_id(subOptionMaxCount + 1);
 		so.setOption_name("옵션없음");
 		so.setStore_id(currentStore.getStore_id());
-		this.storeService.addSubOption(so); 
-		
+		this.storeService.addSubOption(so);
+
 		return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
 	}
 
@@ -646,47 +661,48 @@ public class StoreController {
 		return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
 
 	}
-	
+
 	@PostMapping("/store/updateStatus")
-    @ResponseBody
-    public Map<String, Object> updateStoreStatus(@RequestParam String storeId, @RequestParam Integer status, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            // 현재 로그인한 업주 확인
-            LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
-            
-            if (loginOwner != null) {
-                // 해당 가게가 현재 로그인한 업주의 가게인지 확인
-                Store store = storeService.getStore(storeId);
-                
-                if (store != null && store.getOwner_id().equals(loginOwner.getId())) {
-                    // 상태 업데이트
-                    storeService.updateStoreStatus(storeId, status);
-                    
-                    // 세션에 저장된 현재 가게 정보 업데이트
-                    Store currentStore = (Store) session.getAttribute("currentStore");
-                    if (currentStore != null && currentStore.getStore_id().equals(storeId)) {
-                        currentStore.setStore_status(status);
-                        session.setAttribute("currentStore", currentStore);
-                    }
-                    
-                    response.put("success", true);
-                    response.put("message", "가게 상태가 성공적으로 업데이트되었습니다.");
-                } else {
-                    response.put("success", false);
-                    response.put("message", "해당 가게에 대한 권한이 없습니다.");
-                }
-            } else {
-                response.put("success", false);
-                response.put("message", "로그인 정보가 없습니다.");
-            }
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "오류가 발생했습니다: " + e.getMessage());
-        }
-        
-        return response;
-    }
+	@ResponseBody
+	public Map<String, Object> updateStoreStatus(@RequestParam String storeId, @RequestParam Integer status,
+			HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			// 현재 로그인한 업주 확인
+			LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
+
+			if (loginOwner != null) {
+				// 해당 가게가 현재 로그인한 업주의 가게인지 확인
+				Store store = storeService.getStore(storeId);
+
+				if (store != null && store.getOwner_id().equals(loginOwner.getId())) {
+					// 상태 업데이트
+					storeService.updateStoreStatus(storeId, status);
+
+					// 세션에 저장된 현재 가게 정보 업데이트
+					Store currentStore = (Store) session.getAttribute("currentStore");
+					if (currentStore != null && currentStore.getStore_id().equals(storeId)) {
+						currentStore.setStore_status(status);
+						session.setAttribute("currentStore", currentStore);
+					}
+
+					response.put("success", true);
+					response.put("message", "가게 상태가 성공적으로 업데이트되었습니다.");
+				} else {
+					response.put("success", false);
+					response.put("message", "해당 가게에 대한 권한이 없습니다.");
+				}
+			} else {
+				response.put("success", false);
+				response.put("message", "로그인 정보가 없습니다.");
+			}
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "오류가 발생했습니다: " + e.getMessage());
+		}
+
+		return response;
+	}
 
 }

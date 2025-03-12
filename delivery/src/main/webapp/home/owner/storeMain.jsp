@@ -220,7 +220,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-utensils"></i>
                                 </div>
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">${menuCount }</div>
                                 <div class="stat-label">메뉴 수</div>
                             </div>
 
@@ -228,7 +228,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <div class="stat-value">0.0</div>
+                                <div class="stat-value">${averageRating }</div>
                                 <div class="stat-label">평균 평점</div>
                             </div>
 
