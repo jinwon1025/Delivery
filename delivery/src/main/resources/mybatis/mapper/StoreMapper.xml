@@ -412,5 +412,20 @@
 		WHERE
 		store_id = #{storeId}
 	</update>
+	
+	<select id="getCountMenuFromStore" parameterType="String" resultType="Integer">
+	
+	select count(menu_item_id) from b_menu_item_tbl where store_id=#{store_id}
+	
+	
+	</select>
+	
+	<select id="getRatingFromStore" parameterType="String" resultType="com.springboot.delivery.model.Rating">
+	
+	select sum(rating) as sum, count(rating) as count from b_review_tbl where store_id=#{store_id}
+	
+	
+	</select>
+	
 
 </mapper>
