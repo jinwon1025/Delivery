@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <div class="page-header">
-	<h1 class="page-title">마이페이지</h1>
+	<h1 class="page-title">마이 페이지</h1>
 	<p class="page-subtitle">나의 계정 정보와 주문 내역을 확인할 수 있습니다.</p>
 </div>
 
