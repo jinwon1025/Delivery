@@ -188,28 +188,72 @@ public class UserController {
 	// UserController 클래스에 추가할 메소드들
 
 	@GetMapping("/user/mypage")
-	public ModelAndView myPage(HttpSession session) {
-		ModelAndView mav = new ModelAndView("user/userMain");
+    public ModelAndView myPage(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
 
-		// 세션에서 로그인한 사용자 정보 가져오기
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        // 세션에서 로그인한 사용자 정보 가져오기
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-		if (loginUser == null) {
-			// 로그인되지 않은 경우 로그인 페이지로 리다이렉트
-			mav.setViewName("redirect:/user/index");
-			return mav;
-		}
+        if (loginUser == null) {
+            // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
 
-		// 사용자의 전체 정보 조회
-		User userInfo = this.userService.getUserById(loginUser.getUser_id());
-		String maskedPassword = userInfo.getPassword().replaceAll(".", "*");
-		userInfo.setPassword(maskedPassword);
-		System.out.println(userInfo.getUser_phone());
-		mav.addObject("userInfo", userInfo);
-		mav.addObject("BODY", "mypage.jsp");
+        // 사용자의 전체 정보 조회
+        User userInfo = this.userService.getUserById(loginUser.getUser_id());
+        String maskedPassword = userInfo.getPassword().replaceAll(".", "*");
+        userInfo.setPassword(maskedPassword);
+        
+        mav.addObject("userInfo", userInfo);
+        mav.addObject("activeMenu", "mypage");
+        mav.addObject("BODY", "mypage.jsp");
 
-		return mav;
-	}
+        return mav;
+    }
+
+    @GetMapping(value = "/user/mypage/bookMarkList")
+    public ModelAndView mypagebookMarkList(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
+        
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        
+        List<BookMarkStore> bmsList = this.userService.getBookMarkStoreByUserId(loginUser.getUser_id());
+
+        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+        mav.addObject("maincategoryList", maincategoryList);
+
+        List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id());
+
+        mav.addObject("activeMenu", "bookMarkList");
+        mav.addObject("contentPage", "bookMarkList");
+        mav.addObject("BODY", "mypage.jsp");
+        return mav;
+
+    }
+
+    @GetMapping(value = "/user/viewPay")
+    public ModelAndView viewPay(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
+        
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        
+        List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
+        mav.addObject("cardList", uc);
+        mav.addObject("activeMenu", "viewPay");
+        mav.addObject("contentPage", "viewPay");
+        mav.addObject("BODY", "mypage.jsp");
+        
+        return mav;
+    }
 
 	@GetMapping("/user/updateForm")
 	public ModelAndView updateForm(HttpSession session) {
@@ -455,15 +499,7 @@ public class UserController {
 		mav.setViewName("redirect:/user/categoryStores");
 		return mav;
 	}
-	@GetMapping(value = "/user/viewPay")
-	public ModelAndView viewPay(HttpSession session) {
-		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
-		ModelAndView mav = new ModelAndView("user/userMain");
-		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
-		mav.addObject("cardList",uc);
-		mav.addObject("BODY","viewPay.jsp");
-		return mav;
-	}
+
 	@GetMapping(value="/user/payRegister")
 	public ModelAndView payRegister() {
 		ModelAndView mav = new ModelAndView("user/userMain");
@@ -658,6 +694,8 @@ public class UserController {
 
 	    return response;
 	}
+	
+	
 	
 	
 

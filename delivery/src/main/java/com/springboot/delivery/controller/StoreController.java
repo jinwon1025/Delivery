@@ -4,13 +4,17 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -642,5 +646,47 @@ public class StoreController {
 		return new ModelAndView("redirect:/store/optionManage?menu_item_id=" + currentMenu.getMenu_item_id());
 
 	}
+	
+	@PostMapping("/store/updateStatus")
+    @ResponseBody
+    public Map<String, Object> updateStoreStatus(@RequestParam String storeId, @RequestParam Integer status, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 현재 로그인한 업주 확인
+            LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
+            
+            if (loginOwner != null) {
+                // 해당 가게가 현재 로그인한 업주의 가게인지 확인
+                Store store = storeService.getStore(storeId);
+                
+                if (store != null && store.getOwner_id().equals(loginOwner.getId())) {
+                    // 상태 업데이트
+                    storeService.updateStoreStatus(storeId, status);
+                    
+                    // 세션에 저장된 현재 가게 정보 업데이트
+                    Store currentStore = (Store) session.getAttribute("currentStore");
+                    if (currentStore != null && currentStore.getStore_id().equals(storeId)) {
+                        currentStore.setStore_status(status);
+                        session.setAttribute("currentStore", currentStore);
+                    }
+                    
+                    response.put("success", true);
+                    response.put("message", "가게 상태가 성공적으로 업데이트되었습니다.");
+                } else {
+                    response.put("success", false);
+                    response.put("message", "해당 가게에 대한 권한이 없습니다.");
+                }
+            } else {
+                response.put("success", false);
+                response.put("message", "로그인 정보가 없습니다.");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return response;
+    }
 
 }

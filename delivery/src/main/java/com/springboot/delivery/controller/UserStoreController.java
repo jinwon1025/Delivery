@@ -571,36 +571,35 @@ public class UserStoreController {
 	}
 
 	@GetMapping(value = "/userstore/myOrderList")
-	public ModelAndView myOrderList(HttpSession session) {
-	    ModelAndView mav = new ModelAndView("user/userMain");
-	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+    public ModelAndView myOrderList(HttpSession session) {
+        ModelAndView mav = new ModelAndView("user/userMain");
+        
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return new ModelAndView("redirect:/user/index");
+        }
 
-	    // 로그인 체크
-	    if (loginUser == null) {
-	        return new ModelAndView("redirect:/user/index");
-	    }
+        // 기본 페이지 설정
+        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+        mav.addObject("maincategoryList", maincategoryList);
 
-	    // 기본 페이지 설정
-	    List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-	    mav.addObject("maincategoryList", maincategoryList);
+        // 주문 목록 가져오기
+        List<Map<String, Object>> orderList = userStoreService.getOrderListByUserId(loginUser.getUser_id());
+        
+        for (Map<String, Object> order : orderList) {
+            String orderId = (String) order.get("ORDER_ID");
+            Integer reviewCount = userStoreService.checkReviewExists(orderId);
+            boolean hasReview = (reviewCount != null && reviewCount > 0);
+            order.put("HAS_REVIEW", hasReview);
+        }
 
-	    // 주문 목록 가져오기
-	    List<Map<String, Object>> orderList = userStoreService.getOrderListByUserId(loginUser.getUser_id());
-	    
-	    for (Map<String, Object> order : orderList) {
-	        String orderId = (String) order.get("ORDER_ID");
-	        System.out.println(orderId);
-	        Integer reviewCount = userStoreService.checkReviewExists(orderId);
-	        System.out.println(reviewCount);
-	        boolean hasReview = (reviewCount != null && reviewCount > 0);
-	        order.put("HAS_REVIEW", hasReview);
-	    }
+        mav.addObject("orderList", orderList);
+        mav.addObject("activeMenu", "myOrderList");
+        mav.addObject("contentPage", "myOrderList");
+        mav.addObject("BODY", "mypage.jsp");
 
-	    mav.addObject("orderList", orderList);
-	    mav.addObject("BODY", "../userstore/myOrderList.jsp");
-
-	    return mav;
-	}
+        return mav;
+    }
 
 	@GetMapping(value = "/userstore/orderDetail")
 	public ModelAndView orderDetail(HttpSession session, @RequestParam String orderId) {
@@ -747,39 +746,29 @@ public class UserStoreController {
 
 	}
 
-	@GetMapping(value="/userstore/myReviewList")
-	public ModelAndView myReviewList(HttpSession session) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	 @GetMapping(value="/userstore/myReviewList")
+	    public ModelAndView myReviewList(HttpSession session) {
+	        ModelAndView mav = new ModelAndView("user/userMain");
+	        
+	        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	        if (loginUser == null) {
+	            return new ModelAndView("redirect:/user/index");
+	        }
 
-		// 로그인 체크
-		if (loginUser == null) {
-			return new ModelAndView("redirect:/user/index");
-		}
+	        // 사용자의 리뷰 목록 조회
+	        List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
 
-		// 사용자의 리뷰 목록 조회
-		List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
+	        mav.addObject("reviewList", reviewList);
 
-		// 디버깅용 로그 추가
-		System.out.println("리뷰 개수: " + (reviewList != null ? reviewList.size() : "null"));
-		if (reviewList != null && !reviewList.isEmpty()) {
-			System.out.println("첫 번째 리뷰 내용:");
-			for (Map.Entry<String, Object> entry : reviewList.get(0).entrySet()) {
-				System.out.println(entry.getKey() + ": " + entry.getValue());
-			}
-		} else {
-			System.out.println("리뷰가 없습니다.");
-		}
+	        // 기본 페이지 설정
+	        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	        mav.addObject("maincategoryList", maincategoryList);
+	        mav.addObject("activeMenu", "myReviewList");
+	        mav.addObject("contentPage", "myReviewList");
+	        mav.addObject("BODY", "mypage.jsp");
 
-		mav.addObject("reviewList", reviewList);
-
-		// 기본 페이지 설정
-		List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-		mav.addObject("maincategoryList", maincategoryList);
-		mav.addObject("BODY", "../userstore/reviewList.jsp");
-
-		return mav;
-	}
+	        return mav;
+	    }
 
 	@GetMapping(value="/userstore/deleteReview")
 	public String deleteReview(@RequestParam("reviewId") int reviewId, HttpSession session) {
@@ -898,4 +887,59 @@ public class UserStoreController {
 	    
 	    return response;
 	}
+	 @GetMapping(value = "/userstore/mypage/viewCart")
+	    public ModelAndView mypageviewCart(HttpSession session) {
+	        ModelAndView mav = new ModelAndView("user/userMain");
+	        
+	        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	        if (loginUser == null) {
+	            return new ModelAndView("redirect:/user/index");
+	        }
+
+	        // 기본 화면 설정
+	        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+	        mav.addObject("maincategoryList", maincategoryList);
+
+	        // 주문 정보 가져오기
+	        OrderCart oc = this.userStoreService.getOrderByUserId(loginUser.getUser_id());
+
+	        // oc가 null인 경우 처리
+	        if (oc == null) {
+	            mav.addObject("isEmptyCart", "empty");
+	            mav.addObject("activeMenu", "viewCart");
+	            mav.addObject("contentPage", "viewCart");
+	            mav.addObject("BODY", "mypage.jsp");
+	            return mav;
+	        }
+
+	        // 장바구니 정보 가져오기
+	        List<Map<String, Object>> cartList = this.userStoreService.getCartMenuDetails(loginUser.getUser_id());
+
+	        // cartList가 null이거나 비어있는 경우 처리
+	        if (cartList == null || cartList.isEmpty()) {
+	            mav.addObject("isEmptyCart", "empty");
+	            mav.addObject("activeMenu", "viewCart");
+	            mav.addObject("contentPage", "viewCart");
+	            mav.addObject("BODY", "mypage.jsp");
+	            return mav;
+	        }
+
+	        OrderCart oc1 = new OrderCart();
+	        oc1.setOrder_id(oc.getOrder_id());
+	        oc1.setUser_id(loginUser.getUser_id());
+	        oc1.setOrder_status(0);
+
+	        String store_id = this.userStoreService.findStoreByMenuItemInCart(oc1);
+	        Integer delivery_fee = this.userStoreService.getDeliveryFee(store_id);
+
+	        mav.addObject("isEmptyCart", "notEmpty");
+	        mav.addObject("cartDetails", cartList);
+	        mav.addObject("deliveryFee", delivery_fee);
+	        mav.addObject("activeMenu", "viewCart");
+	        mav.addObject("contentPage", "viewCart");
+	        mav.addObject("BODY", "mypage.jsp");
+
+	        return mav;
+	    }
 }
+

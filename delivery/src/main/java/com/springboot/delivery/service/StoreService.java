@@ -1,6 +1,7 @@
 package com.springboot.delivery.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -184,5 +185,9 @@ public class StoreService {
 	
 	public void deleteOptionCategory(OptionCategory oc) {
 		this.storeMapper.deleteOptionCategory(oc);
+	}
+	
+	public void updateStoreStatus(String storeId, Integer status) {
+	    this.storeMapper.updateStoreStatus(storeId, status);
 	}
 }
