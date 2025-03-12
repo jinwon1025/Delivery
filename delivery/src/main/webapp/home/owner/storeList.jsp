@@ -3,17 +3,104 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
+<style>
+    /* 영업 상태 표시 스타일 */
+    .store-status {
+        display: inline-block;
+        padding: 5px 10px;
+        color: white;
+        font-weight: bold;
+        border-radius: 4px;
+        font-size: 12px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        z-index: 5;
+    }
+    
+    .status-open {
+        background-color: #4CAF50;
+    }
+    
+    .status-closed {
+        background-color: #F44336;
+    }
+    
+    /* 카드 스타일 조정 */
+    .store-card-img {
+        position: relative;
+        overflow: hidden;
+        height: 160px;
+        border-radius: 8px 8px 0 0;
+        background-color: #f5f5f5;
+    }
+    
+    .store-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .store-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .store-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .store-card-body {
+        padding: 15px;
+    }
+    
+    .store-card-footer {
+        padding: 10px 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .store-stats {
+        display: flex;
+    }
+    
+    .store-stat {
+        margin-right: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .store-stat i {
+        margin-right: 5px;
+        color: #FFD700;
+    }
+    
+    .store-card-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+</style>
+
 <div class="page-header">
     <h1 class="page-title">내 가게 관리</h1>
     <p class="page-subtitle">등록한 가게 목록과 상세 정보를 확인하고 관리할 수 있습니다.</p>
-    
+
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div>
             <a href="<c:url value='/store/goRegister'/>" class="btn btn-primary">
                 <i class="fas fa-plus mr-2"></i> 새 가게 등록
             </a>
         </div>
-        
+
         <div class="d-flex">
             <div class="form-group mb-0 mr-2">
                 <select class="form-select">
@@ -43,59 +130,39 @@
                              alt="기본 이미지">
                     </c:otherwise>
                 </c:choose>
-                <div class="store-status status-open">영업 중</div>
+                
+                <!-- 영업 상태 표시 배지 -->
+                <div class="store-status ${store.store_status == 1 ? 'status-open' : 'status-closed'}">
+                    ${store.store_status == 1 ? '영업 중' : '영업 종료'}
+                </div>
             </div>
             
             <div class="store-card-body">
-                <h3 class="store-card-title">
-                    ${store.store_name}
-                    <span class="store-badge">배달</span>
-                </h3>
-                
-                <div class="store-card-meta">
-                    <div class="store-meta-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${empty store.store_address ? '주소 미등록' : store.store_address}</span>
-                    </div>
-                    <div class="store-meta-item">
-                        <i class="fas fa-phone"></i>
-                        <span>${empty store.store_phone ? '연락처 미등록' : store.store_phone}</span>
-                    </div>
-                    <div class="store-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>${empty store.store_openHour ? '영업시간 미등록' : store.store_openHour}</span>
-                    </div>
-                    <div class="store-meta-item">
-                        <i class="fas fa-won-sign"></i>
-                        <span>최소주문: ${store.last_price}원</span>
-                    </div>
-                    <div class="store-meta-item">
-                        <i class="fas fa-truck"></i>
-                        <span>배달비: ${store.delivery_fee}원</span>
-                    </div>
+                <h3 class="store-card-title">${store.store_name}</h3>
+                <div class="store-card-info">
+                    <p><i class="fas fa-won-sign"></i> 최소주문: ${store.last_price}원</p>
+                    <p><i class="fas fa-truck"></i> 배달비: ${store.delivery_fee}원</p>
                 </div>
             </div>
             
             <div class="store-card-footer">
                 <div class="store-stats">
                     <div class="store-stat">
-                        <i class="fas fa-star"></i>
-                        <span>4.8</span>
+                        <i class="fas fa-star"></i> <span>4.8</span>
                     </div>
                     <div class="store-stat">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>123건</span>
+                        <i class="fas fa-shopping-cart"></i> <span>123건</span>
                     </div>
                 </div>
-                
+
                 <div class="store-card-btns">
                     <form action="/store/storeMain" method="get" class="d-inline">
-                        <input type="hidden" name="store_id" value="${store.store_id}"/>
+                        <input type="hidden" name="store_id" value="${store.store_id}" />
                         <button type="submit" class="btn btn-sm btn-primary">관리</button>
                     </form>
-                    <form action="/store/delete" method="post" class="d-inline" 
-                          onsubmit="return confirm('${store.store_name} 가게를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
-                        <input type="hidden" name="store_id" value="${store.store_id}"/>
+                    <form action="/store/delete" method="post" class="d-inline"
+                        onsubmit="return confirm('${store.store_name} 가게를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                        <input type="hidden" name="store_id" value="${store.store_id}" />
                         <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
                     </form>
                 </div>

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Store {
-	
+	private Integer store_status;
 	private String idchecked;
 	
 	@NotEmpty(message="가게 아이디를 입력하세요.")
@@ -45,6 +45,14 @@ public class Store {
 	private MultipartFile image;
 	
 	private String delivery_time; 
+	
+	public Integer getStore_status() {
+	    return store_status;
+	}
+
+	public void setStore_status(Integer store_status) {
+	    this.store_status = store_status;
+	}
 	
 
 }

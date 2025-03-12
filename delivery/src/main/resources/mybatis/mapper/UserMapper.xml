@@ -60,96 +60,112 @@
 
 	<select id="getAllStore"
 		resultType="com.springboot.delivery.model.Store">
-
-		select store_id, store_name, store_address, last_price, delivery_time,
-		store_image_name from b_store_tbl
-
+		select store_id, store_name, store_address, last_price,
+		delivery_time,
+		store_image_name, NVL(store_status, 1) as store_status
+		from
+		b_store_tbl
 	</select>
 
 	<select id="getStoresByCategory" parameterType="Integer"
 		resultType="com.springboot.delivery.model.Store">
-
-		select store_id, store_name, store_address, last_price, store_image_name
+		select store_id, store_name, store_address, last_price, store_image_name,
+		NVL(store_status, 1) as store_status
 		from b_store_tbl where main_category_id = #{main_category_id}
-
 	</select>
 
 	<select id="getBookMarkStoreByUserId" parameterType="String"
 		resultType="com.springboot.delivery.model.BookMarkStore">
-		select b.bm_id, b.user_id, s.store_id, s.store_name, s.store_address,
+		select b.bm_id, b.user_id, s.store_id, s.store_name,
+		s.store_address,
 		s.store_address, s.last_price, s.owner_id,
-		s.store_phone, s.store_openHour, s.delivery_fee, s.made_in, s.store_image_name,
+		s.store_phone, s.store_openHour, s.delivery_fee, s.made_in,
+		s.store_image_name,
 		s.delivery_time
-		from b_bookmark_tbl b inner join b_store_tbl s on b.store_id = s.store_id
+		from b_bookmark_tbl b inner join
+		b_store_tbl s on b.store_id = s.store_id
 		where b.user_id = #{user_id}
 
 	</select>
 
 	<select id="getMaxBookMarkStore" resultType="Integer">
 
-		select max(bm_id) from b_bookmark_tbl
+		select max(bm_id)
+		from b_bookmark_tbl
 
 	</select>
 
 	<insert id="insertBookMarkStore"
 		parameterType="com.springboot.delivery.model.BookMarkStore">
 
-		insert into b_bookmark_tbl values(#{bm_id}, #{store_id}, #{user_id})
+		insert into b_bookmark_tbl values(#{bm_id}, #{store_id},
+		#{user_id})
 
 	</insert>
 
 	<delete id="deleteBookMarkStore"
 		parameterType="com.springboot.delivery.model.BookMarkStore">
 
-		delete from b_bookmark_tbl where store_id=#{store_id} and user_id=#{user_id}
+		delete from b_bookmark_tbl where store_id=#{store_id}
+		and user_id=#{user_id}
 
 	</delete>
 
 	<select id="getBookMarkList" parameterType="String">
 
-		select store_id from b_bookmark_tbl where user_id = #{user_id}
+		select store_id from
+		b_bookmark_tbl where user_id = #{user_id}
 
 	</select>
 
 	<insert id="userCardRegister"
 		parameterType="com.springboot.delivery.model.UserCard">
-		insert into b_pay_tbl (pay_id, user_id, card_number, card_holder,
+		insert into b_pay_tbl (pay_id, user_id, card_number,
+		card_holder,
 		expiry_date, card_type)
-		values (b_pay_tbl_seq.NEXTVAL, #{user_id},
-		#{card_number}, #{card_holder}, #{expiry_date}, #{card_type})
+		values (b_pay_tbl_seq.NEXTVAL,
+		#{user_id},
+		#{card_number}, #{card_holder}, #{expiry_date},
+		#{card_type})
 	</insert>
 
 	<select id="getOrderStatus" resultType="int"
 		parameterType="string">
 		SELECT order_status
 		FROM b_order_detail_tbl
-		WHERE order_id = #{orderId}
+		WHERE order_id
+		= #{orderId}
 	</select>
 
 	<select id="userCardList" parameterType="String"
 		resultType="com.springboot.delivery.model.UserCard">
-		select pay_id, card_number, card_holder, expiry_date, card_type from
+		select pay_id, card_number, card_holder, expiry_date,
+		card_type from
 		b_pay_tbl where user_id=#{user_id}
 	</select>
 
 	<delete id="deleteCard" parameterType="Integer">
-		delete from b_pay_tbl where pay_id=#{pay_id}
+		delete from b_pay_tbl
+		where pay_id=#{pay_id}
 	</delete>
 
 	<select id="getPayPassword" parameterType="String"
 		resultType="Integer">
-		select pay_password from b_user_info where user_id=#{user_id}
+		select pay_password from b_user_info where
+		user_id=#{user_id}
 	</select>
 
 	<update id="payPasswordRegister"
 		parameterType="com.springboot.delivery.model.User">
-		update b_user_info set pay_password = #{pay_password} where
+		update b_user_info set pay_password = #{pay_password}
+		where
 		user_id=#{user_id}
 	</update>
 
 	<select id="getMaxUserCouponId" resultType="Integer">
 
-		select max(user_cp_id) from b_user_coupon_tbl
+		select
+		max(user_cp_id) from b_user_coupon_tbl
 
 
 	</select>
@@ -169,13 +185,16 @@
 	</insert>
 
 	<update id="increaseStoreCouponQuantity" parameterType="Integer">
-		UPDATE b_store_coupon_tbl
+		UPDATE
+		b_store_coupon_tbl
 		SET USED_QUANTITY = USED_QUANTITY + 1
-		WHERE STORE_COUPON_ID = #{storeCouponId}
+		WHERE
+		STORE_COUPON_ID = #{storeCouponId}
 	</update>
 
 	<update id="increaseOwnerCouponQuantity" parameterType="Integer">
-		UPDATE b_owner_coupon_tbl
+		UPDATE
+		b_owner_coupon_tbl
 		SET USER_USED_QUANTITY = USER_USED_QUANTITY + 1
 		WHERE OWNER_COUPON_ID = #{ownerCouponId}
 	</update>
