@@ -61,4 +61,7 @@ public interface StoreMapper {
 	
 	Integer getCountMenuFromStore(String storeId);
 	Rating getRatingFromStore(String store_id);
+	
+	Integer getTodayOrderCountByStore(String store_id);
+	Integer getTodayOrderTotalByStore(String store_id);
 }

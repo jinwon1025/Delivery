@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%> <!-- fmt 태그 추가 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -212,7 +213,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">${todayOrder}</div>
                                 <div class="stat-label">오늘 주문</div>
                             </div>
 
@@ -220,7 +221,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-utensils"></i>
                                 </div>
-                                <div class="stat-value">${menuCount }</div>
+                                <div class="stat-value">${menuCount}</div>
                                 <div class="stat-label">메뉴 수</div>
                             </div>
 
@@ -228,7 +229,7 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <div class="stat-value">${averageRating }</div>
+                                <div class="stat-value">${averageRating}</div>
                                 <div class="stat-label">평균 평점</div>
                             </div>
 
@@ -236,7 +237,9 @@
                                 <div class="stat-icon">
                                     <i class="fas fa-won-sign"></i>
                                 </div>
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">
+                                    <fmt:formatNumber value="${totalPrice}" type="number" pattern="#,###"/>원
+                                </div>
                                 <div class="stat-label">오늘 매출</div>
                             </div>
                         </div>

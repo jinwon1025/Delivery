@@ -144,20 +144,27 @@ public class StoreController {
 		}
 
 		mav.addObject("store", store);
+		
+		Store menuStore = (Store)session.getAttribute("currentStore");
 
 		// 오늘 주문 가져오기
-
+		Integer todayOrder = this.storeService.getTodayOrderCountByStore(menuStore.getStore_id());
+		
+		
 		// 가게 메뉴 수 가져오기
-		Store menuStore = (Store)session.getAttribute("currentStore");
 		Integer menuCount = this.storeService.getCountMenuFromStore(menuStore.getStore_id());
 
 		// 평균 평점 가져오기
 		Rating r = this.storeService.getRatingFromStore(menuStore.getStore_id());
 		Double averageRating = r.getSum().doubleValue() / r.getCount();
+		
 		// 오늘 매출 가져오기
-
+		Integer totalPrice = this.storeService.getTodayOrderTotalByStore(menuStore.getStore_id());
+		
+		mav.addObject("todayOrder", todayOrder);
 		mav.addObject("menuCount", menuCount);
 		mav.addObject("averageRating", averageRating);
+		mav.addObject("totalPrice", totalPrice);
 		return mav;
 	}
 

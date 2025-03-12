@@ -198,4 +198,12 @@ public class StoreService {
 	public Rating getRatingFromStore(String store_id) {
 		return this.storeMapper.getRatingFromStore(store_id);
 	}
+	
+	public Integer getTodayOrderCountByStore(String store_id) {
+		return this.storeMapper.getTodayOrderCountByStore(store_id);
+	}
+	
+	public Integer getTodayOrderTotalByStore(String store_id) {
+		return this.storeMapper.getTodayOrderTotalByStore(store_id);
+	}
 }
