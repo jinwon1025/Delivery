@@ -179,7 +179,6 @@ function bookmarkStore(event, storeId) {
         alert("즐겨찾기를 하려면 로그인해야 합니다.");
         return false;
     }
-
     // 현재 클릭된 버튼의 아이콘을 찾음
     var icon = event.currentTarget.querySelector('i');
     
