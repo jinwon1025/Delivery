@@ -10,412 +10,122 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<c:url value='/static/user/user-pages.css'/>">
 <style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-    
-    body {
-        background-color: #f5f5f5;
-        color: #333;
-        line-height: 1.6;
-    }
-    
     .container {
-        max-width: 768px;
-        margin: 0 auto;
-        padding: 15px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 15px;
-    }
-    
-    .order-header {
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 20px 0;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .section-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 15px;
-        color: #333;
-        display: flex;
-        align-items: center;
-    }
-    
-    .section-title i {
-        margin-right: 8px;
-        color: #fa0050; /* 배달의민족 느낌의 분홍색 */
-    }
-    
-    .input-group {
-        margin-bottom: 15px;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-    
-    input[type="text"],
-    input[type="tel"],
-    textarea,
-    select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-    
-    input[readonly] {
-        background-color: #f5f5f5;
-        color: #555;
-    }
-    
-    textarea {
-        height: 80px;
-        resize: none;
-    }
-    
-    .coupon-select {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .coupon-value {
-        font-weight: bold;
-        color: #fa0050;
-    }
-    
-    .point-container {
-        display: flex;
-        align-items: center;
-        margin-top: 15px;
-    }
-    
-    .point-input {
-        flex-grow: 1;
-        margin-right: 10px;
-    }
-    
-    .point-btn {
-        background-color: #fa0050;
-        color: white;
-        border: none;
-        padding: 12px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    
-    .total-container {
-        background-color: #f9f9f9;
-    }
-    
-    .price-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-    
-    .price-title {
-        color: #666;
-    }
-    
-    .price-value {
-        font-weight: bold;
-    }
-    
-    .total-price {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-        font-size: 1.2rem;
-    }
-    
-    .total-price-value {
-        color: #fa0050;
-        font-weight: bold;
-    }
-    
-    .order-btn {
-        display: block;
-        width: 100%;
-        background-color: #fa0050;
-        color: white;
-        border: none;
-        padding: 15px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        border-radius: 5px;
-        margin-top: 20px;
-        cursor: pointer;
-    }
-    
-    .available-point {
-        font-size: 0.9rem;
-        color: #666;
-        margin-top: 5px;
-    }
-    
-    /* 결제 타입 선택 스타일 */
-    .payment-type-selector {
-        display: flex;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 15px;
-    }
-    
-    .payment-type {
-        flex: 1;
-        text-align: center;
-        padding: 12px;
-        cursor: pointer;
-        font-weight: 500;
-        color: #666;
-        position: relative;
-        transition: all 0.2s;
-    }
-    
-    .payment-type.selected {
-        color: #fa0050;
-        font-weight: bold;
-    }
-    
-    .payment-type.selected:after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: #fa0050;
-    }
-    
-    .payment-type i {
-        margin-right: 5px;
-    }
-    
-    /* 결제 섹션 스타일 */
-    .payment-section {
-        display: none;
-        padding: 10px 0;
-    }
-    
-    .payment-section.active {
-        display: block;
-    }
-    
-    /* 만나서 결제 정보 스타일 */
-    .cash-payment-info {
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        text-align: center;
-    }
-    
-    .cash-payment-info i {
-        font-size: 24px;
-        color: #666;
-        margin-bottom: 10px;
-    }
-    
-    .cash-notice {
-        font-size: 0.9rem;
-        color: #fa0050;
-        margin-top: 10px;
-    }
-    
-    /* 비어있는 카드 컨테이너 스타일 */
-    .empty-card-container {
-        text-align: center;
-        padding: 20px;
-    }
-    
-    .empty-card-icon {
-        font-size: 30px;
-        color: #ddd;
-        margin-bottom: 10px;
-    }
-    
-    /* 카드 추가 버튼 스타일 */
-    .add-new-card {
-        text-align: center;
-        padding: 12px;
-        border: 1px dashed #ddd;
-        border-radius: 8px;
-        color: #666;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 15px;
-    }
-    
-    .add-new-card:hover {
-        background-color: #f9f9f9;
-        color: #fa0050;
-    }
-    
-    .add-new-card a {
-        display: block;
-        color: inherit;
-        text-decoration: none;
-    }
-    
-    /* 카드 슬라이더 스타일 수정 - viewPay와 일치하도록 */
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
 
-	/* 카드 슬라이더 컨테이너 */
-	.card-slider-container {
-	    display: flex;
-	    align-items: center;
-	    justify-content: center;
-	    position: relative;
-	    width: 100%;
-	    padding: 20px 0;
-	}
-	
-	/* 카드 슬라이더 */
-	.card-slider {
-	    width: 70%;
-	    overflow: hidden;
-	    position: relative;
-	}
-	
-	/* 카드 슬라이드 */
-	.payment-card-slide {
-	    display: none;
-	    flex-direction: column;
-	    align-items: center;
-	    transition: transform 0.3s ease;
-	}
-	
-	.payment-card-slide.active {
-	    display: flex;
-	}
-	
-	/* 카드 스타일 - viewPay와 동일하게 */
-	.payment-card {
-	    width: 320px;
-	    height: 200px;
-	    border-radius: 12px;
-	    padding: 20px;
-	    position: relative;
-	    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	    margin-bottom: 15px;
-	    display: flex;
-	    flex-direction: column;
-	    background: linear-gradient(135deg, #1e88e5, #1565c0);
-	    color: white;
-	}
-	
-	/* 카드 칩 스타일 */
-	.card-chip {
-	    width: 40px;
-	    height: 30px;
-	    background: linear-gradient(135deg, #fdd835, #f9a825);
-	    border-radius: 5px;
-	    margin-bottom: 20px;
-	    position: relative;
-	    overflow: hidden;
-	}
-	
-	.card-chip:before {
-	    content: "";
-	    position: absolute;
-	    left: 50%;
-	    top: 50%;
-	    width: 60%;
-	    height: 80%;
-	    transform: translate(-50%, -50%);
-	    background: linear-gradient(90deg, transparent 33%, rgba(255, 255, 255, 0.3) 35%, transparent 37%);
-	}
-	
-	/* 카드 정보 스타일 */
-	.card-info {
-	    flex-grow: 1;
-	}
-	
-	.card-label {
-	    font-size: 0.7rem;
-	    opacity: 0.8;
-	    margin-bottom: 3px;
-	}
-	
-	.card-name {
-	    font-size: 1.2rem;
-	    font-weight: bold;
-	    margin-bottom: 15px;
-	}
-	
-	.card-number {
-	    font-size: 1rem;
-	    letter-spacing: 2px;
-	    margin-bottom: 15px;
-	}
-	
-	.card-details {
-	    display: flex;
-	    justify-content: space-between;
-	    font-size: 0.8rem;
-	}
-	
-	/* 화살표 스타일 */
-	.slider-arrow {
-	    background-color: #f8f9fa;
-	    width: 40px;
-	    height: 40px;
-	    border-radius: 50%;
-	    display: flex;
-	    align-items: center;
-	    justify-content: center;
-	    cursor: pointer;
-	    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	    transition: all 0.2s;
-	    margin: 0 15px;
-	}
-	
-	.slider-arrow:hover {
-	    background-color: #e9ecef;
-	}
-	
-	/* 인디케이터 스타일 */
-	.card-indicator {
-	    display: flex;
-	    justify-content: center;
-	    margin-top: 20px;
-	}
-	
-	.indicator-dot {
-	    width: 8px;
-	    height: 8px;
-	    border-radius: 50%;
-	    background-color: #ced4da;
-	    margin: 0 5px;
-	    cursor: pointer;
-	    transition: background-color 0.3s;
-	}
-	
-	.indicator-dot.active {
-	    background-color: #fa0050;
-	}
-	
-	/* 카드 액션 버튼 스타일 */
-	.card-actions {
-	    display: flex;
-	    justify-content: center;
-	    width: 100%;
-	}
+/* 결제 비밀번호 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+.modal-header {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 18px;
+}
+
+.close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.password-input-container {
+    position: relative;
+    margin: 20px auto;
+    width: 80%;
+}
+
+#paymentPassword {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 10px;
+    box-sizing: border-box;
+}
+
+.password-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: #ddd;
+    border-radius: 50%;
+    margin: 0 8px;
+}
+
+.dot.filled {
+    background-color: #4a90e2;
+}
+
+.modal-footer {
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-footer button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#cancelPayment {
+    background-color: #f2f2f2;
+}
+
+#confirmPayment {
+    background-color: #4a90e2;
+    color: white;
+}
 </style>
 </head>
 <body>
@@ -427,13 +137,14 @@
         <input type="hidden" id="riderRequestHidden" name="riderRequest" value="">
         <input type="hidden" id="storeRequestHidden" name="storeRequest" value=""> 
         <input type="hidden" id="order_Id" name="order_Id" value="${order_Id}">
-        <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="card">
+        <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="${card.pay_id}">
         <input type="hidden" id="couponValueHidden" name="couponValue" value="0">
         <input type="hidden" id="selectedCouponIdHidden" name="selectedCouponId" value="0">
         <input type="hidden" id="pointValueHidden" name="pointValue" value="0">
         <input type="hidden" id="finalTotalHidden" name="finalTotal" value="${totalPrice + deliveryFee}">
         <input type="hidden" id="menuPriceHidden" value="${totalPrice}">
         <input type="hidden" id="deliveryFeeHidden" value="${deliveryFee}">
+        <input type="hidden" id="paymentPasswordHidden" name="paymentPassword" value="">
         
         <!-- 배달주소, 라이더 요청사항, 내 연락처 컨테이너 -->
         <div class="container">
@@ -522,8 +233,8 @@
                                 <!-- 카드 슬라이더 -->
                                 <div class="card-slider">
                                     <c:forEach var="card" items="${cardList}" varStatus="status">
-                                        <div class="payment-card-slide" data-index="${status.index}" data-payment="card-${card.pay_id}">
-                                            <div class="payment-card">
+                                        <div class="payment-card-slide" data-index="${status.index}" data-payment="${card.pay_id}">
+                                            <div class="payment-card card-${card.card_type}">	
                                                 <div class="card-icon">
                                                     <i class="fas fa-credit-card"></i>
                                                 </div>
@@ -652,6 +363,37 @@
         <button type="submit" class="order-btn" id="orderButton">결제하기</button>
     </form>
     
+    <!-- 결제 비밀번호 모달 -->
+    <div id="paymentPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>결제 비밀번호 입력</h2>
+            </div>
+            <div class="modal-body">
+                <p>안전한 결제를 위해 결제 비밀번호를 입력해주세요.</p>
+                <div class="password-input-container">
+                    <input type="password" id="paymentPassword" maxlength="6" placeholder="6자리 비밀번호 입력">
+                    <div class="password-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+                <div class="error-message" id="passwordError" style="display: none; color: red;">
+                    비밀번호가 일치하지 않습니다.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelPayment">취소</button>
+                <button id="confirmPayment">확인</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
 // JSP 변수를 JavaScript 변수로 직접 할당
 const totalPrice = ${totalPrice};
@@ -675,6 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 쿠폰 및 포인트 핸들러 설정
     setupDiscountHandlers();
+    
+    // 결제 비밀번호 모달 설정
+    setupPaymentPasswordModal();
 });
 
 // 라이더 및 가게 요청사항 핸들러 설정
@@ -690,7 +435,7 @@ function setupRequestHandlers() {
             document.getElementById('riderRequestHidden').value = this.value;
         }
     });
-    
+
     // 라이더 요청사항 직접 입력 처리
     document.getElementById('riderRequestDirect').addEventListener('input', function() {
         document.getElementById('riderRequestHidden').value = this.value;
@@ -746,6 +491,189 @@ function setupPaymentTypeHandlers() {
             }
         });
     });
+}
+
+// 결제 비밀번호 모달 설정
+function setupPaymentPasswordModal() {
+    const modal = document.getElementById('paymentPasswordModal');
+    const closeBtn = document.querySelector('.close');
+    const passwordInput = document.getElementById('paymentPassword');
+    const dots = document.querySelectorAll('.password-dots .dot');
+    const confirmPaymentBtn = document.getElementById('confirmPayment');
+    const cancelPaymentBtn = document.getElementById('cancelPayment');
+    const passwordError = document.getElementById('passwordError');
+
+    // 폼 제출 이벤트 덮어쓰기
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 기본 제출 방지
+        
+        // 현재 선택된 결제 방식 확인
+        const paymentMethod = document.getElementById('paymentMethodHidden').value;
+        
+        // 결제 방식에 따라 다른 처리
+        if (paymentMethod === 'cash') {
+            // 현금 결제인 경우 바로 폼 제출
+            this.action = '/userstore/pay';
+            this.submit();
+        } else if (!isNaN(paymentMethod)) {
+            // 카드 결제인 경우 비밀번호 모달 표시
+            showPasswordModal(false);
+        }
+    });
+
+    // 비밀번호 모달 표시 함수
+    function showPasswordModal(showError) {
+        modal.style.display = 'block';
+        passwordInput.value = '';
+        dots.forEach(dot => dot.classList.remove('filled'));
+        
+        if (showError) {
+            passwordError.style.display = 'block';
+        } else {
+            passwordError.style.display = 'none';
+        }
+        
+        // 포커스 설정
+        setTimeout(() => {
+            passwordInput.focus();
+        }, 100);
+    }
+
+    // 비밀번호 입력 처리
+    passwordInput.addEventListener('input', function() {
+        const value = this.value;
+        
+        // 비밀번호 입력에 따른 시각적 표시 업데이트
+        for (let i = 0; i < dots.length; i++) {
+            if (i < value.length) {
+                dots[i].classList.add('filled');
+            } else {
+                dots[i].classList.remove('filled');
+            }
+        }
+    });
+
+    // 확인 버튼 클릭
+    confirmPaymentBtn.addEventListener('click', function() {
+        const password = passwordInput.value;
+        
+        // 비밀번호가 6자리인지 확인
+        if (password.length !== 6) {
+            passwordError.innerText = '6자리 비밀번호를 입력해주세요';
+            passwordError.style.display = 'block';
+            return;
+        }
+        
+        // AJAX로 비밀번호 검증 요청
+        verifyPasswordWithAjax(password);
+    });
+
+    // 취소 버튼 클릭
+    cancelPaymentBtn.addEventListener('click', function() {
+        closeModal();
+    });
+
+    // 닫기 버튼 클릭
+    closeBtn.addEventListener('click', function() {
+        closeModal();
+    });
+
+    // 모달 외부 클릭 시 닫기
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // 모달 닫기 함수
+    function closeModal() {
+        modal.style.display = 'none';
+        passwordInput.value = '';
+        passwordError.style.display = 'none';
+        dots.forEach(dot => dot.classList.remove('filled'));
+    }
+    
+    // AJAX로 비밀번호 검증
+    function verifyPasswordWithAjax(password) {
+        // 모든 폼 데이터 수집
+        const formData = new FormData();
+        formData.append('paymentPassword', password);
+        formData.append('paymentMethod', document.getElementById('paymentMethodHidden').value);
+        formData.append('order_Id', document.getElementById('order_Id').value);
+        formData.append('riderRequest', document.getElementById('riderRequestHidden').value);
+        formData.append('storeRequest', document.getElementById('storeRequestHidden').value);
+        formData.append('address', document.getElementById('fullAddress').value);
+        formData.append('phone', document.getElementById('phone').value);
+        formData.append('couponValue', document.getElementById('couponValueHidden').value);
+        formData.append('selectedCouponId', document.getElementById('selectedCouponIdHidden').value);
+        formData.append('pointValue', document.getElementById('pointValueHidden').value);
+        formData.append('finalTotal', document.getElementById('finalTotalHidden').value);
+        
+        // AJAX 요청 생성
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/userstore/verifyPaymentPasswordAjax', true);
+        
+        // 응답 처리
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    if (response.success) {
+                    	 // 비밀번호 검증 성공 - POST 방식으로 폼 제출
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/userstore/pay';
+                        
+                        // 필요한 파라미터 추가
+                        const params = {
+                            'order_Id': document.getElementById('order_Id').value,
+                            'riderRequest': document.getElementById('riderRequestHidden').value,
+                            'storeRequest': document.getElementById('storeRequestHidden').value,
+                            'finalTotal': document.getElementById('finalTotalHidden').value,
+                            'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
+                            'paymentMethod': document.getElementById('paymentMethodHidden').value
+                        };
+                        // 폼에 필드 추가
+                        for (const key in params) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = params[key];
+                            form.appendChild(input);
+                        }
+                        
+                        // 폼을 DOM에 추가하고 제출
+                        document.body.appendChild(form);
+                        form.submit();
+                    } else {
+                        // 비밀번호 검증 실패 - 오류 표시
+                        passwordError.innerText = '비밀번호가 일치하지 않습니다';
+                        passwordError.style.display = 'block';
+                        passwordInput.value = '';
+                        dots.forEach(dot => dot.classList.remove('filled'));
+                        passwordInput.focus();
+                    }
+                } catch (e) {
+                    console.error('응답 처리 오류:', e);
+                    passwordError.innerText = '처리 중 오류가 발생했습니다';
+                    passwordError.style.display = 'block';
+                }
+            } else {
+                passwordError.innerText = '서버 오류가 발생했습니다';
+                passwordError.style.display = 'block';
+            }
+        };
+        
+        // 요청 실패 처리
+        xhr.onerror = function() {
+            passwordError.innerText = '네트워크 오류가 발생했습니다';
+            passwordError.style.display = 'block';
+        };
+        
+        // 요청 전송
+        xhr.send(formData);
+    }
 }
 
 // 할인 핸들러 설정 (쿠폰, 포인트)
@@ -827,7 +755,7 @@ function setupDiscountHandlers() {
         updateTotalPrice();
     });
     
-    // 폼 제출 전 최종 확인
+    // 폼 제출 전 최종 확인 (쿠폰 최소 주문금액 확인)
     document.getElementById('orderForm').addEventListener('submit', function(event) {
         const couponSelect = document.getElementById('coupon');
         
@@ -933,3 +861,5 @@ function initCardSlider() {
     }
 }
 </script>
+</body>
+</html>

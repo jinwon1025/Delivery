@@ -195,5 +195,9 @@ public class UserStoreService {
 	public Map<String, Object> getReviewDetail(String orderId) {
 		return this.userStoreMapper.getReviewDetail(orderId);
 	}
+	
+	public Integer getPayPassword(String user_id) {
+		return this.userStoreMapper.getPayPassword(user_id);
+	}
 
 }

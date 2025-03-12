@@ -3,7 +3,9 @@ package com.springboot.delivery.controller;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -521,7 +524,7 @@ public class UserStoreController {
 
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
-			String finalTotal, String selectedCouponId) {
+			String finalTotal, String selectedCouponId, String paymentMethod) {
 		ModelAndView mav = new ModelAndView("user/userMain");
 
 		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
@@ -563,7 +566,7 @@ public class UserStoreController {
 		// 추가 정보 모델에 추가
 		mav.addObject("TOTALPRICE", finalTotal);
 		mav.addObject("BODY", "../userstore/end.jsp");
-
+		System.out.println("결제카드 아이디 : " +paymentMethod);
 		return mav;
 	}
 
@@ -802,5 +805,97 @@ public class UserStoreController {
 		return mav;
 		
 	}
-
+	@PostMapping("/userstore/verifyPaymentPasswordAjax")
+	@ResponseBody
+	public Map<String, Object> verifyPaymentPasswordAjax(
+	    @RequestParam("paymentMethod") String paymentMethod,
+	    @RequestParam("paymentPassword") String paymentPassword,
+	    @RequestParam("order_Id") String orderId,
+	    @RequestParam("riderRequest") String riderRequest,
+	    @RequestParam("storeRequest") String storeRequest,
+	    @RequestParam("address") String address,
+	    @RequestParam("phone") String phone,
+	    @RequestParam("couponValue") int couponValue,
+	    @RequestParam("selectedCouponId") String selectedCouponId,
+	    @RequestParam("pointValue") int pointValue,
+	    @RequestParam("finalTotal") int finalTotal,
+	    HttpSession session) {
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    // 로그인 사용자 정보 가져오기
+	    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	    
+	    if (loginUser == null) {
+	        response.put("success", false);
+	        response.put("message", "로그인 정보가 없습니다");
+	        return response;
+	    }
+	    
+	    // 결제 비밀번호 검증
+	    Integer storedPassword = this.userStoreService.getPayPassword(loginUser.getUser_id());
+	    boolean isPasswordValid = false;
+	    
+	    try {
+	        if (Integer.parseInt(paymentPassword) == storedPassword) {
+	            isPasswordValid = true;
+	        }
+	    } catch (NumberFormatException e) {
+	        response.put("success", false);
+	        response.put("message", "유효하지 않은 비밀번호 형식입니다");
+	        return response;
+	    }
+	    
+	    if (!isPasswordValid) {
+	        response.put("success", false);
+	        response.put("message", "비밀번호가 일치하지 않습니다");
+	        return response;
+	    }
+	    
+	    // 비밀번호 검증 성공 시 결제 처리
+	    try {
+	        // 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
+	        OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(orderId);
+	        
+	        // 주문 정보 설정 및 처리
+	        if (orderWithAddress != null) {
+	            // 필요한 정보 설정
+	            orderWithAddress.setToowner(storeRequest);
+	            orderWithAddress.setTorider(riderRequest);
+	            orderWithAddress.setOrder_status(1); // 주문완료 처리
+	            orderWithAddress.setTotalPrice(finalTotal);
+	            orderWithAddress.setOrder_id(orderId);
+	            
+	            // 수정된 객체로 결제 정보 저장
+	            this.userStoreService.insertPay(orderWithAddress);
+	        } else {
+	            // 쿼리 결과가 없을 경우 새 객체 생성
+	            OrderCart oc = new OrderCart();
+	            oc.setToowner(storeRequest);
+	            oc.setTorider(riderRequest);
+	            oc.setOrder_id(orderId);
+	            oc.setOrder_status(1);
+	            oc.setTotalPrice(finalTotal);
+	            
+	            this.userStoreService.insertPay(oc);
+	        }
+	        
+	        // 성공 응답
+	        response.put("success", true);
+	        // 결제 성공 후 이동할 URL - 주문 완료 페이지
+	        response.put("redirectUrl", "/userstore/pay?order_Id=" + orderId + 
+	                    "&riderRequest=" + URLEncoder.encode(riderRequest, "UTF-8") + 
+	                    "&storeRequest=" + URLEncoder.encode(storeRequest, "UTF-8") + 
+	                    "&finalTotal=" + finalTotal + 
+	                    "&selectedCouponId=" + selectedCouponId + 
+	                    "&paymentMethod=" + paymentMethod);
+	        
+	    } catch (Exception e) {
+	        // 결제 처리 중 오류 발생
+	        response.put("success", false);
+	        response.put("message", "결제 처리 중 오류가 발생했습니다");
+	    }
+	    
+	    return response;
+	}
 }

@@ -80,4 +80,5 @@ public interface UserStoreMapper {
 	
 	Map<String, Object> getReviewDetail(String orderId);
 	
+	Integer getPayPassword(String user_id);
 }	

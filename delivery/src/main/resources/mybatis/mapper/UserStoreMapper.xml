@@ -651,4 +651,11 @@
         r.ORDER_ID = #{order_id}
 </select>
 
+<select id="getPayPassword" parameterType="String" resultType="Integer">
+	select pay_password from b_user_info where user_id = #{user_id}
+</select>
+
+
+
+
 </mapper>
