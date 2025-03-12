@@ -184,8 +184,8 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="/user/main" class="btn btn-continue text-white">쇼핑 계속하기</a>
-            <a href="/user/orderList" class="btn btn-outline-secondary ms-2">주문 내역 보기</a>
+            <a href="/user/index" class="btn btn-continue text-white">쇼핑 계속하기</a>
+            <a href="/userstore/orderDetail?orderId=${orderCart.order_id}" class="btn btn-outline-secondary ms-2">주문 내역 보기</a>
         </div>
     </div>
 
