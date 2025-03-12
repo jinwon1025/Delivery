@@ -35,6 +35,7 @@ import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
@@ -518,8 +519,15 @@ public class UserStoreController {
 		mav.addObject("finalTotalPrice", finalTotalPrice);
 		System.out.println("결제창 오더 아이디:" + order_Id);
 		mav.addObject("order_Id", order_Id);
+		Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
+		double pointRate = 0.02;
+		Integer point = (int)(Integer.parseInt(finalTotalPrice) * pointRate);
+		Integer userTotalPoint = userPoint + point;
+		User user = new User();
+		user.setPoint(userTotalPoint);
+		user.setUser_id(loginUser.getUser_id());
+		this.userStoreService.updatePoint(user);
 		return mav;
-
 	}
 
 	@PostMapping(value = "/userstore/pay")

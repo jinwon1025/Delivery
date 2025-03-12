@@ -15,7 +15,7 @@ import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.StoreCoupon;
-import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.User;
 
 @Mapper
 public interface UserStoreMapper {
@@ -81,4 +81,8 @@ public interface UserStoreMapper {
 	Map<String, Object> getReviewDetail(String orderId);
 	
 	Integer getPayPassword(String user_id);
+	
+	Integer getPoint(String user_id);
+	
+	void updatePoint(User user);
 }	

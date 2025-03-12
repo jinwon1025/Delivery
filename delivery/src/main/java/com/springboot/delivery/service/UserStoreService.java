@@ -17,6 +17,7 @@ import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.User;
 
 @Service
 public class UserStoreService {
@@ -198,6 +199,14 @@ public class UserStoreService {
 	
 	public Integer getPayPassword(String user_id) {
 		return this.userStoreMapper.getPayPassword(user_id);
+	}
+	
+	public Integer getPoint(String user_id) {
+		return this.userStoreMapper.getPoint(user_id);
+	}
+	
+	public void updatePoint(User user) {
+		this.userStoreMapper.updatePoint(user);
 	}
 
 }

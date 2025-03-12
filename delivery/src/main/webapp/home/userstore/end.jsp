@@ -196,6 +196,7 @@
     $(document).ready(function() {
         const orderId = $('#order-id').text();
         let currentStatus = 0;
+        let pointCanceled = false; // 포인트 차감 여부를 추적하는 플래그
         
         // 주문 완료는 항상 활성화
         $(`.track-step[data-step="0"]`).addClass('active');
@@ -225,7 +226,7 @@
                         // 주문이 취소되거나 배달이 완료된 경우 interval 중지
                         if (newStatus === 4 || newStatus === 5) {
                             clearInterval(statusInterval);
-                        }d
+                        }
                     }
                 },
                 error: function(xhr, status, error) {
@@ -254,7 +255,7 @@
                 4: { text: "배달 완료", class: "bg-success" },
                 5: { text: "주문 취소", class: "bg-danger" }
             };
-            
+          
             // 배달 트래커 막대 업데이트
             const progressWidth = status === 5 ? 0 : Math.min(status, 4) * 25;
             

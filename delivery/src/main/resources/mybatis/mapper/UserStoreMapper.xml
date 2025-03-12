@@ -655,6 +655,13 @@
 	select pay_password from b_user_info where user_id = #{user_id}
 </select>
 
+<select id="getPoint" parameterType="String" resultType="Integer">
+	select point from b_user_info where user_id = #{user_id}
+</select>
+
+<update id="updatePoint" parameterType="com.springboot.delivery.model.User">
+	update b_user_info set point = #{point} where user_id = #{user_id}
+</update>
 
 
 
