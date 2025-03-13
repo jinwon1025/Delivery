@@ -191,4 +191,52 @@ public class AdminController {
         adminService.createMaincategory(maincategory);        
         return mav;
     }
+    
+    @GetMapping("/admin/pointManagement")
+    public ModelAndView pointManagement(HttpSession session) {
+    	ModelAndView mav = new ModelAndView("admin/adminMain");
+    	
+    	// 세션에서 로그인 사용자 확인 (관리자 권한 체크)
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            // 관리자가 아니면 로그인 페이지로 리다이렉트
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        float currentRate = this.adminService.getpointRate();
+        Integer currentpointRate = (int)(currentRate * 100);
+        mav.addObject("currentRate",currentpointRate);
+        mav.addObject("contentPage", "../admin/pointManagement.jsp");
+        return mav;
+    }
+    @PostMapping("/admin/updatePointRate")
+    public ModelAndView updatePointRate(HttpSession session, Integer pointRate) {
+    	ModelAndView mav = new ModelAndView("admin/adminMain");
+    	// 세션에서 로그인 사용자 확인 (관리자 권한 체크)
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        
+        if (loginUser == null || !"ADMIN".equals(loginUser.getRole().toUpperCase())) {
+            // 관리자가 아니면 로그인 페이지로 리다이렉트
+            mav.setViewName("redirect:/user/index");
+            return mav;
+        }
+        float point_rate = (float)pointRate / 100;
+        float currentRate = this.adminService.getpointRate();
+        System.out.println("포인트설정"+point_rate);
+        this.adminService.pointRate(point_rate);
+        Integer currentpointRate = (int)(currentRate * 100);
+        mav.addObject("currentRate",currentpointRate);
+        mav.addObject("contentPage", "../admin/pointManagement.jsp");
+        return mav;
+    }
 }
+
+
+
+
+
+
+
+
+

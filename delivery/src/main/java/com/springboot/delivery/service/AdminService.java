@@ -64,6 +64,13 @@ public class AdminService{
     public List<Owner> getAllOwner(){
     	return adminMapper.getAllOwner();
     }
-
+    
+    public void pointRate(Float point_rate) {
+    	this.adminMapper.pointRate(point_rate);
+    }
+    
+    public Float getpointRate() {
+    	return this.adminMapper.getpointRate();
+    }
     
 }

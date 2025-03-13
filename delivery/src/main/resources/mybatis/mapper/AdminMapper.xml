@@ -121,12 +121,16 @@
 	</select>
 	
 	<select id="getAllOwner" resultType="com.springboot.delivery.model.Owner">
-	
-	select owner_id from b_owner_info
-	
-	
+		select owner_id from b_owner_info	
 	</select>
-
+	
+	<update id="pointRate" parameterType="Float">
+	    update b_point_tbl set point_rate=#{point_rate}
+	</update>
+	
+	<select id="getpointRate" resultType="Float">
+		select * from b_point_tbl
+	</select>
 
 
 </mapper>
