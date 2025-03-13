@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
@@ -7,394 +8,406 @@
 <meta charset="UTF-8">
 <title>주문하기</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="<c:url value='/static/user/user-pages.css'/>">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="<c:url value='/static/user/user-pages.css'/>">
 <style>
-    .container {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 15px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
+.container {
+	max-width: 768px;
+	margin: 0 auto;
+	padding: 15px;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin-bottom: 15px;
 }
 
 /* 결제 비밀번호 모달 스타일 */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 400px;
+	background-color: #fefefe;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #888;
+	border-radius: 10px;
+	width: 80%;
+	max-width: 400px;
 }
 
 .modal-header {
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-    position: relative;
+	padding: 10px 0;
+	border-bottom: 1px solid #eee;
+	position: relative;
 }
 
 .modal-header h2 {
-    margin: 0;
-    text-align: center;
-    font-size: 18px;
+	margin: 0;
+	text-align: center;
+	font-size: 18px;
 }
 
 .close {
-    position: absolute;
-    right: 0;
-    top: 0;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+	position: absolute;
+	right: 0;
+	top: 0;
+	color: #aaa;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .modal-body {
-    padding: 20px 0;
-    text-align: center;
+	padding: 20px 0;
+	text-align: center;
 }
 
 .password-input-container {
-    position: relative;
-    margin: 20px auto;
-    width: 80%;
+	position: relative;
+	margin: 20px auto;
+	width: 80%;
 }
 
 #paymentPassword {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 20px;
-    letter-spacing: 10px;
-    box-sizing: border-box;
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 20px;
+	letter-spacing: 10px;
+	box-sizing: border-box;
 }
 
 .password-dots {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
+	display: flex;
+	justify-content: center;
+	margin-top: 15px;
 }
 
 .dot {
-    width: 12px;
-    height: 12px;
-    background-color: #ddd;
-    border-radius: 50%;
-    margin: 0 8px;
+	width: 12px;
+	height: 12px;
+	background-color: #ddd;
+	border-radius: 50%;
+	margin: 0 8px;
 }
 
 .dot.filled {
-    background-color: #4a90e2;
+	background-color: #4a90e2;
 }
 
 .modal-footer {
-    padding: 10px 0;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
+	padding: 10px 0;
+	border-top: 1px solid #eee;
+	display: flex;
+	justify-content: space-between;
 }
 
 .modal-footer button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 #cancelPayment {
-    background-color: #f2f2f2;
+	background-color: #f2f2f2;
 }
 
 #confirmPayment {
-    background-color: #4a90e2;
-    color: white;
+	background-color: #4a90e2;
+	color: white;
 }
 </style>
 </head>
 <body>
-    <h1 class="order-header">주문하기</h1>
-    
-    <!-- 전체 폼으로 페이지 감싸기 -->
-    <form id="orderForm" action="/userstore/pay" method="post">
-        <!-- 숨겨진 필드들 -->
-        <input type="hidden" id="riderRequestHidden" name="riderRequest" value="">
-        <input type="hidden" id="storeRequestHidden" name="storeRequest" value=""> 
-        <input type="hidden" id="order_Id" name="order_Id" value="${order_Id}">
-        <input type="hidden" id="paymentMethodHidden" name="paymentMethod" value="${card.pay_id}">
-        <input type="hidden" id="couponValueHidden" name="couponValue" value="0">
-        <input type="hidden" id="selectedCouponIdHidden" name="selectedCouponId" value="0">
-        <input type="hidden" id="pointValueHidden" name="pointValue" value="0">
-        <input type="hidden" id="finalTotalHidden" name="finalTotal" value="${totalPrice + deliveryFee}">
-        <input type="hidden" id="menuPriceHidden" value="${totalPrice}">
-        <input type="hidden" id="deliveryFeeHidden" value="${deliveryFee}">
-        <input type="hidden" id="paymentPasswordHidden" name="paymentPassword" value="">
-        
-        <!-- 배달주소, 라이더 요청사항, 내 연락처 컨테이너 -->
-        <div class="container">
-            <div class="section-title">
-                <i class="fas fa-map-marker-alt"></i> 배달정보
-            </div>
-            
-            <div class="input-group">
-                <label for="fullAddress">배달주소</label>
-                <input type="text" id="fullAddress" name="address" value="${userInfo.user_address}" readonly>
-            </div>
-            
-            <div class="input-group">
-                <label for="riderRequest">라이더 요청사항</label>
-                <select id="riderRequest">
-                    <option value="">요청사항을 선택해주세요</option>
-                    <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
-                    <option value="직접 받겠습니다">직접 받겠습니다</option>
-                    <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
-                    <option value="배달 전 연락 부탁드립니다">배달 전 연락 부탁드립니다</option>
-                    <option value="direct">직접 입력</option>
-                </select>
-                <textarea id="riderRequestDirect" placeholder="요청사항을 직접 입력해주세요" style="display: none;"></textarea>
-            </div>
-        </div>
-        
-        <!-- 내 연락처 컨테이너 -->
-        <div class="container">
-            <div class="section-title">
-                <i class="fas fa-phone-alt"></i> 내 연락처
-            </div>
-            
-            <div class="input-group">
-                <label for="phone">연락처</label>
-                <input type="tel" id="phone" name="phone" value="${userInfo.user_phone}">
-            </div>
-        </div>
-        
-        <!-- 가게 요청사항 컨테이너 -->
-        <div class="container">
-            <div class="section-title">
-                <i class="fas fa-store"></i> 가게 요청사항
-            </div>
-            
-            <div class="input-group">
-                <label for="storeRequest">요청사항</label>
-                <select id="storeRequest">
-                    <option value="">요청사항을 선택해주세요</option>
-                    <option value="맵게 해주세요">맵게 해주세요</option>
-                    <option value="덜 맵게 해주세요">덜 맵게 해주세요</option>
-                    <option value="양념 많이 주세요">양념 많이 주세요</option>
-                    <option value="빨리 부탁드립니다">빨리 부탁드립니다</option>
-                    <option value="direct">직접 입력</option>
-                </select>
-                <textarea id="storeRequestDirect" placeholder="요청사항을 직접 입력해주세요" style="display: none;"></textarea>
-            </div>
-        </div>
-        
-        <!-- 결제수단 컨테이너 -->
-        <div class="container">
-            <div class="section-title">
-                <i class="fas fa-credit-card"></i> 결제수단
-            </div>
-            
-            <div class="payment-methods-container">
-                <!-- 결제 방식 선택 타입 -->
-                <div class="payment-type-selector">
-                    <div class="payment-type selected" data-type="card">
-                        <i class="fas fa-credit-card"></i> 내 카드결제
-                    </div>
-                    <div class="payment-type" data-type="cash">
-                        <i class="fas fa-money-bill-wave"></i> 만나서결제
-                    </div>
-                </div>
-                
-                <!-- 내 카드 목록 -->
-                <div id="cardPaymentSection" class="payment-section active">
-                    <c:choose>
-                        <c:when test="${not empty cardList}">
-                            <div class="card-slider-container">
-                                <!-- 왼쪽 화살표 -->
-                                <div class="slider-arrow prev-arrow" id="prevCard">
-                                    <i class="fas fa-chevron-left"></i>
-                                </div>
-                                
-                                <!-- 카드 슬라이더 -->
-                                <div class="card-slider">
-                                    <c:forEach var="card" items="${cardList}" varStatus="status">
-                                        <div class="payment-card-slide" data-index="${status.index}" data-payment="${card.pay_id}">
-                                            <div class="payment-card card-${card.card_type}">	
-                                                <div class="card-icon">
-                                                    <i class="fas fa-credit-card"></i>
-                                                </div>
-                                                <div class="card-info">
-                                                    <div class="card-name">${card.card_type}</div>
-                                                    <div class="card-number">**** **** **** ${card.card_number.substring(card.card_number.length() - 4)}</div>
-                                                </div>
-                                                <div class="card-check">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-                                
-                                <!-- 오른쪽 화살표 -->
-                                <div class="slider-arrow next-arrow" id="nextCard">
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
-                            
-                            <!-- 카드 인디케이터 -->
-                            <div class="card-indicator">
-                                <c:forEach var="card" items="${cardList}" varStatus="status">
-                                    <span class="indicator-dot" data-index="${status.index}"></span>
-                                </c:forEach>
-                            </div>
-                            
-                            <!-- 새 카드 추가하기 버튼 -->
-                            <div class="add-new-card">
-                                <a href="/user/payRegister">
-                                    <i class="fas fa-plus-circle"></i> 새 카드 추가하기
-                                </a>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="empty-card-container">
-                                <div class="empty-card-icon">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <p class="text-muted">등록된 카드가 없습니다.</p>
-                                <a href="/user/payRegister" class="btn btn-primary mt-3">
-                                    <i class="fas fa-plus-circle"></i> 카드 등록하기
-                                </a>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-                
-                <!-- 만나서 결제 섹션 -->
-                <div id="cashPaymentSection" class="payment-section">
-                    <div class="cash-payment-info">
-                        <i class="fas fa-info-circle"></i>
-                        <p>라이더에게 현금으로 직접 결제합니다.</p>
-                        <p class="cash-notice">* 만나서결제 시 쿠폰 및 포인트 사용이 제한될 수 있습니다.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 할인쿠폰, 포인트 컨테이너 -->
-        <div class="container">
-            <div class="section-title">
-                <i class="fas fa-tags"></i> 할인 및 포인트
-            </div>
-            
-            <div class="input-group">
-                <label for="coupon">할인쿠폰</label>
-                <div class="coupon-select">
-                    <select id="coupon">
-                        <option value="0">사용 가능한 쿠폰 (${userCoupons.size()}개)</option>
-                        <c:forEach var="coupon" items="${userCoupons}">
-                            <option value="${coupon.STORE_COUPON_ID}" 
-                                    data-discount="${coupon.SALE_PRICE}" 
-                                    data-min-order="${coupon.MINIMUM_PURCHASE}" 
-                                    data-name="${coupon.CP_NAME}">
-                                ${coupon.CP_NAME} (<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###"/>원 할인, 최소주문 <fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###"/>원)
-                            </option>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="input-group">
-                <label for="point">포인트</label>
-                <div class="point-container">
-                    <input type="text" id="point" class="point-input" placeholder="사용할 포인트를 입력하세요" value="">
-                    <button type="button" class="point-btn">전액사용</button>
-                </div>
-                <div class="available-point">사용 가능 포인트: ${userInfo.point}P</div>
-            </div>
-        </div>
-        
-        <!-- 결제금액 컨테이너 -->
-        <div class="container total-container">
-            <div class="section-title">
-                <i class="fas fa-calculator"></i> 결제금액
-            </div>
-            
-            <div class="price-row">
-                <span class="price-title">메뉴 금액</span>
-                <span class="price-value" id="menuPriceDisplay"></span>
-            </div>
-            
-            <div class="price-row">
-                <span class="price-title">배달팁</span>
-                <span class="price-value" id="deliveryFeeDisplay"></span>
-            </div>
-            
-            <div class="price-row">
-                <span class="price-title">할인쿠폰</span>
-                <span class="price-value" id="couponDisplay">-0원</span>
-            </div>
-            
-            <div class="price-row">
-                <span class="price-title">포인트 사용</span>
-                <span class="price-value" id="pointDisplay">-0원</span>
-            </div>
-            
-            <div class="total-price">
-                <span class="total-price-title">총 결제금액</span>
-                <span class="total-price-value" id="totalDisplay"></span>
-            </div>
-        </div>
-        
-        <button type="submit" class="order-btn" id="orderButton">결제하기</button>
-    </form>
-    
-    <!-- 결제 비밀번호 모달 -->
-    <div id="paymentPasswordModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h2>결제 비밀번호 입력</h2>
-            </div>
-            <div class="modal-body">
-                <p>안전한 결제를 위해 결제 비밀번호를 입력해주세요.</p>
-                <div class="password-input-container">
-                    <input type="password" id="paymentPassword" maxlength="6" placeholder="6자리 비밀번호 입력">
-                    <div class="password-dots">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </div>
-                </div>
-                <div class="error-message" id="passwordError" style="display: none; color: red;">
-                    비밀번호가 일치하지 않습니다.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancelPayment">취소</button>
-                <button id="confirmPayment">확인</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
+	<h1 class="order-header">주문하기</h1>
+
+	<!-- 전체 폼으로 페이지 감싸기 -->
+	<form id="orderForm" action="/userstore/pay" method="post">
+		<!-- 숨겨진 필드들 -->
+		<input type="hidden" id="riderRequestHidden" name="riderRequest"
+			value=""> <input type="hidden" id="storeRequestHidden"
+			name="storeRequest" value=""> <input type="hidden"
+			id="order_Id" name="order_Id" value="${order_Id}"> <input
+			type="hidden" id="paymentMethodHidden" name="paymentMethod"
+			value="${card.pay_id}"> <input type="hidden"
+			id="couponValueHidden" name="couponValue" value="0"> <input
+			type="hidden" id="selectedCouponIdHidden" name="selectedCouponId"
+			value="0"> <input type="hidden" id="pointValueHidden"
+			name="pointValue" value="0"> <input type="hidden"
+			id="finalTotalHidden" name="finalTotal"
+			value="${totalPrice + deliveryFee}"> <input type="hidden"
+			id="menuPriceHidden" value="${totalPrice}"> <input
+			type="hidden" id="deliveryFeeHidden" value="${deliveryFee}">
+		<input type="hidden" id="paymentPasswordHidden" name="paymentPassword"
+			value="">
+
+		<!-- 배달주소, 라이더 요청사항, 내 연락처 컨테이너 -->
+		<div class="container">
+			<div class="section-title">
+				<i class="fas fa-map-marker-alt"></i> 배달정보
+			</div>
+
+			<div class="input-group">
+				<label for="fullAddress">배달주소</label> <input type="text"
+					id="fullAddress" name="address" value="${userInfo.user_address}"
+					readonly>
+			</div>
+
+			<div class="input-group">
+				<label for="riderRequest">라이더 요청사항</label> <select id="riderRequest">
+					<option value="">요청사항을 선택해주세요</option>
+					<option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+					<option value="직접 받겠습니다">직접 받겠습니다</option>
+					<option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
+					<option value="배달 전 연락 부탁드립니다">배달 전 연락 부탁드립니다</option>
+					<option value="direct">직접 입력</option>
+				</select>
+				<textarea id="riderRequestDirect" placeholder="요청사항을 직접 입력해주세요"
+					style="display: none;"></textarea>
+			</div>
+		</div>
+
+		<!-- 내 연락처 컨테이너 -->
+		<div class="container">
+			<div class="section-title">
+				<i class="fas fa-phone-alt"></i> 내 연락처
+			</div>
+
+			<div class="input-group">
+				<label for="phone">연락처</label> <input type="tel" id="phone"
+					name="phone" value="${userInfo.user_phone}">
+			</div>
+		</div>
+
+		<!-- 가게 요청사항 컨테이너 -->
+		<div class="container">
+			<div class="section-title">
+				<i class="fas fa-store"></i> 가게 요청사항
+			</div>
+
+			<div class="input-group">
+				<label for="storeRequest">요청사항</label> <select id="storeRequest">
+					<option value="">요청사항을 선택해주세요</option>
+					<option value="맵게 해주세요">맵게 해주세요</option>
+					<option value="덜 맵게 해주세요">덜 맵게 해주세요</option>
+					<option value="양념 많이 주세요">양념 많이 주세요</option>
+					<option value="빨리 부탁드립니다">빨리 부탁드립니다</option>
+					<option value="direct">직접 입력</option>
+				</select>
+				<textarea id="storeRequestDirect" placeholder="요청사항을 직접 입력해주세요"
+					style="display: none;"></textarea>
+			</div>
+		</div>
+
+		<!-- 결제수단 컨테이너 -->
+		<div class="container">
+			<div class="section-title">
+				<i class="fas fa-credit-card"></i> 결제수단
+			</div>
+
+			<div class="payment-methods-container">
+				<!-- 결제 방식 선택 타입 -->
+				<div class="payment-type-selector">
+					<div class="payment-type selected" data-type="card">
+						<i class="fas fa-credit-card"></i> 내 카드결제
+					</div>
+					<div class="payment-type" data-type="cash">
+						<i class="fas fa-money-bill-wave"></i> 만나서결제
+					</div>
+				</div>
+
+				<!-- 내 카드 목록 -->
+				<div id="cardPaymentSection" class="payment-section active">
+					<c:choose>
+						<c:when test="${not empty cardList}">
+							<div class="card-slider-container">
+								<!-- 왼쪽 화살표 -->
+								<div class="slider-arrow prev-arrow" id="prevCard">
+									<i class="fas fa-chevron-left"></i>
+								</div>
+
+								<!-- 카드 슬라이더 -->
+								<div class="card-slider">
+									<c:forEach var="card" items="${cardList}" varStatus="status">
+										<div class="payment-card-slide" data-index="${status.index}"
+											data-payment="${card.pay_id}">
+											<div class="payment-card card-${card.card_type}">
+												<div class="card-icon">
+													<i class="fas fa-credit-card"></i>
+												</div>
+												<div class="card-info">
+													<div class="card-name">${card.card_type}</div>
+													<div class="card-number">**** **** ****
+														${card.card_number.substring(card.card_number.length() - 4)}</div>
+												</div>
+												<div class="card-check">
+													<i class="fas fa-check-circle"></i>
+												</div>
+											</div>
+										</div>
+									</c:forEach>
+								</div>
+
+								<!-- 오른쪽 화살표 -->
+								<div class="slider-arrow next-arrow" id="nextCard">
+									<i class="fas fa-chevron-right"></i>
+								</div>
+							</div>
+
+							<!-- 카드 인디케이터 -->
+							<div class="card-indicator">
+								<c:forEach var="card" items="${cardList}" varStatus="status">
+									<span class="indicator-dot" data-index="${status.index}"></span>
+								</c:forEach>
+							</div>
+
+							<!-- 새 카드 추가하기 버튼 -->
+							<div class="add-new-card">
+								<a href="/user/payRegister"> <i class="fas fa-plus-circle"></i>
+									새 카드 추가하기
+								</a>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div class="empty-card-container">
+								<div class="empty-card-icon">
+									<i class="fas fa-credit-card"></i>
+								</div>
+								<p class="text-muted">등록된 카드가 없습니다.</p>
+								<a href="/user/payRegister" class="btn btn-primary mt-3"> <i
+									class="fas fa-plus-circle"></i> 카드 등록하기
+								</a>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</div>
+
+				<!-- 만나서 결제 섹션 -->
+				<div id="cashPaymentSection" class="payment-section">
+					<div class="cash-payment-info">
+						<i class="fas fa-info-circle"></i>
+						<p>라이더에게 현금으로 직접 결제합니다.</p>
+						<p class="cash-notice">* 만나서결제 시 쿠폰 및 포인트 사용이 제한될 수 있습니다.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 할인쿠폰, 포인트 컨테이너 -->
+		<div class="container">
+			<div class="section-title">
+				<i class="fas fa-tags"></i> 할인 및 포인트
+			</div>
+
+			<div class="input-group">
+				<label for="coupon">할인쿠폰</label>
+				<div class="coupon-select">
+					<select id="coupon">
+						<option value="0">사용 가능한 쿠폰 (${userCoupons.size()}개)</option>
+						<c:forEach var="coupon" items="${userCoupons}">
+							<option value="${coupon.USER_CP_ID}"
+								data-discount="${coupon.SALE_PRICE}"
+								data-min-order="${coupon.MINIMUM_PURCHASE}"
+								data-name="${coupon.CP_NAME}">${coupon.CP_NAME}(
+								<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" />원
+								할인, 최소주문
+								<fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}"
+									pattern="#,###" />원)
+							</option>
+						</c:forEach>
+					</select>
+				</div>
+			</div>
+
+			<div class="input-group">
+				<label for="point">포인트</label>
+				<div class="point-container">
+					<input type="text" id="point" class="point-input"
+						placeholder="사용할 포인트를 입력하세요" value="">
+					<button type="button" class="point-btn">전액사용</button>
+				</div>
+				<div class="available-point">사용 가능 포인트: ${userInfo.point}P</div>
+			</div>
+		</div>
+
+		<!-- 결제금액 컨테이너 -->
+		<div class="container total-container">
+			<div class="section-title">
+				<i class="fas fa-calculator"></i> 결제금액
+			</div>
+
+			<div class="price-row">
+				<span class="price-title">메뉴 금액</span> <span class="price-value"
+					id="menuPriceDisplay"></span>
+			</div>
+
+			<div class="price-row">
+				<span class="price-title">배달팁</span> <span class="price-value"
+					id="deliveryFeeDisplay"></span>
+			</div>
+
+			<div class="price-row">
+				<span class="price-title">할인쿠폰</span> <span class="price-value"
+					id="couponDisplay">-0원</span>
+			</div>
+
+			<div class="price-row">
+				<span class="price-title">포인트 사용</span> <span class="price-value"
+					id="pointDisplay">-0원</span>
+			</div>
+
+			<div class="total-price">
+				<span class="total-price-title">총 결제금액</span> <span
+					class="total-price-value" id="totalDisplay"></span>
+			</div>
+		</div>
+
+		<button type="submit" class="order-btn" id="orderButton">결제하기</button>
+	</form>
+
+	<!-- 결제 비밀번호 모달 -->
+	<div id="paymentPasswordModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>결제 비밀번호 입력</h2>
+			</div>
+			<div class="modal-body">
+				<p>안전한 결제를 위해 결제 비밀번호를 입력해주세요.</p>
+				<div class="password-input-container">
+					<input type="password" id="paymentPassword" maxlength="6"
+						placeholder="6자리 비밀번호 입력">
+					<div class="password-dots">
+						<span class="dot"></span> <span class="dot"></span> <span
+							class="dot"></span> <span class="dot"></span> <span class="dot"></span>
+						<span class="dot"></span>
+					</div>
+				</div>
+				<div class="error-message" id="passwordError"
+					style="display: none; color: red;">비밀번호가 일치하지 않습니다.</div>
+			</div>
+			<div class="modal-footer">
+				<button id="cancelPayment">취소</button>
+				<button id="confirmPayment">확인</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
 // JSP 변수를 JavaScript 변수로 직접 할당
 const totalPrice = ${totalPrice};
 const deliveryFee = ${deliveryFee};

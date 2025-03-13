@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -659,19 +660,19 @@ public class UserController {
 	@PostMapping(value="/user/downloadCoupon")
 	@ResponseBody
 	public Map<String, Object> downloadCoupon(
-	        HttpSession session,
-	        @RequestBody Map<String, Object> request) {
+	    HttpSession session,
+	    @RequestBody Map<String, Object> request) {
 
 	    Map<String, Object> response = new HashMap<>();
 
 	    try {
 	        LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
-	        
+
 	        // JSON 요청에서 파라미터 추출
 	        Integer storeCouponId = Integer.parseInt(request.get("storeCouponId").toString());
 	        Integer ownerCouponId = Integer.parseInt(request.get("ownerCouponId").toString());
-	        
-	        // userStoreService.getStoreCouponInfo(storeCouponId) 호출 불필요
+	        String expireDate = request.get("expireDate").toString(); // 만료일 파라미터 추출
+
 
 	        Integer maxCount = this.userService.getMaxUserCouponId();
 	        if(maxCount == null) {
@@ -684,11 +685,15 @@ public class UserController {
 	        uc.setStore_coupon_id(storeCouponId);
 	        uc.setOwner_coupon_id(ownerCouponId);
 	        uc.setDownload_date(new String());
-	        uc.setStatus(1);  // 0: 사용 가능
+	        uc.setStatus(1); // 0: 사용 가능
+	        
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //0313
+	        Date date = formatter.parse(expireDate);//0313
+	        uc.setExpire_date(date); // 받아온 만료일 설정
 	        
 	        this.userService.increaseStoreCouponQuantity(storeCouponId);
 	        this.userService.increaseOwnerCouponQuantity(ownerCouponId);
-	        
+
 	        // 쿠폰 다운로드 처리
 	        userService.downloadCoupon(uc);
 

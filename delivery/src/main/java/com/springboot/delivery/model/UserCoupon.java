@@ -1,5 +1,7 @@
 package com.springboot.delivery.model;
 
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,4 +17,5 @@ public class UserCoupon {
 	private Integer store_coupon_id;
 	
 	private String order_id;
+	private Date expire_date;
 }

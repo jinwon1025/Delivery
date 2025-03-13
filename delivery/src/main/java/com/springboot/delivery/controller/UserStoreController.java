@@ -35,8 +35,10 @@ import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
+import com.springboot.delivery.model.UserCoupon;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
 import com.springboot.delivery.service.UserService;
@@ -534,6 +536,7 @@ public class UserStoreController {
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
 			String finalTotal, String selectedCouponId, String paymentMethod) {
 		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 
 		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
 		OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
@@ -578,10 +581,43 @@ public class UserStoreController {
 				mav.addObject("orderCart", oc);
 			}
 		}
+		
+		UserCoupon uc = new UserCoupon();
+		uc.setOrder_id(order_Id);
+		uc.setUser_cp_id(Integer.parseInt(selectedCouponId));
 		// b_order_tbl에 user_cp_id 넣기
-
+		this.userStoreService.updateUserCoupon(uc);
+		
+		
 		// b_user_coupon_tbl의 status 변경
-
+		this.userStoreService.updateUserCouponStatus(Integer.parseInt(selectedCouponId));
+		
+		Map<String, Object> couponInfo = this.userStoreService.getCouponInfoByUserCouponId(Integer.parseInt(selectedCouponId));
+		
+		System.out.println("USER_CP_ID: " + couponInfo.get("USER_CP_ID"));
+		System.out.println("STORE_COUPON_ID: " + couponInfo.get("STORE_COUPON_ID"));
+		System.out.println("OWNER_COUPON_ID: " + couponInfo.get("OWNER_COUPON_ID"));
+		System.out.println("CP_NAME: " + couponInfo.get("CP_NAME"));
+		System.out.println("SALE_PRICE: " + couponInfo.get("SALE_PRICE"));
+		System.out.println("MINIMUM_PURCHASE: " + couponInfo.get("MINIMUM_PURCHASE"));
+		
+		UsedCoupon udc = new UsedCoupon();
+		
+		Integer maxCount = this.userStoreService.getMaxCountUsedCoupon();
+		if(maxCount == null) {
+			maxCount = 0;
+		}
+		
+		udc.setUsed_cp_id(maxCount+1);
+		udc.setOrder_id(order_Id);
+		udc.setUser_id(loginUser.getUser_id());
+		udc.setUsed_date(new String());
+		udc.setStore_coupon_id(Integer.valueOf(couponInfo.get("STORE_COUPON_ID").toString()));
+		udc.setOwner_coupon_id(Integer.valueOf(couponInfo.get("OWNER_COUPON_ID").toString()));
+		udc.setUser_cp_id(Integer.valueOf(couponInfo.get("USER_CP_ID").toString()));
+		
+		this.userStoreService.insertUsedCoupon(udc);
+		
 		// 추가 정보 모델에 추가
 		mav.addObject("TOTALPRICE", finalTotal);
 		mav.addObject("BODY", "../userstore/end.jsp");
