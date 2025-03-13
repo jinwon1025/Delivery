@@ -663,6 +663,23 @@
 	update b_user_info set point = #{point} where user_id = #{user_id}
 </update>
 
+<select id="getOrderStatus" parameterType="String" resultType="com.springboot.delivery.model.OrderCart">
+    SELECT 
+        o.ORDER_ID as order_id,
+        o.ORDER_TIME as order_time,
+        u.USER_ADDRESS as user_address,
+        d.TOTALPRICE as totalPrice,
+        s.DELIVERY_TIME as delivery_time,
+        d.ORDER_STATUS as order_status
+    FROM 
+        b_order_tbl o
+        JOIN b_user_info u ON o.USER_ID = u.USER_ID
+        JOIN b_order_detail_tbl d ON o.ORDER_ID = d.ORDER_ID
+        JOIN b_store_tbl s ON d.STORE_ID = s.STORE_ID
+    WHERE 
+        o.ORDER_ID = #{orderId}
+</select>
+
 
 
 </mapper>

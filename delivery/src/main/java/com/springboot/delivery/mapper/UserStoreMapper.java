@@ -85,4 +85,6 @@ public interface UserStoreMapper {
 	Integer getPoint(String user_id);
 	
 	void updatePoint(User user);
+	
+	OrderCart getOrderStatus(String order_id);
 }	

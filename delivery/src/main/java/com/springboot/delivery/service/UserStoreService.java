@@ -208,5 +208,9 @@ public class UserStoreService {
 	public void updatePoint(User user) {
 		this.userStoreMapper.updatePoint(user);
 	}
+	
+	public OrderCart getOrderStatus(String order_id) {
+		return this.userStoreMapper.getOrderStatus(order_id);
+	}
 
 }

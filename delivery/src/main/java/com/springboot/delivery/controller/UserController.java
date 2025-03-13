@@ -79,6 +79,13 @@ public class UserController {
 	    return mav;
 	}
 	
+	@GetMapping(value="/user/register")
+	public ModelAndView register() {
+		ModelAndView mav = new ModelAndView("user/userMain");
+		mav.addObject(new User());
+		mav.addObject("BODY", "register.jsp");
+		return mav;
+	}
 	
 
 	@PostMapping(value = "/user/insertRegister")

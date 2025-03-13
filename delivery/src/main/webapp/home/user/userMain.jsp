@@ -84,7 +84,7 @@
 					<c:otherwise>
 						<a href="<c:url value='/user/loginForm'/>"
 							class="btn btn-sm btn-primary">로그인</a>
-						<a href="<c:url value='/user/register'/>"
+						<a href="/user/register"
 							class="btn btn-sm btn-outline-gold">회원가입</a>
 					</c:otherwise>
 				</c:choose>
