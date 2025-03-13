@@ -165,4 +165,12 @@ public class OwnerService {
 	public List<Map<String, Object>> getStoreReviews(String storeId){
 		return this.ownerMapper.getStoreReviews(storeId);
 	}
+	
+	public String getUserId(String order_id) {
+		return this.ownerMapper.getUserId(order_id);
+	}
+	
+	public Integer getTotalPrice(String order_id) {
+		return this.ownerMapper.getTotalPrice(order_id);
+	}
 }

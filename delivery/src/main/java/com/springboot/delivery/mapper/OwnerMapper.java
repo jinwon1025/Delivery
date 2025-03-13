@@ -65,6 +65,9 @@ public interface OwnerMapper {
     
     Integer getMaxReplyId();
     List<Map<String, Object>> getStoreReviews(String storeId);
+    
+    String getUserId(String order_id);
+    Integer getTotalPrice(String order_id);
 }
 
 
