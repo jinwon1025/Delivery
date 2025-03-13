@@ -723,4 +723,30 @@ values(#{user_cp_id}, #{order_id}, #{user_id}, #{used_date}, #{store_coupon_id},
 
 </insert>
 
+<select id="getCouponList" parameterType="String" resultType="com.springboot.delivery.model.UserCouponDetail">
+    SELECT 
+        uct.USER_CP_ID as userCpId,
+        uct.USER_ID as userId,
+        uct.OWNER_COUPON_ID as ownerCouponId,
+        uct.DOWNLOAD_DATE as downloadDate,
+        uct.STATUS as status,
+        uct.STORE_COUPON_ID as storeCouponId,
+        uct.EXPIRE_DATE as expireDate,
+        sct.STORE_ID as storeId,
+        sct.QUANTITY as quantity,
+        sct.OWNER_ID as ownerId,
+        sct.CP_NAME as cpName,
+        sct.MINIMUM_PURCHASE as minimumPurchase,
+        sct.USED_QUANTITY as usedQuantity
+    FROM 
+        b_user_coupon_tbl uct
+    LEFT JOIN 
+        b_store_coupon_tbl sct ON uct.STORE_COUPON_ID = sct.STORE_COUPON_ID
+    WHERE 
+        uct.USER_ID = #{user_id}
+    ORDER BY 
+        uct.EXPIRE_DATE DESC
+</select>
+
+
 </mapper>

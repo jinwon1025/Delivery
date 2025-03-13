@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.UserCouponDetail;
 import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.StoreService;
 import com.springboot.delivery.service.UserService;
@@ -989,5 +991,21 @@ public class UserStoreController {
 		mav.addObject("BODY", "mypage.jsp");
 
 		return mav;
+	}
+	
+	@GetMapping(value="/userstore/myCouponList")
+	public ModelAndView myCouponList(HttpSession session) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+
+	    List<UserCouponDetail> couponList = this.userStoreService.getCouponList(loginUser.getUser_id());
+	    
+	    Date currentDate = new Date();
+	    
+	    mav.addObject("couponList", couponList);
+	    mav.addObject("currentDate", currentDate);
+	    mav.addObject("BODY","../userstore/couponList.jsp");
+
+	    return mav;
 	}
 }

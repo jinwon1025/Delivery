@@ -18,6 +18,7 @@ import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.UserCouponDetail;
 
 @Mapper
 public interface UserStoreMapper {
@@ -99,4 +100,6 @@ public interface UserStoreMapper {
 	Integer getMaxCountUsedCoupon();
 	
 	void insertUsedCoupon(UsedCoupon udc);
+	
+	List<UserCouponDetail> getCouponList(String user_id);
 }	

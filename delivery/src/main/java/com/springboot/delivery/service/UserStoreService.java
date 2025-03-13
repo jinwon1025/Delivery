@@ -20,6 +20,7 @@ import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.UserCouponDetail;
 
 @Service
 public class UserStoreService {
@@ -234,6 +235,10 @@ public class UserStoreService {
 	
 	public void insertUsedCoupon(UsedCoupon udc) {
 		this.userStoreMapper.insertUsedCoupon(udc);
+	}
+	
+	public List<UserCouponDetail> getCouponList(String user_id){
+		return this.userStoreMapper.getCouponList(user_id);
 	}
 
 }
