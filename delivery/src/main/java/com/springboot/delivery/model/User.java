@@ -52,7 +52,7 @@ public class User {
 	private String birth;
 	
 	private String user_address;
-	private Integer pay_password;
+	private String pay_password;
 
 	public String getUser_phone() {
 		// DB에서 불러온 경우 (user_phone 값이 있는 경우)
