@@ -175,11 +175,11 @@
 
 		INSERT INTO b_user_coupon_tbl
 		(user_cp_id, user_id,
-		owner_coupon_id, download_date, status, store_coupon_id)
+		owner_coupon_id, download_date, status, store_coupon_id, expire_date)
 		VALUES
 		(#{user_cp_id}, #{user_id}, #{owner_coupon_id}, sysdate,
 		#{status},
-		#{store_coupon_id})
+		#{store_coupon_id}, #{expire_date})
 
 
 	</insert>

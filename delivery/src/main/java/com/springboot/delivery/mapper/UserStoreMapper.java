@@ -15,7 +15,10 @@ import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.UserCouponDetail;
 
 @Mapper
 public interface UserStoreMapper {
@@ -85,4 +88,18 @@ public interface UserStoreMapper {
 	Integer getPoint(String user_id);
 	
 	void updatePoint(User user);
+	
+	OrderCart getOrderStatus(String order_id);
+	
+	void updateUserCoupon(UserCoupon uc);
+	
+	void updateUserCouponStatus(Integer uc_id);
+	
+	Map<String, Object> getCouponInfoByUserCouponId(Integer userCouponId);
+	
+	Integer getMaxCountUsedCoupon();
+	
+	void insertUsedCoupon(UsedCoupon udc);
+	
+	List<UserCouponDetail> getCouponList(String user_id);
 }	

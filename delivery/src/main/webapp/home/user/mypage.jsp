@@ -38,7 +38,7 @@
 					class="mypage-menu-link ${activeMenu eq 'myOrderList' ? 'active' : ''}">
 						<i class="fas fa-history"></i> <span>주문 내역</span>
 				</a></li>
-				<li class="mypage-menu-item"><a href="#"
+				<li class="mypage-menu-item"><a href="/userstore/myCouponList"
 					class="mypage-menu-link"> <i class="fas fa-ticket-alt"></i> <span>쿠폰함</span>
 				</a></li>
 				<li class="mypage-menu-item"><a

@@ -17,7 +17,10 @@ import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
 import com.springboot.delivery.model.Review;
 import com.springboot.delivery.model.StoreCoupon;
+import com.springboot.delivery.model.UsedCoupon;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.model.UserCoupon;
+import com.springboot.delivery.model.UserCouponDetail;
 
 @Service
 public class UserStoreService {
@@ -207,6 +210,35 @@ public class UserStoreService {
 	
 	public void updatePoint(User user) {
 		this.userStoreMapper.updatePoint(user);
+	}
+	
+	public OrderCart getOrderStatus(String order_id) {
+		return this.userStoreMapper.getOrderStatus(order_id);
+	}
+	
+	public void updateUserCoupon(UserCoupon uc) {
+		this.userStoreMapper.updateUserCoupon(uc);
+	}
+	
+	public void updateUserCouponStatus(Integer uc_id) {
+		this.userStoreMapper.updateUserCouponStatus(uc_id);
+	}
+	
+	public Map<String, Object> getCouponInfoByUserCouponId(Integer userCouponId){
+		return this.userStoreMapper.getCouponInfoByUserCouponId(userCouponId);
+		
+	}
+	
+	public Integer getMaxCountUsedCoupon() {
+		return this.userStoreMapper.getMaxCountUsedCoupon();
+	}
+	
+	public void insertUsedCoupon(UsedCoupon udc) {
+		this.userStoreMapper.insertUsedCoupon(udc);
+	}
+	
+	public List<UserCouponDetail> getCouponList(String user_id){
+		return this.userStoreMapper.getCouponList(user_id);
 	}
 
 }

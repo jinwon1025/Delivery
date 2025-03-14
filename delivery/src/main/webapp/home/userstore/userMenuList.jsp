@@ -211,14 +211,17 @@
                     <div class="coupon-name">${coupon.CP_NAME}</div>
                     <div class="coupon-price">₩<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" /></div>
                     <div class="coupon-min-order">최소주문금액: ₩<fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" /></div>
-                    <div class="coupon-expire">~${coupon.EXPIRE_DATE}까지</div>
+                    <div class="coupon-expire">
+                        <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
+                        <fmt:formatDate value="${expireDate}" pattern="yyyy년 MM월 dd일까지" />
+                    </div>
                     
                     <c:choose>
                         <c:when test="${coupon.ISDOWNLOADED == 1}">
                             <button class="coupon-download" disabled>다운로드 완료</button>
                         </c:when>
                         <c:otherwise>
-                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID})">다운로드</button>
+                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID}, '${coupon.EXPIRE_DATE}')">다운로드</button>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -241,7 +244,7 @@
 
 <!-- 쿠폰 다운로드 스크립트 -->
 <script>
-function downloadCoupon(couponId, couponName, ownerCouponId) {
+function downloadCoupon(couponId, couponName, ownerCouponId, expireDate) {
     if(confirm(`'${couponName}' 쿠폰을 다운로드하시겠습니까?`)) {
         // AJAX를 통한 쿠폰 다운로드 요청
         fetch('/user/downloadCoupon', {
@@ -251,7 +254,8 @@ function downloadCoupon(couponId, couponName, ownerCouponId) {
             },
             body: JSON.stringify({
                 storeCouponId: couponId,
-                ownerCouponId: ownerCouponId
+                ownerCouponId: ownerCouponId,
+                expireDate: expireDate
             })
         })
         .then(response => response.json())

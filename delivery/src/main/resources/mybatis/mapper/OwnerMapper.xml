@@ -181,14 +181,20 @@
 	<select id="getReviewList"
 		parameterType="com.springboot.delivery.model.OrderCart"
 		resultType="com.springboot.delivery.model.Review">
-		SELECT r.REVIEW_ID, r.GROUP_ID, r.PARENT_ID, r.ORDER_NO, r.ORDER_ID,
+		SELECT r.REVIEW_ID, r.GROUP_ID, r.PARENT_ID, r.ORDER_NO,
+		r.ORDER_ID,
 		r.REVIEW_CONTENT, r.RATING, r.WRITE_DATE,
-		r.STORE_ID, r.USER_ID, r.REVIEW_TITLE, r.REVIEW_IMAGE_NAME,
-		s.STORE_NAME, u.USER_NAME, o.OWNER_IMAGE_NAME, o.OWNER_ID
+		r.STORE_ID,
+		r.USER_ID, r.REVIEW_TITLE, r.REVIEW_IMAGE_NAME,
+		s.STORE_NAME,
+		u.USER_NAME, o.OWNER_IMAGE_NAME, o.OWNER_ID
 		FROM B_REVIEW_TBL r
-		JOIN B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
-		LEFT JOIN B_USER_INFO u ON r.USER_ID = u.USER_ID
-		LEFT JOIN B_OWNER_INFO o ON s.STORE_ID = o.OWNER_ID
+		JOIN
+		B_STORE_TBL s ON r.STORE_ID = s.STORE_ID
+		LEFT JOIN B_USER_INFO u ON
+		r.USER_ID = u.USER_ID
+		LEFT JOIN B_OWNER_INFO o ON s.STORE_ID =
+		o.OWNER_ID
 		WHERE r.STORE_ID = #{store_id}
 	</select>
 
@@ -202,7 +208,7 @@
 		owner_id,
 		TO_CHAR(issued_date, 'YYYY-MM-DD') as issued_date,
 		TO_CHAR(expire_date, 'YYYY-MM-DD') as expire_date,
-		total_quantity
+		(total_quantity - NVL(store_used_quantity, 0)) as total_quantity
 		FROM
 		b_owner_coupon_tbl
 		WHERE
@@ -361,16 +367,19 @@
 	<insert id="writeOwnerReply"
 		parameterType="com.springboot.delivery.model.Reply">
 
-		insert into b_reply_tbl (reply_id, store_id, owner_id, order_id,
+		insert into b_reply_tbl (reply_id, store_id, owner_id,
+		order_id,
 		reply_content, write_date)
-		values (#{reply_id}, #{store_id}, #{owner_id}, #{order_id},
+		values (#{reply_id}, #{store_id},
+		#{owner_id}, #{order_id},
 		#{reply_content}, sysdate)
 
 	</insert>
 
 	<select id="getMaxReplyId" resultType="Integer">
 
-		select max(reply_id) from b_reply_tbl
+		select max(reply_id) from
+		b_reply_tbl
 
 
 	</select>
@@ -382,34 +391,46 @@
 		r.STORE_ID as "storeId",
 		r.USER_ID as "userId",
 		r.ORDER_ID as "orderId",
-		r.REVIEW_TITLE as "reviewTitle",
+		r.REVIEW_TITLE as
+		"reviewTitle",
 		r.REVIEW_CONTENT as "reviewContent",
-		r.REVIEW_IMAGE_NAME as "reviewImageName",
+		r.REVIEW_IMAGE_NAME
+		as "reviewImageName",
 		r.WRITE_DATE as "reviewDate",
-		r.RATING as "rating",
+		r.RATING as
+		"rating",
 		p.REPLY_ID as "replyId",
 		p.REPLY_CONTENT as "replyContent",
 		p.WRITE_DATE as "replyDate",
 		p.OWNER_ID as "ownerId",
-		s.STORE_NAME as "storeName",
+		s.STORE_NAME as
+		"storeName",
 		u.USER_NAME as "userName",
 		o.OWNER_NAME as "ownerName",
 		o.OWNER_IMAGE_NAME as "ownerImageName"
 		FROM b_review_tbl r
-		LEFT JOIN b_store_tbl s ON r.STORE_ID = s.STORE_ID
-		LEFT JOIN b_user_info u ON r.USER_ID = u.USER_ID
-		LEFT JOIN b_reply_tbl p ON r.ORDER_ID = p.ORDER_ID
+		LEFT JOIN
+		b_store_tbl s ON r.STORE_ID = s.STORE_ID
+		LEFT JOIN b_user_info u ON
+		r.USER_ID = u.USER_ID
+		LEFT JOIN b_reply_tbl p ON r.ORDER_ID =
+		p.ORDER_ID
 		LEFT JOIN b_owner_info o ON p.OWNER_ID = o.OWNER_ID
-		WHERE r.STORE_ID = #{storeId}
+		WHERE
+		r.STORE_ID = #{storeId}
 		ORDER BY r.WRITE_DATE DESC
 	</select>
-	
-	<select id="getUserId" parameterType="String" resultType="String">
-		select user_id from b_order_tbl where order_id = #{order_id}
+
+	<select id="getUserId" parameterType="String"
+		resultType="String">
+		select user_id from b_order_tbl where order_id =
+		#{order_id}
 	</select>
-	
-	<select id="getTotalPrice" parameterType="String" resultType="Integer">
-		select totalprice from b_order_detail_tbl where order_id = #{order_id}
+
+	<select id="getTotalPrice" parameterType="String"
+		resultType="Integer">
+		select totalprice from b_order_detail_tbl where order_id =
+		#{order_id}
 	</select>
 
 

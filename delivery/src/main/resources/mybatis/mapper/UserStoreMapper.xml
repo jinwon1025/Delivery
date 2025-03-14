@@ -663,6 +663,90 @@
 	update b_user_info set point = #{point} where user_id = #{user_id}
 </update>
 
+<select id="getOrderStatus" parameterType="String" resultType="com.springboot.delivery.model.OrderCart">
+    SELECT 
+        o.ORDER_ID as order_id,
+        o.ORDER_TIME as order_time,
+        u.USER_ADDRESS as user_address,
+        d.TOTALPRICE as totalPrice,
+        s.DELIVERY_TIME as delivery_time,
+        d.ORDER_STATUS as order_status
+    FROM 
+        b_order_tbl o
+        JOIN b_user_info u ON o.USER_ID = u.USER_ID
+        JOIN b_order_detail_tbl d ON o.ORDER_ID = d.ORDER_ID
+        JOIN b_store_tbl s ON d.STORE_ID = s.STORE_ID
+    WHERE 
+        o.ORDER_ID = #{orderId}
+</select>
+
+<update id="updateUserCoupon" parameterType="com.springboot.delivery.model.UserCoupon">
+
+	update b_order_tbl set user_cp_id = #{user_cp_id} where order_id=#{order_id}
+
+</update>
+
+<update id="updateUserCouponStatus" parameterType="Integer">
+
+	update b_user_coupon_tbl set status = 0 where user_cp_id = #{user_cp_id}
+
+</update>
+
+<select id="getCouponInfoById" parameterType="Integer" resultType="map">
+    SELECT 
+        uc.user_cp_id,
+        uc.store_coupon_id,
+        uc.owner_coupon_id,
+        sc.cp_name,
+        oc.sale_price,
+        sc.minimum_purchase
+    FROM 
+        b_user_coupon_tbl uc
+    JOIN 
+        b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+    JOIN 
+        b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+    WHERE 
+        uc.user_cp_id = #{userCouponId}
+</select>
+
+<select id="getMaxCountUsedCoupon">
+
+	select max(used_cp_id) from b_used_coupon_tbl
+
+</select>
+
+<insert id="insertUsedCoupon" parameterType="com.springboot.delivery.model.UsedCoupon">
+
+insert into b_used_coupon_tbl(used_cp_id, order_id, user_id, used_date, store_coupon_id, owner_coupon_id, user_cp_id)
+values(#{user_cp_id}, #{order_id}, #{user_id}, #{used_date}, #{store_coupon_id}, #{owner_coupon_id}, #{user_cp_id})
+
+</insert>
+
+<select id="getCouponList" parameterType="String" resultType="com.springboot.delivery.model.UserCouponDetail">
+    SELECT 
+        uct.USER_CP_ID as userCpId,
+        uct.USER_ID as userId,
+        uct.OWNER_COUPON_ID as ownerCouponId,
+        uct.DOWNLOAD_DATE as downloadDate,
+        uct.STATUS as status,
+        uct.STORE_COUPON_ID as storeCouponId,
+        uct.EXPIRE_DATE as expireDate,
+        sct.STORE_ID as storeId,
+        sct.QUANTITY as quantity,
+        sct.OWNER_ID as ownerId,
+        sct.CP_NAME as cpName,
+        sct.MINIMUM_PURCHASE as minimumPurchase,
+        sct.USED_QUANTITY as usedQuantity
+    FROM 
+        b_user_coupon_tbl uct
+    LEFT JOIN 
+        b_store_coupon_tbl sct ON uct.STORE_COUPON_ID = sct.STORE_COUPON_ID
+    WHERE 
+        uct.USER_ID = #{user_id}
+    ORDER BY 
+        uct.EXPIRE_DATE DESC
+</select>
 
 
 </mapper>

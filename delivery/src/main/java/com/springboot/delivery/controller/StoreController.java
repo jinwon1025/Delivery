@@ -149,17 +149,31 @@ public class StoreController {
 
 		// 오늘 주문 가져오기
 		Integer todayOrder = this.storeService.getTodayOrderCountByStore(menuStore.getStore_id());
+		if(todayOrder == null) {
+			todayOrder = 0;
+		}
 		
 		
 		// 가게 메뉴 수 가져오기
 		Integer menuCount = this.storeService.getCountMenuFromStore(menuStore.getStore_id());
+		if(menuCount == null) {
+			menuCount = 0;
+		}
 
 		// 평균 평점 가져오기
+		Double averageRating;
 		Rating r = this.storeService.getRatingFromStore(menuStore.getStore_id());
-		Double averageRating = r.getSum().doubleValue() / r.getCount();
+		if (r == null || r.getSum() == null || r.getCount() == null || r.getCount() == 0) {
+		    averageRating = 0.0;
+		} else {
+		    averageRating = r.getSum().doubleValue() / r.getCount();
+		}
 		
 		// 오늘 매출 가져오기
 		Integer totalPrice = this.storeService.getTodayOrderTotalByStore(menuStore.getStore_id());
+		if(totalPrice == null) {
+			totalPrice = 0;
+		}
 		
 		mav.addObject("todayOrder", todayOrder);
 		mav.addObject("menuCount", menuCount);
