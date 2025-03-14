@@ -4,7 +4,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-coins"></i> 포인트적립률 설정</h5>
+        <h5 class="mb-0"><i class="fas fa-coins"></i> 포인트 적립률 설정</h5>
     </div>
     <div class="card-body">
         <div class="row">
