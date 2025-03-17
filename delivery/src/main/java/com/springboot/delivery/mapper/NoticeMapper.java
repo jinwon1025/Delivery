@@ -19,7 +19,7 @@ public interface NoticeMapper {
     void increaseUserNoticeViewCount(Integer notice_id);
     
     // 사업자 공지사항
-    List<OwnerNotice> getAllOwnerNotices();
+    List<OwnerNotice> getAllOwnerNotices(StartEnd se);
     OwnerNotice getOwnerNoticeById(Integer notice_id);
     void createOwnerNotice(OwnerNotice notice);
     void updateOwnerNotice(OwnerNotice notice);
@@ -27,4 +27,8 @@ public interface NoticeMapper {
     void increaseOwnerNoticeViewCount(Integer notice_id);
     
     Integer getMaxCountFromUserNotice();
+    Integer getMaxCountFromOwnerNotice();
+    
+    Integer getMaxCountFromUserNotice2();
+    Integer getMaxCountFromOwnerNotice2();
 }

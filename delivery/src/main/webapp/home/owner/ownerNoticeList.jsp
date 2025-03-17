@@ -39,6 +39,11 @@
                     <h2 class="card-title">사업자 공지사항</h2>
                 </div>
                 <div class="card-body">
+                    <!-- 페이지 정보 표시 -->
+                    <div align="right" style="padding: 0 10px 10px 0;">
+                        ${START + 1}~${END - 1}/${TOTAL}
+                    </div>
+                    
                     <div class="table-container">
                         <table class="table table-hover">
                             <thead>
@@ -51,13 +56,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:if test="${empty noticeList}">
+                                <c:if test="${empty LIST}">
                                     <tr>
                                         <td colspan="5" class="text-center py-4">등록된 공지사항이 없습니다.</td>
                                     </tr>
                                 </c:if>
                                 
-                                <c:forEach var="notice" items="${noticeList}">
+                                <c:forEach var="notice" items="${LIST}">
                                     <tr class="${notice.important == 'Y' ? 'bg-gray-100' : ''}">
                                         <td>${notice.notice_id}</td>
                                         <td>
@@ -77,6 +82,36 @@
                                 </c:forEach>
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- 페이지네이션 -->
+                    <div align="center" style="margin-top: 20px;">
+                        <c:set var="currentPage" value="${currentPage}"/>
+                        <c:set var="pageCount" value="${(TOTAL + 4) / 5}"/>
+                        <c:set var="startPage" value="${currentPage - (currentPage % 10 == 0 ? 10 : (currentPage % 10)) + 1}"/>
+                        <c:set var="endPage" value="${startPage + 9}"/>
+                        
+                        <c:if test="${endPage > pageCount}">
+                            <c:set var="endPage" value="${pageCount}"/>
+                        </c:if>
+                        
+                        <c:if test="${startPage > 10}">
+                            <a href="<c:url value='/owner/notice?PAGE_NUM=${startPage - 1}'/>" style="margin: 0 5px;">[이전]</a>
+                        </c:if>
+                        
+                        <c:forEach begin="${startPage}" end="${endPage}" var="i">
+                            <c:if test="${currentPage == i}">
+                                <font size="5">
+                            </c:if>
+                            <a href="<c:url value='/owner/notice?PAGE_NUM=${i}'/>" style="margin: 0 5px;">${i}</a>
+                            <c:if test="${currentPage == i}">
+                                </font>
+                            </c:if>
+                        </c:forEach>
+                        
+                        <c:if test="${endPage < pageCount}">
+                            <a href="<c:url value='/owner/notice?PAGE_NUM=${endPage + 1}'/>" style="margin: 0 5px;">[다음]</a>
+                        </c:if>
                     </div>
                 </div>
             </div>

@@ -48,23 +48,23 @@
     </select>
     
     <insert id="createUserNotice" parameterType="com.springboot.delivery.model.UserNotice">
-        INSERT INTO b_user_notice_tbl (
-            notice_id,
-            title,
-            content,
-            writer,
-            reg_date,
-            view_count,
-            important
-        ) VALUES (
-            user_notice_seq.NEXTVAL,
-            #{title},
-            #{content},
-            #{writer},
-            SYSDATE,
-            0,
-            #{important, jdbcType=VARCHAR}
-        )
+	INSERT INTO b_user_notice_tbl (
+	notice_id,
+	title,
+	content,
+	writer,
+	reg_date,
+	view_count,
+	important
+	) VALUES (
+	#{notice_id},
+	#{title},
+	#{content},
+	#{writer},
+	SYSDATE,
+	0,
+	#{important, jdbcType=VARCHAR}
+	)
     </insert>
     
     <update id="updateUserNotice" parameterType="com.springboot.delivery.model.UserNotice">
@@ -88,8 +88,21 @@
     </update>
     
     <!-- 사업자 공지사항 쿼리 -->
-    <select id="getAllOwnerNotices" resultType="com.springboot.delivery.model.OwnerNotice">
-        SELECT 
+    <select id="getAllOwnerNotices" parameterType="com.springboot.delivery.model.StartEnd" resultType="com.springboot.delivery.model.OwnerNotice">
+SELECT
+    notice_id,
+    title,
+    content,
+    writer,
+    reg_date,
+    view_count,
+    important
+FROM (
+    SELECT
+        rownum rank,
+        a.*
+    FROM (
+        SELECT
             notice_id,
             title,
             content,
@@ -98,10 +111,13 @@
             view_count,
             important
         FROM b_owner_notice_tbl
-        ORDER BY 
+        ORDER BY
             CASE WHEN important = 'Y' THEN 0 ELSE 1 END,
             reg_date DESC
-    </select>
+    ) a
+)
+WHERE rank > #{start} AND rank <![CDATA[<]]> #{end}
+</select>
     
     <select id="getOwnerNoticeById" parameterType="Integer" resultType="com.springboot.delivery.model.OwnerNotice">
         SELECT 
@@ -126,7 +142,7 @@
             view_count,
             important
         ) VALUES (
-            owner_notice_seq.NEXTVAL,
+            #{notice_id},
             #{title},
             #{content},
             #{writer},
@@ -160,6 +176,25 @@
     <select id="getMaxCountFromUserNotice">
     
     select count(notice_id) from b_user_notice_tbl
+    
+    </select>
+    
+    <select id="getMaxCountFromOwnerNotice">
+    
+    select count(notice_id) from b_owner_notice_tbl
+    
+    </select>
+    
+    <select id="getMaxCountFromUserNotice2">
+    
+    select max(notice_id) from b_user_notice_tbl
+    
+    </select>
+    
+    <select id="getMaxCountFromOwnerNotice2">
+    
+    
+    select max(notice_id) from b_owner_notice_tbl
     
     </select>
 </mapper>

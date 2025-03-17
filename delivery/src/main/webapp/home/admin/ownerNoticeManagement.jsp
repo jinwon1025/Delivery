@@ -7,12 +7,16 @@
         <h5 class="mb-0"><i class="fas fa-bullhorn"></i> 사업자 공지사항 관리</h5>
     </div>
     <div class="card-body">
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-between mb-3">
+            <!-- 페이지 정보 표시 -->
+            <div>
+                ${START + 1}~${END - 1}/${TOTAL}
+            </div>
             <a href="/admin/ownerNotice/write" class="btn btn-primary">
                 <i class="fas fa-plus"></i> 공지사항 작성
             </a>
         </div>
-        
+
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -27,13 +31,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:if test="${empty noticeList}">
+                    <c:if test="${empty LIST}">
                         <tr>
                             <td colspan="7" class="text-center">등록된 공지사항이 없습니다.</td>
                         </tr>
                     </c:if>
-                    
-                    <c:forEach var="notice" items="${noticeList}">
+
+                    <c:forEach var="notice" items="${LIST}">
                         <tr>
                             <td>${notice.notice_id}</td>
                             <td>
@@ -67,6 +71,36 @@
                     </c:forEach>
                 </tbody>
             </table>
+        </div>
+        
+        <!-- 페이지네이션 (예제와 동일한 방식) -->
+        <div align="center" style="margin-top: 20px;">
+            <c:set var="currentPage" value="${currentPage}"/>
+            <c:set var="pageCount" value="${pageCount}"/>
+            <c:set var="startPage" value="${currentPage - (currentPage % 10 == 0 ? 10 : (currentPage % 10)) + 1}"/>
+            <c:set var="endPage" value="${startPage + 9}"/>
+            
+            <c:if test="${endPage > pageCount}">
+                <c:set var="endPage" value="${pageCount}"/>
+            </c:if>
+            
+            <c:if test="${startPage > 10}">
+                <a href="/admin/ownerNotice?PAGE_NUM=${startPage - 1}">[이전]</a>
+            </c:if>
+            
+            <c:forEach begin="${startPage}" end="${endPage}" var="i">
+                <c:if test="${currentPage == i}">
+                    <font size="6">
+                </c:if>
+                <a href="/admin/ownerNotice?PAGE_NUM=${i}">${i}</a>
+                <c:if test="${currentPage == i}">
+                    </font>
+                </c:if>
+            </c:forEach>
+            
+            <c:if test="${endPage < pageCount}">
+                <a href="/admin/ownerNotice?PAGE_NUM=${endPage + 1}">[다음]</a>
+            </c:if>
         </div>
     </div>
 </div>

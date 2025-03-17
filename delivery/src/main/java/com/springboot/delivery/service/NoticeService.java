@@ -43,8 +43,8 @@ public class NoticeService {
     
     // 사업자 공지사항
 
-    public List<OwnerNotice> getAllOwnerNotices() {
-        return noticeMapper.getAllOwnerNotices();
+    public List<OwnerNotice> getAllOwnerNotices(StartEnd se) {
+        return noticeMapper.getAllOwnerNotices(se);
     }
     
 
@@ -70,5 +70,17 @@ public class NoticeService {
     
     public Integer getMaxCountFromUserNotice() {
     	return this.noticeMapper.getMaxCountFromUserNotice();
+    }
+    
+    public Integer getMaxCountFromOwnerNotice() {
+    	return this.noticeMapper.getMaxCountFromOwnerNotice();
+    }
+    
+    public Integer getMaxCountFromUserNotice2() {
+    	return this.noticeMapper.getMaxCountFromUserNotice2();
+    }
+    
+    public Integer getMaxCountFromOwnerNotice2() {
+    	return this.noticeMapper.getMaxCountFromOwnerNotice2();
     }
 }
