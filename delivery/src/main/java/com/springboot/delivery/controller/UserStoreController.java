@@ -599,7 +599,7 @@ public class UserStoreController {
 	            uc.setOrder_id(order_Id);
 	            uc.setUser_cp_id(couponId);
 	            
-	            // b_order_tbl에 user_cp_id 넣기
+	            // b_order_tbl에 user_cp_id 넣기1
 	            this.userStoreService.updateUserCoupon(uc);
 	            
 	            // b_user_coupon_tbl의 status 변경
