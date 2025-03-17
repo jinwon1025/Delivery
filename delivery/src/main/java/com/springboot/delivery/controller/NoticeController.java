@@ -259,7 +259,7 @@ public class NoticeController {
 
 	// 사용자 공지사항 수정 처리
 	@PostMapping("/admin/userNotice/edit")
-	public ModelAndView userNoticeEdit(UserNotice notice, HttpSession session) {
+	public ModelAndView userNoticeEdit(UserNotice notice, HttpSession session, String notice_id) {
 		ModelAndView mav = new ModelAndView("redirect:/admin/userNotice");
 
 		// 세션에서 로그인 사용자 확인 (관리자 권한 체크)
@@ -270,7 +270,13 @@ public class NoticeController {
 			mav.setViewName("redirect:/user/index");
 			return mav;
 		}
-
+		if(notice.getImportant()==null) {
+			notice.setImportant("N");
+		}
+		notice.setNotice_id(Integer.parseInt(notice_id));
+		System.out.println("제목 : "+notice.getTitle());
+		System.out.println("내용 : "+notice.getContent());
+		System.out.println("체크 상태 : "+notice.getImportant());
 		noticeService.updateUserNotice(notice);
 
 		return mav;
@@ -416,7 +422,7 @@ public class NoticeController {
 
 	// 사업자 공지사항 수정 처리
 	@PostMapping("/admin/ownerNotice/edit")
-	public ModelAndView ownerNoticeEdit(OwnerNotice notice, HttpSession session) {
+	public ModelAndView ownerNoticeEdit(OwnerNotice notice,String notice_id, HttpSession session) {
 		ModelAndView mav = new ModelAndView("redirect:/admin/ownerNotice");
 
 		// 세션에서 로그인 사용자 확인 (관리자 권한 체크)
@@ -427,7 +433,10 @@ public class NoticeController {
 			mav.setViewName("redirect:/user/index");
 			return mav;
 		}
-
+		if(notice.getImportant()==null) {
+			notice.setImportant("N");
+		}
+		System.out.println(notice.getImportant());
 		noticeService.updateOwnerNotice(notice);
 
 		return mav;
