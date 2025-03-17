@@ -316,7 +316,7 @@ public class OwnerController {
 	public String updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
 	    try {
 	        ownerSerivce.updateOrderStatus(orderId, status);
-	        
+	        System.out.println("=================updatePoint============");
 	        if(status == 5) {
 	        	String user_id = this.ownerSerivce.getUserId(orderId);
 		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId);
@@ -328,6 +328,7 @@ public class OwnerController {
 	        	user.setPoint(userPoint);
 	        	user.setUser_id(user_id);
 	        	this.userStoreService.updatePoint(user);
+	        	
 	        }
 	        return "success";
 	    } catch (Exception e) {

@@ -248,5 +248,9 @@ public class UserStoreService {
 	public Integer getMaxUserCouponId() {
 		return this.userStoreMapper.getMaxUserCouponId();
 	}
+	
+	public void insertOrderDate(String order_id) {
+		this.userStoreMapper.insertOrderDate(order_id);
+	}
 
 }

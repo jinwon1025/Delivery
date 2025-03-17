@@ -106,4 +106,6 @@ public interface UserStoreMapper {
 	UsedCoupon getCouponNum(UserCoupon uc);
 	
 	Integer getMaxUserCouponId();
+	
+	void insertOrderDate(String order_id);
 }	
