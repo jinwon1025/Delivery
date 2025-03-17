@@ -316,7 +316,7 @@ public class OwnerController {
 	public String updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
 	    try {
 	        ownerSerivce.updateOrderStatus(orderId, status);
-	        
+	        System.out.println("=================updatePoint============");
 	        if(status == 5) {
 	        	String user_id = this.ownerSerivce.getUserId(orderId);
 		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId);
@@ -328,6 +328,7 @@ public class OwnerController {
 	        	user.setPoint(userPoint);
 	        	user.setUser_id(user_id);
 	        	this.userStoreService.updatePoint(user);
+	        	
 	        }
 	        return "success";
 	    } catch (Exception e) {
@@ -450,10 +451,12 @@ public class OwnerController {
 		
 		//b_store_coupon_tbl에 등록
 		this.ownerSerivce.registerCoupon(sc);
+		Integer store_used_quantity = this.ownerSerivce.getStoreUsedQuantity(owner_coupon_id);
 		
 		Coupon c = new Coupon();
 		c.setOwner_coupon_id(Integer.parseInt(owner_coupon_id));
-		c.setStore_used_quantity(Integer.parseInt(quantity));
+		c.setStore_used_quantity(store_used_quantity + Integer.parseInt(quantity));
+		System.out.println("등록된 쿠폰개수 :"+ (store_used_quantity + Integer.parseInt(quantity)));
 		
 		
 		//등록한 쿠폰 개수만큼 owner_coupon_tbl에서 깎기

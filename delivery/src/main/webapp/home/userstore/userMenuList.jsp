@@ -221,7 +221,7 @@
                             <button class="coupon-download" disabled>다운로드 완료</button>
                         </c:when>
                         <c:otherwise>
-                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID}, '${coupon.EXPIRE_DATE}')">다운로드</button>
+                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID}, '${coupon.EXPIRE_DATE}', ${coupon.MINIMUM_PURCHASE})">다운로드</button>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -244,7 +244,7 @@
 
 <!-- 쿠폰 다운로드 스크립트 -->
 <script>
-function downloadCoupon(couponId, couponName, ownerCouponId, expireDate) {
+function downloadCoupon(couponId, couponName, ownerCouponId, expireDate, minimumPurchase) {
     if(confirm(`'${couponName}' 쿠폰을 다운로드하시겠습니까?`)) {
         // AJAX를 통한 쿠폰 다운로드 요청
         fetch('/user/downloadCoupon', {
@@ -255,7 +255,8 @@ function downloadCoupon(couponId, couponName, ownerCouponId, expireDate) {
             body: JSON.stringify({
                 storeCouponId: couponId,
                 ownerCouponId: ownerCouponId,
-                expireDate: expireDate
+                expireDate: expireDate,
+                minimumPurchase: minimumPurchase
             })
         })
         .then(response => response.json())

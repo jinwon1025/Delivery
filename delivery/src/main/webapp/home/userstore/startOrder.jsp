@@ -863,7 +863,7 @@ function setupDiscountHandlers() {
         const minOrderAmount = parseInt(selectedOption.getAttribute('data-min-order'));
         const couponName = selectedOption.getAttribute('data-name');
         
-        // 최소 주문금액 체크
+        // 최소 주문금액 체크	1
         if (totalPrice < minOrderAmount) {
             alert(`'${couponName}' 쿠폰은 ${minOrderAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`);
             this.value = "0"; // 쿠폰 선택 초기화

@@ -18,4 +18,5 @@ public class UserCoupon {
 	
 	private String order_id;
 	private Date expire_date;
+	private Integer minimum_purchase;
 }

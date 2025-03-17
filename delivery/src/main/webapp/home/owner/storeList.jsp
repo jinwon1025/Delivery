@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <style>
     /* 영업 상태 표시 스타일 */
@@ -140,8 +141,8 @@
             <div class="store-card-body">
                 <h3 class="store-card-title">${store.store_name}</h3>
                 <div class="store-card-info">
-                    <p><i class="fas fa-won-sign"></i> 최소주문: ${store.last_price}원</p>
-                    <p><i class="fas fa-truck"></i> 배달비: ${store.delivery_fee}원</p>
+                    <p><i class="fas fa-won-sign"></i> 최소주문: <fmt:formatNumber value="${store.last_price}" pattern="#,###"/>원</p>
+                    <p><i class="fas fa-truck"></i> 배달비: <fmt:formatNumber value="${store.delivery_fee}" pattern="#,###"/>원</p>
                 </div>
             </div>
             

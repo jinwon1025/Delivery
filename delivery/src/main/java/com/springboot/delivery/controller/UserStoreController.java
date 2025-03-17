@@ -508,12 +508,16 @@ public class UserStoreController {
 	@GetMapping(value = "/userStore/startOrder")
 	public ModelAndView startOrder(HttpSession session, String totalPrice, String deliveryFee, String finalTotalPrice,
 			String order_Id) {
-		
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 		ModelAndView mav = new ModelAndView("user/userMain");
 		mav.addObject("BODY", "../userstore/startOrder.jsp");
 		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
-		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(loginUser.getUser_id());
+
+		StoreCoupon sc = new StoreCoupon();
+		sc.setUser_id(loginUser.getUser_id());
+		sc.setMinimum_purchase(Integer.parseInt(totalPrice));
+
+		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(sc);
 		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
 		Integer password = userService.getPayPassword(loginUser.getUser_id());
 		mav.addObject("cardList", uc);
@@ -523,132 +527,175 @@ public class UserStoreController {
 		mav.addObject("deliveryFee", deliveryFee);
 		mav.addObject("finalTotalPrice", finalTotalPrice);
 		mav.addObject("hasPaymentPassword", password);
-		System.out.println("결제창오더 아이디:" + order_Id);
+		System.out.println("결제창 오더 아이디:" + order_Id);
 		mav.addObject("order_Id", order_Id);
 		return mav;
 	}
 
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
-			String finalTotal, String selectedCouponId, String paymentMethod, String pointValue) {
-		ModelAndView mav = new ModelAndView("user/userMain");
-		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
-		// 포인트 처리 로직 추가
-	    if(pointValue != null && !pointValue.isEmpty()) {
-	        int usedPoints = Integer.parseInt(pointValue);
-	        if(usedPoints > 0) {
-	            // 현재 사용자의 포인트 가져오기
-	            Integer currentPoints = this.userStoreService.getPoint(loginUser.getUser_id());
-	            
-	            // 사용한 포인트만큼 차감
-	            Integer remainingPoints = currentPoints - usedPoints;
-	            
-	            // 사용자 객체에 업데이트할 포인트 설정
-	            User user = new User();
-	            user.setUser_id(loginUser.getUser_id());
-	            user.setPoint(remainingPoints);
-	            
-	            // 포인트 업데이트 서비스 호출
-	            this.userStoreService.updatePoint(user);
-	            
-	            System.out.println("사용한 포인트: " + usedPoints);
-	            System.out.println("남은 포인트: " + remainingPoints);
+	                        String finalTotal, String selectedCouponId, String paymentMethod, String pointValue) {
+	    ModelAndView mav = new ModelAndView("user/userMain");
+	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	    
+	    // 주문 상태 확인
+	    OrderCart orderStatusCart = this.userStoreService.getOrderStatus(order_Id);
+	    
+	    // 디버깅을 위해 order_status 값 확인
+	    System.out.println("orderStatusCart.getOrder_status(): " + orderStatusCart.getOrder_status());
+	    
+	    Integer currentStatus = orderStatusCart.getOrder_status();
+	    
+	    // 이미 처리된 주문인 경우 (주문 상태가 0이 아닌 경우)
+	       if (currentStatus != 0) {
+	           System.out.println("새로고침 했는데 상태가 0이 아님: " + currentStatus);
+	           mav.addObject("orderCart", orderStatusCart);
+	           mav.addObject("TOTALPRICE", finalTotal);
+	           mav.addObject("BODY", "../userstore/end.jsp");
+	           return mav;
+	       }
+	    
+	    try {
+	        // 포인트 처리 로직 추가
+	        if(pointValue != null && !pointValue.isEmpty()) {
+	            int usedPoints = Integer.parseInt(pointValue);
+	            if(usedPoints > 0) {
+	                // 현재 사용자의 포인트 가져오기
+	                Integer currentPoints = this.userStoreService.getPoint(loginUser.getUser_id());
+	                
+	                // 사용한 포인트만큼 차감
+	                Integer remainingPoints = currentPoints - usedPoints;
+	                
+	                // 사용자 객체에 업데이트할 포인트 설정
+	                User user = new User();
+	                user.setUser_id(loginUser.getUser_id());
+	                user.setPoint(remainingPoints);
+	                
+	                // 포인트 업데이트 서비스 호출
+	                this.userStoreService.updatePoint(user);
+	                
+	                System.out.println("사용한 포인트: " + usedPoints);
+	                System.out.println("남은 포인트: " + remainingPoints);
+	            }
 	        }
+	        
+	        // 포인트 적립 처리
+	        Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
+	        double pointRate = adminService.getpointRate();
+	        Integer point = (int)(Integer.parseInt(finalTotal) * pointRate);
+	        Integer userTotalPoint = userPoint + point;
+	        User user = new User();
+	        user.setPoint(userTotalPoint);
+	        user.setUser_id(loginUser.getUser_id());
+	        this.userStoreService.updatePoint(user);
+	        
+	        // 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
+	        OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
+	        
+	        // 쿠폰 처리
+	        if (selectedCouponId != null && !selectedCouponId.isEmpty() && !selectedCouponId.equals("0")) {
+	            int couponId = Integer.parseInt(selectedCouponId);
+	            
+	            UserCoupon uc = new UserCoupon();
+	            uc.setOrder_id(order_Id);
+	            uc.setUser_cp_id(couponId);
+	            
+	            // b_order_tbl에 user_cp_id 넣기
+	            this.userStoreService.updateUserCoupon(uc);
+	            
+	            // b_user_coupon_tbl의 status 변경
+	            this.userStoreService.updateUserCouponStatus(couponId);
+	            
+	            // 쿠폰 관련 정보 가져오기
+	            Map<String, Object> couponInfo = this.userStoreService.getCouponInfoByUserCouponId(couponId);
+	            
+	            if (couponInfo != null) {
+	                System.out.println("USER_CP_ID: " + couponInfo.get("USER_CP_ID"));
+	                System.out.println("STORE_COUPON_ID: " + couponInfo.get("STORE_COUPON_ID"));
+	                System.out.println("OWNER_COUPON_ID: " + couponInfo.get("OWNER_COUPON_ID"));
+	                System.out.println("CP_NAME: " + couponInfo.get("CP_NAME"));
+	                System.out.println("SALE_PRICE: " + couponInfo.get("SALE_PRICE"));
+	                System.out.println("MINIMUM_PURCHASE: " + couponInfo.get("MINIMUM_PURCHASE"));
+	                
+	                // 사용된 쿠폰 정보 저장
+	                UsedCoupon udc = new UsedCoupon();
+	                
+	                Integer maxCount = this.userStoreService.getMaxCountUsedCoupon();
+	                if(maxCount == null) {
+	                    maxCount = 0;
+	                }
+	                
+	                udc.setUsed_cp_id(maxCount+1);
+	                udc.setOrder_id(order_Id);
+	                udc.setUser_id(loginUser.getUser_id());
+	                udc.setUsed_date(new String());
+	                udc.setStore_coupon_id(Integer.valueOf(couponInfo.get("STORE_COUPON_ID").toString()));
+	                udc.setOwner_coupon_id(Integer.valueOf(couponInfo.get("OWNER_COUPON_ID").toString()));
+	                udc.setUser_cp_id(Integer.valueOf(couponInfo.get("USER_CP_ID").toString()));
+	                
+	                this.userStoreService.insertUsedCoupon(udc);
+	            }
+	        }
+	        
+	        // 최종적으로 주문 상태 업데이트 (가장 마지막에 수행)
+	        if (orderWithAddress != null) {
+	            // 필요한 정보 설정
+	            orderWithAddress.setToowner(storeRequest);
+	            orderWithAddress.setTorider(riderRequest);
+	            orderWithAddress.setTotalPrice(Integer.parseInt(finalTotal));
+	            orderWithAddress.setOrder_id(order_Id);
+	            orderWithAddress.setOrder_status(1); // 주문완료 처리
+	            
+	            // 수정된 객체로 결제 정보 저장
+	            this.userStoreService.insertPay(orderWithAddress);
+	            
+	            // 모델에 객체 추가
+	            mav.addObject("orderCart", orderWithAddress);
+	        } else {
+	            // 쿼리 결과가 없을 경우 새 객체 생성
+	            OrderCart oc = new OrderCart();
+	            oc.setToowner(storeRequest);
+	            oc.setTorider(riderRequest);
+	            oc.setOrder_id(order_Id);
+	            oc.setTotalPrice(Integer.parseInt(finalTotal));
+	            oc.setOrder_status(1);
+	            
+	            // 현금 결제 시 주소 정보를 추가
+	            CartUser cartUser = this.userStoreService.cartUserData(loginUser.getUser_id());
+	            if (cartUser != null) {
+	                oc.setUser_address(cartUser.getUser_address());
+	            }
+	            
+	            // 만약 CartUser에서 주소를 가져올 수 없다면 주문 정보에서 가져오기 시도
+	            if (oc.getUser_address() == null || oc.getUser_address().isEmpty()) {
+	                // 주문 기본 정보에서 주소 가져오기
+	                Map<String, Object> orderInfo = this.userStoreService.getOrderInfoByOrderId(order_Id);
+	                if (orderInfo != null && orderInfo.containsKey("USER_ADDRESS")) {
+	                    oc.setUser_address((String) orderInfo.get("USER_ADDRESS"));
+	                }
+	            }
+	            
+	            // 결제 정보 저장
+	            this.userStoreService.insertPay(oc);
+	            
+	            mav.addObject("orderCart", oc);
+	        }
+	        
+	        //결제 시간 바꾸기 (원래는 장바구니에 음식 넣을 때 시간이 들어가있음.)
+	        this.userStoreService.insertOrderDate(order_Id);
+	        
+	    } catch (Exception e) {
+	        // 오류 처리
+	        e.printStackTrace();
+	        mav.addObject("error", "결제 처리 중 오류가 발생했습니다.");
+	        return mav;
 	    }
-	    Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
-		double pointRate = adminService.getpointRate();
-		Integer point = (int)(Integer.parseInt(finalTotal) * pointRate);
-		Integer userTotalPoint = userPoint + point;
-		User user = new User();
-		user.setPoint(userTotalPoint);
-		user.setUser_id(loginUser.getUser_id());
-		this.userStoreService.updatePoint(user);
-
-		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
-		OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
-		
-		OrderCart orderStatusCart = this.userStoreService.getOrderStatus(order_Id);
-		
-		// 상태가 다른 경우 먼저 띄우기
-		if (!orderStatusCart.getOrder_status().equals("0")) {
-			System.out.println("새로고침 했는데 상태가 0이 아님.");
-			mav.addObject("orderCart", orderStatusCart);
-			mav.addObject("TOTALPRICE", finalTotal);
-			mav.addObject("BODY", "../userstore/end.jsp");
-			return mav;
-		} else {
-
-			// 새로운 OrderCart 객체 생성 대신 가져온 객체를 수정
-			if (orderWithAddress != null) {
-				// 필요한 정보 설정
-				orderWithAddress.setToowner(storeRequest);
-				orderWithAddress.setTorider(riderRequest);
-				orderWithAddress.setOrder_status(1); // 주문완료 처리
-				orderWithAddress.setTotalPrice(Integer.parseInt(finalTotal));
-				orderWithAddress.setOrder_id(order_Id);
-
-				// 수정된 객체로 결제 정보 저장
-				this.userStoreService.insertPay(orderWithAddress);
-
-				// 모델에 객체 추가
-				mav.addObject("orderCart", orderWithAddress);
-			} else {
-				// 쿼리 결과가 없을 경우 새 객체 생성
-				OrderCart oc = new OrderCart();
-				oc.setToowner(storeRequest);
-				oc.setTorider(riderRequest);
-				oc.setOrder_id(order_Id);
-				oc.setOrder_status(1);
-				oc.setTotalPrice(Integer.parseInt(finalTotal));
-
-				//
-				this.userStoreService.insertPay(oc);
-
-				mav.addObject("orderCart", oc);
-			}
-		}
-		
-		UserCoupon uc = new UserCoupon();
-		uc.setOrder_id(order_Id);
-		uc.setUser_cp_id(Integer.parseInt(selectedCouponId));
-		// b_order_tbl에 user_cp_id 넣기
-		this.userStoreService.updateUserCoupon(uc);
-		
-		
-		// b_user_coupon_tbl의 status 변경
-		this.userStoreService.updateUserCouponStatus(Integer.parseInt(selectedCouponId));
-		
-		Map<String, Object> couponInfo = this.userStoreService.getCouponInfoByUserCouponId(Integer.parseInt(selectedCouponId));
-		
-		System.out.println("USER_CP_ID: " + couponInfo.get("USER_CP_ID"));
-		System.out.println("STORE_COUPON_ID: " + couponInfo.get("STORE_COUPON_ID"));
-		System.out.println("OWNER_COUPON_ID: " + couponInfo.get("OWNER_COUPON_ID"));
-		System.out.println("CP_NAME: " + couponInfo.get("CP_NAME"));
-		System.out.println("SALE_PRICE: " + couponInfo.get("SALE_PRICE"));
-		System.out.println("MINIMUM_PURCHASE: " + couponInfo.get("MINIMUM_PURCHASE"));
-		
-		UsedCoupon udc = new UsedCoupon();
-		
-		Integer maxCount = this.userStoreService.getMaxCountUsedCoupon();
-		if(maxCount == null) {
-			maxCount = 0;
-		}
-		
-		udc.setUsed_cp_id(maxCount+1);
-		udc.setOrder_id(order_Id);
-		udc.setUser_id(loginUser.getUser_id());
-		udc.setUsed_date(new String());
-		udc.setStore_coupon_id(Integer.valueOf(couponInfo.get("STORE_COUPON_ID").toString()));
-		udc.setOwner_coupon_id(Integer.valueOf(couponInfo.get("OWNER_COUPON_ID").toString()));
-		udc.setUser_cp_id(Integer.valueOf(couponInfo.get("USER_CP_ID").toString()));
-		
-		this.userStoreService.insertUsedCoupon(udc);
-		
-		// 추가 정보 모델에 추가
-		mav.addObject("TOTALPRICE", finalTotal);
-		mav.addObject("BODY", "../userstore/end.jsp");
-		System.out.println("결제카드 아이디 : " + paymentMethod);
-		return mav;
+	    
+	    // 추가 정보 모델에 추가
+	    mav.addObject("TOTALPRICE", finalTotal);
+	    mav.addObject("BODY", "../userstore/end.jsp");
+	    System.out.println("결제카드 아이디 : " + paymentMethod);
+	    return mav;
 	}
 
 	@GetMapping(value = "/userstore/myOrderList")
@@ -880,10 +927,6 @@ public class UserStoreController {
 	@ResponseBody
 	public Map<String, Object> verifyPaymentPasswordAjax(@RequestParam("paymentMethod") String paymentMethod,
 			@RequestParam("paymentPassword") String paymentPassword, @RequestParam("order_Id") String orderId,
-			@RequestParam("riderRequest") String riderRequest, @RequestParam("storeRequest") String storeRequest,
-			@RequestParam("address") String address, @RequestParam("phone") String phone,
-			@RequestParam("couponValue") int couponValue, @RequestParam("selectedCouponId") String selectedCouponId,
-			@RequestParam("pointValue") int pointValue, @RequestParam("finalTotal") int finalTotal,
 			HttpSession session) {
 
 		Map<String, Object> response = new HashMap<>();
@@ -897,7 +940,15 @@ public class UserStoreController {
 			return response;
 		}
 
-		// 결제 비밀번호 검증
+		// 1. 주문 상태 확인 - 이미 처리된 주문인지 체크
+		OrderCart orderStatusCart = this.userStoreService.getOrderStatus(orderId);
+		if (orderStatusCart != null && orderStatusCart.getOrder_status() != 0) {
+			response.put("success", false);
+			response.put("message", "이미 처리된 주문입니다");
+			return response;
+		}
+
+		// 2. 결제 비밀번호 검증
 		Integer storedPassword = this.userStoreService.getPayPassword(loginUser.getUser_id());
 		boolean isPasswordValid = false;
 
@@ -917,47 +968,8 @@ public class UserStoreController {
 			return response;
 		}
 
-		// 비밀번호 검증 성공 시 결제 처리
-		try {
-			// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
-			OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(orderId);
-
-			// 주문 정보 설정 및 처리
-			if (orderWithAddress != null) {
-				// 필요한 정보 설정
-				orderWithAddress.setToowner(storeRequest);
-				orderWithAddress.setTorider(riderRequest);
-				orderWithAddress.setOrder_status(1); // 주문완료 처리
-				orderWithAddress.setTotalPrice(finalTotal);
-				orderWithAddress.setOrder_id(orderId);
-
-				// 수정된 객체로 결제 정보 저장
-				this.userStoreService.insertPay(orderWithAddress);
-			} else {
-				// 쿼리 결과가 없을 경우 새 객체 생성
-				OrderCart oc = new OrderCart();
-				oc.setToowner(storeRequest);
-				oc.setTorider(riderRequest);
-				oc.setOrder_id(orderId);
-				oc.setOrder_status(1);
-				oc.setTotalPrice(finalTotal);
-
-				this.userStoreService.insertPay(oc);
-			}
-
-			// 성공 응답
-			response.put("success", true);
-			// 결제 성공 후 이동할 URL - 주문 완료 페이지
-			response.put("redirectUrl",
-					"/userstore/pay?order_Id=" + orderId + "&riderRequest=" + URLEncoder.encode(riderRequest, "UTF-8")
-							+ "&storeRequest=" + URLEncoder.encode(storeRequest, "UTF-8") + "&finalTotal=" + finalTotal
-							+ "&selectedCouponId=" + selectedCouponId + "&paymentMethod=" + paymentMethod);
-
-		} catch (Exception e) {
-			// 결제 처리 중 오류 발생
-			response.put("success", false);
-			response.put("message", "결제 처리 중 오류가 발생했습니다");
-		}
+		// 3. 비밀번호 검증 성공 시 응답만 반환 (실제 결제 처리는 하지 않음)
+		response.put("success", true);
 
 		return response;
 	}
@@ -1016,20 +1028,20 @@ public class UserStoreController {
 
 		return mav;
 	}
-	
-	@GetMapping(value="/userstore/myCouponList")
+
+	@GetMapping(value = "/userstore/myCouponList")
 	public ModelAndView myCouponList(HttpSession session) {
-	    ModelAndView mav = new ModelAndView("user/userMain");
-	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		ModelAndView mav = new ModelAndView("user/userMain");
+		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-	    List<UserCouponDetail> couponList = this.userStoreService.getCouponList(loginUser.getUser_id());
-	    
-	    Date currentDate = new Date();
-	    
-	    mav.addObject("couponList", couponList);
-	    mav.addObject("currentDate", currentDate);
-	    mav.addObject("BODY","../userstore/couponList.jsp");
+		List<UserCouponDetail> couponList = this.userStoreService.getCouponList(loginUser.getUser_id());
 
-	    return mav;
+		Date currentDate = new Date();
+
+		mav.addObject("couponList", couponList);
+		mav.addObject("currentDate", currentDate);
+		mav.addObject("BODY", "../userstore/couponList.jsp");
+
+		return mav;
 	}
 }

@@ -505,31 +505,40 @@
 		from b_review_tbl
 	</select>
 
-<select id="getMyReviewList" parameterType="string" resultType="map">
-    SELECT
-        r.REVIEW_ID as "reviewId", 
-        r.STORE_ID as "storeId", 
-        r.USER_ID as "userId", 
-        r.ORDER_ID as "orderId",
-        r.REVIEW_TITLE as "reviewTitle", 
-        r.REVIEW_CONTENT as "reviewContent", 
-        r.REVIEW_IMAGE_NAME as "reviewImageName",
-        r.WRITE_DATE as "reviewDate", 
-        r.RATING as "rating",
-        p.REPLY_ID as "replyId", 
-        p.REPLY_CONTENT as "replyContent", 
-        p.WRITE_DATE as "replyDate",
-        p.OWNER_ID as "ownerId",
-        s.STORE_NAME as "storeName",
-        o.OWNER_NAME as "ownerName",
-        o.OWNER_IMAGE_NAME as "ownerImageName"
-    FROM b_review_tbl r
-    LEFT JOIN b_store_tbl s ON r.STORE_ID = s.STORE_ID
-    LEFT JOIN b_reply_tbl p ON r.ORDER_ID = p.ORDER_ID
-    LEFT JOIN b_owner_info o ON p.OWNER_ID = o.OWNER_ID
-    WHERE r.USER_ID = #{userId}
-    ORDER BY r.WRITE_DATE DESC
-</select>
+	<select id="getMyReviewList" parameterType="string"
+		resultType="map">
+		SELECT
+		r.REVIEW_ID as "reviewId",
+		r.STORE_ID as "storeId",
+		r.USER_ID as "userId",
+		r.ORDER_ID as "orderId",
+		r.REVIEW_TITLE as
+		"reviewTitle",
+		r.REVIEW_CONTENT as "reviewContent",
+		r.REVIEW_IMAGE_NAME
+		as "reviewImageName",
+		r.WRITE_DATE as "reviewDate",
+		r.RATING as
+		"rating",
+		p.REPLY_ID as "replyId",
+		p.REPLY_CONTENT as "replyContent",
+		p.WRITE_DATE as "replyDate",
+		p.OWNER_ID as "ownerId",
+		s.STORE_NAME as
+		"storeName",
+		o.OWNER_NAME as "ownerName",
+		o.OWNER_IMAGE_NAME as
+		"ownerImageName"
+		FROM b_review_tbl r
+		LEFT JOIN b_store_tbl s ON
+		r.STORE_ID = s.STORE_ID
+		LEFT JOIN b_reply_tbl p ON r.ORDER_ID =
+		p.ORDER_ID
+		LEFT JOIN b_owner_info o ON p.OWNER_ID = o.OWNER_ID
+		WHERE
+		r.USER_ID = #{userId}
+		ORDER BY r.WRITE_DATE DESC
+	</select>
 
 	<!-- 리뷰 삭제 -->
 	<delete id="deleteReview" parameterType="Integer">
@@ -583,26 +592,16 @@
 		sc.expire_date ASC
 	</select>
 
-	<select id="getUserCoupons" parameterType="String"
-		resultType="map">
-		SELECT
-		uc.user_cp_id,
-		uc.store_coupon_id,
-		sc.cp_name,
-		oc.sale_price,
-		sc.minimum_purchase,
-		uc.status
-		FROM
-		b_user_coupon_tbl uc
-		JOIN
-		b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
-		JOIN
-		b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
-		WHERE
-		uc.user_id = #{userId}
-		AND uc.status = 1  <!-- 사용 가능한 쿠폰만 -->
-		ORDER BY
-		oc.sale_price DESC
+	<select id="getUserCoupons" parameterType="map" resultType="map">
+		SELECT uc.user_cp_id, uc.store_coupon_id, sc.cp_name,
+		oc.sale_price, sc.minimum_purchase, uc.status
+		FROM b_user_coupon_tbl uc
+		JOIN b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+		JOIN b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+		WHERE uc.user_id = #{user_id}
+		AND uc.status = 1
+		AND sc.minimum_purchase &lt;= #{minimum_purchase}
+		ORDER BY oc.sale_price DESC
 	</select>
 
 	<select id="getAllMenusByStoreId" parameterType="String"
@@ -626,127 +625,194 @@
 		WHERE ORDER_ID =
 		#{order_id}
 	</select>
-<select id="getReviewDetail" parameterType="String" resultType="map">
-    SELECT
-        r.REVIEW_ID as "reviewId", 
-        r.STORE_ID as "storeId", 
-        r.USER_ID as "userId", 
-        r.ORDER_ID as "orderId", 
-        r.REVIEW_TITLE as "reviewTitle", 
-        r.REVIEW_CONTENT as "reviewContent", 
-        r.REVIEW_IMAGE_NAME as "reviewImageName", 
-        r.WRITE_DATE as "reviewDate", 
-        r.RATING as "rating",
-        p.REPLY_ID as "replyId", 
-        p.STORE_ID as "replyStoreId",
-        p.OWNER_ID as "ownerId", 
-        p.ORDER_ID as "replyOrderId", 
-        p.REPLY_CONTENT as "replyContent", 
-        p.WRITE_DATE as "replyDate"
-    FROM 
-        B_REVIEW_TBL r
-    LEFT JOIN 
-        B_REPLY_TBL p ON r.ORDER_ID = p.ORDER_ID
-    WHERE 
-        r.ORDER_ID = #{order_id}
-</select>
+	<select id="getReviewDetail" parameterType="String"
+		resultType="map">
+		SELECT
+		r.REVIEW_ID as "reviewId",
+		r.STORE_ID as "storeId",
+		r.USER_ID as "userId",
+		r.ORDER_ID as "orderId",
+		r.REVIEW_TITLE as
+		"reviewTitle",
+		r.REVIEW_CONTENT as "reviewContent",
+		r.REVIEW_IMAGE_NAME
+		as "reviewImageName",
+		r.WRITE_DATE as "reviewDate",
+		r.RATING as
+		"rating",
+		p.REPLY_ID as "replyId",
+		p.STORE_ID as "replyStoreId",
+		p.OWNER_ID as "ownerId",
+		p.ORDER_ID as "replyOrderId",
+		p.REPLY_CONTENT
+		as "replyContent",
+		p.WRITE_DATE as "replyDate"
+		FROM
+		B_REVIEW_TBL r
+		LEFT
+		JOIN
+		B_REPLY_TBL p ON r.ORDER_ID = p.ORDER_ID
+		WHERE
+		r.ORDER_ID =
+		#{order_id}
+	</select>
 
-<select id="getPayPassword" parameterType="String" resultType="Integer">
-	select pay_password from b_user_info where user_id = #{user_id}
-</select>
+	<select id="getPayPassword" parameterType="String"
+		resultType="Integer">
+		select pay_password from b_user_info where user_id =
+		#{user_id}
+	</select>
 
-<select id="getPoint" parameterType="String" resultType="Integer">
-	select point from b_user_info where user_id = #{user_id}
-</select>
+	<select id="getPoint" parameterType="String"
+		resultType="Integer">
+		select point from b_user_info where user_id = #{user_id}
+	</select>
 
-<update id="updatePoint" parameterType="com.springboot.delivery.model.User">
-	update b_user_info set point = #{point} where user_id = #{user_id}
-</update>
+	<update id="updatePoint"
+		parameterType="com.springboot.delivery.model.User">
+		update b_user_info set point = #{point} where user_id =
+		#{user_id}
+	</update>
 
-<select id="getOrderStatus" parameterType="String" resultType="com.springboot.delivery.model.OrderCart">
-    SELECT 
-        o.ORDER_ID as order_id,
-        o.ORDER_TIME as order_time,
-        u.USER_ADDRESS as user_address,
-        d.TOTALPRICE as totalPrice,
-        s.DELIVERY_TIME as delivery_time,
-        d.ORDER_STATUS as order_status
-    FROM 
-        b_order_tbl o
-        JOIN b_user_info u ON o.USER_ID = u.USER_ID
-        JOIN b_order_detail_tbl d ON o.ORDER_ID = d.ORDER_ID
-        JOIN b_store_tbl s ON d.STORE_ID = s.STORE_ID
-    WHERE 
-        o.ORDER_ID = #{orderId}
-</select>
+	<select id="getOrderStatus" parameterType="String"
+		resultType="com.springboot.delivery.model.OrderCart">
+		SELECT
+		o.ORDER_ID as order_id,
+		o.ORDER_TIME as order_time,
+		u.USER_ADDRESS as user_address,
+		d.TOTALPRICE as totalPrice,
+		s.DELIVERY_TIME as delivery_time,
+		d.ORDER_STATUS as order_status
+		FROM
+		b_order_tbl o
+		JOIN b_user_info u ON o.USER_ID = u.USER_ID
+		JOIN
+		b_order_detail_tbl d ON o.ORDER_ID = d.ORDER_ID
+		JOIN b_store_tbl s ON
+		d.STORE_ID = s.STORE_ID
+		WHERE
+		o.ORDER_ID = #{orderId}
+	</select>
 
-<update id="updateUserCoupon" parameterType="com.springboot.delivery.model.UserCoupon">
+	<update id="updateUserCoupon"
+		parameterType="com.springboot.delivery.model.UserCoupon">
 
-	update b_order_tbl set user_cp_id = #{user_cp_id} where order_id=#{order_id}
+		update b_order_tbl set user_cp_id = #{user_cp_id} where
+		order_id=#{order_id}
 
-</update>
+	</update>
 
-<update id="updateUserCouponStatus" parameterType="Integer">
+	<update id="updateUserCouponStatus" parameterType="Integer">
 
-	update b_user_coupon_tbl set status = 0 where user_cp_id = #{user_cp_id}
+		update
+		b_user_coupon_tbl set status = 0 where user_cp_id = #{user_cp_id}
 
-</update>
+	</update>
 
-<select id="getCouponInfoById" parameterType="Integer" resultType="map">
-    SELECT 
-        uc.user_cp_id,
-        uc.store_coupon_id,
-        uc.owner_coupon_id,
-        sc.cp_name,
-        oc.sale_price,
-        sc.minimum_purchase
-    FROM 
-        b_user_coupon_tbl uc
-    JOIN 
-        b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
-    JOIN 
-        b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
-    WHERE 
-        uc.user_cp_id = #{userCouponId}
-</select>
+	<select id="getCouponInfoById" parameterType="Integer"
+		resultType="map">
+		SELECT
+		uc.user_cp_id,
+		uc.store_coupon_id,
+		uc.owner_coupon_id,
+		sc.cp_name,
+		oc.sale_price,
+		sc.minimum_purchase
+		FROM
+		b_user_coupon_tbl uc
+		JOIN
+		b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+		JOIN
+		b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+		WHERE
+		uc.user_cp_id = #{userCouponId}
+	</select>
 
-<select id="getMaxCountUsedCoupon">
+	<select id="getMaxCountUsedCoupon">
 
-	select max(used_cp_id) from b_used_coupon_tbl
+		select max(used_cp_id) from b_used_coupon_tbl
 
-</select>
+	</select>
 
-<insert id="insertUsedCoupon" parameterType="com.springboot.delivery.model.UsedCoupon">
+	<insert id="insertUsedCoupon"
+		parameterType="com.springboot.delivery.model.UsedCoupon">
 
-insert into b_used_coupon_tbl(used_cp_id, order_id, user_id, used_date, store_coupon_id, owner_coupon_id, user_cp_id)
-values(#{user_cp_id}, #{order_id}, #{user_id}, #{used_date}, #{store_coupon_id}, #{owner_coupon_id}, #{user_cp_id})
+		insert into b_used_coupon_tbl(used_cp_id, order_id,
+		user_id, used_date,
+		store_coupon_id, owner_coupon_id, user_cp_id)
+		values(#{user_cp_id}, #{order_id}, #{user_id}, sysdate,
+		#{store_coupon_id},
+		#{owner_coupon_id}, #{user_cp_id})
 
-</insert>
+	</insert>
 
-<select id="getCouponList" parameterType="String" resultType="com.springboot.delivery.model.UserCouponDetail">
-    SELECT 
-        uct.USER_CP_ID as userCpId,
-        uct.USER_ID as userId,
-        uct.OWNER_COUPON_ID as ownerCouponId,
-        uct.DOWNLOAD_DATE as downloadDate,
-        uct.STATUS as status,
-        uct.STORE_COUPON_ID as storeCouponId,
-        uct.EXPIRE_DATE as expireDate,
-        sct.STORE_ID as storeId,
-        sct.QUANTITY as quantity,
-        sct.OWNER_ID as ownerId,
-        sct.CP_NAME as cpName,
-        sct.MINIMUM_PURCHASE as minimumPurchase,
-        sct.USED_QUANTITY as usedQuantity
-    FROM 
-        b_user_coupon_tbl uct
-    LEFT JOIN 
-        b_store_coupon_tbl sct ON uct.STORE_COUPON_ID = sct.STORE_COUPON_ID
-    WHERE 
-        uct.USER_ID = #{user_id}
-    ORDER BY 
-        uct.EXPIRE_DATE DESC
-</select>
+	<select id="getCouponList" parameterType="String"
+		resultType="com.springboot.delivery.model.UserCouponDetail">
+		SELECT
+		uct.USER_CP_ID as userCpId,
+		uct.USER_ID as userId,
+		uct.OWNER_COUPON_ID as ownerCouponId,
+		uct.DOWNLOAD_DATE as
+		downloadDate,
+		uct.STATUS as status,
+		uct.STORE_COUPON_ID as
+		storeCouponId,
+		uct.EXPIRE_DATE as expireDate,
+		sct.STORE_ID as storeId,
+		sct.QUANTITY as quantity,
+		sct.OWNER_ID as ownerId,
+		sct.CP_NAME as
+		cpName,
+		sct.MINIMUM_PURCHASE as minimumPurchase,
+		sct.USED_QUANTITY as
+		usedQuantity
+		FROM
+		b_user_coupon_tbl uct
+		LEFT JOIN
+		b_store_coupon_tbl sct
+		ON uct.STORE_COUPON_ID = sct.STORE_COUPON_ID
+		WHERE
+		uct.USER_ID =
+		#{user_id}
+		ORDER BY
+		uct.EXPIRE_DATE DESC
+	</select>
+
+	<select id="getCouponNum"
+		parameterType="com.springboot.delivery.model.UserCoupon"
+		resultType="com.springboot.delivery.model.UsedCoupon">
+
+		select owner_coupon_id, store_coupon_id from b_user_coupon_tbl where
+		user_cp_id = #{user_cp_id}
+
+	</select>
+
+	<select id="getMaxUserCouponId">
+
+		select max(used_cp_id) from b_used_coupon_tbl
+
+	</select>
+	
+	<select id="getCouponInfoByUserCouponId" parameterType="Integer">
+	
+	SELECT 
+    USER_CP_ID,
+    OWNER_COUPON_ID,
+    STORE_COUPON_ID
+FROM 
+    b_user_coupon_tbl
+WHERE 
+    USER_CP_ID = #{user_cp_id}
+	
+	</select> 
+	
+	<update id="insertOrderDate" parameterType="String">
+	
+	update b_order_tbl set order_time = sysdate where order_id=#{order_id}
+	
+	
+	</update>
+
 
 
 </mapper>

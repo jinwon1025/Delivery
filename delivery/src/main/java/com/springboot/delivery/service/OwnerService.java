@@ -173,4 +173,8 @@ public class OwnerService {
 	public Integer getTotalPrice(String order_id) {
 		return this.ownerMapper.getTotalPrice(order_id);
 	}
+	
+	public Integer getStoreUsedQuantity(String owner_coupon_id) {
+		return this.ownerMapper.getStoreUsedQuantity(owner_coupon_id);
+	}
 }
