@@ -6,62 +6,7 @@
     <h1 class="page-title">마이페이지</h1>
     <p class="page-subtitle">나의 계정 정보와 주문 내역을 확인할 수 있습니다.</p>
 </div>
-
-<div class="mypage-container">
-    <!-- 사이드바 메뉴 -->
-    <div class="mypage-sidebar">
-        <div class="mypage-menu">
-            <div class="mypage-menu-header">
-                마이 금베달
-            </div>
-            <ul class="mypage-menu-list">
-                <li class="mypage-menu-item">
-                    <a href="<c:url value='/user/mypage'/>" class="mypage-menu-link active">
-                        <i class="fas fa-user"></i>
-                        <span>내 정보</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="<c:url value='/user/bookMarkList'/>" class="mypage-menu-link">
-                        <i class="fas fa-heart"></i>
-                        <span>즐겨찾기</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="<c:url value='/user/viewPay'/>" class="mypage-menu-link">
-                        <i class="fas fa-credit-card"></i>
-                        <span>결제수단 관리</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="<c:url value='/userstore/viewCart'/>" class="mypage-menu-link">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>장바구니</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="#" class="mypage-menu-link">
-                        <i class="fas fa-history"></i>
-                        <span>주문 내역</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="#" class="mypage-menu-link">
-                        <i class="fas fa-ticket-alt"></i>
-                        <span>쿠폰함</span>
-                    </a>
-                </li>
-                <li class="mypage-menu-item">
-                    <a href="#" class="mypage-menu-link">
-                        <i class="fas fa-star"></i>
-                        <span>리뷰 관리</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- 메인 컨텐츠 영역 -->
+    
     <div class="mypage-content">
         <div class="card">
             <div class="card-header">

@@ -411,6 +411,7 @@
 // JSP 변수를 JavaScript 변수로 직접 할당
 const totalPrice = ${totalPrice};
 const deliveryFee = ${deliveryFee};
+const hasPaymentPassword = ${hasPaymentPassword != null ? 'true' : 'false'};
 
 // 페이지 로드 직후 실행
 document.addEventListener('DOMContentLoaded', function() {
@@ -515,6 +516,9 @@ function setupPaymentPasswordModal() {
     const confirmPaymentBtn = document.getElementById('confirmPayment');
     const cancelPaymentBtn = document.getElementById('cancelPayment');
     const passwordError = document.getElementById('passwordError');
+    const modalTitle = document.querySelector('.modal-header h2');
+    const modalDesc = document.querySelector('.modal-body p');
+    const passwordInputContainer = document.querySelector('.password-input-container');
 
     // 폼 제출 이벤트 덮어쓰기
     document.getElementById('orderForm').addEventListener('submit', function(event) {
@@ -523,16 +527,153 @@ function setupPaymentPasswordModal() {
         // 현재 선택된 결제 방식 확인
         const paymentMethod = document.getElementById('paymentMethodHidden').value;
         
+        // 내 카드 결제 선택 & 등록된 카드가 없는 경우 체크
+        const isCardPaymentSelected = document.querySelector('.payment-type[data-type="card"]').classList.contains('selected');
+        const hasRegisteredCards = document.querySelectorAll('.payment-card-slide').length > 0;
+        
+        if (isCardPaymentSelected && !hasRegisteredCards) {
+            // 등록된 카드가 없는 경우
+            event.preventDefault();
+            
+            // 결제수단 섹션으로 스크롤
+            const paymentSection = document.querySelector('.payment-methods-container');
+            paymentSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // 알림 메시지 표시
+            const alertMsg = document.createElement('div');
+            alertMsg.className = 'card-alert-message';
+            alertMsg.style.color = 'red';
+            alertMsg.style.marginTop = '10px';
+            alertMsg.style.fontWeight = 'bold';
+            alertMsg.style.padding = '10px';
+            alertMsg.style.backgroundColor = '#fff8f8';
+            alertMsg.style.border = '1px solid #ffcccb';
+            alertMsg.style.borderRadius = '5px';
+            alertMsg.style.textAlign = 'center';
+            alertMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> 등록된 카드가 없습니다. 카드를 등록해주세요.';
+            
+            // 기존 알림 메시지가 있으면 제거
+            const existingAlert = document.querySelector('.card-alert-message');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // 알림 메시지 삽입
+            const emptyCardContainer = document.querySelector('.empty-card-container');
+            if (emptyCardContainer) {
+                emptyCardContainer.prepend(alertMsg);
+                
+                // 버튼 강조 표시
+                const registerBtn = emptyCardContainer.querySelector('.btn');
+                registerBtn.style.animation = 'pulse 1.5s infinite';
+                
+                // 애니메이션 CSS 추가
+                if (!document.querySelector('style#pulse-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'pulse-animation';
+                    style.innerHTML = `
+                        @keyframes pulse {
+                            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7); }
+                            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(74, 144, 226, 0); }
+                            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                // 5초 후 알림 메시지 숨기기
+                setTimeout(() => {
+                    alertMsg.style.display = 'none';
+                    registerBtn.style.animation = '';
+                }, 5000);
+            }
+            
+            return;
+        }
+        
         // 결제 방식에 따라 다른 처리
         if (paymentMethod === 'cash') {
             // 현금 결제인 경우 바로 폼 제출
-            this.action = '/userstore/pay';
-            this.submit();
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/userstore/pay';
+            
+            // 필요한 파라미터 추가 (카드 결제와 동일하게)
+            const params = {
+                'order_Id': document.getElementById('order_Id').value,
+                'riderRequest': document.getElementById('riderRequestHidden').value,
+                'storeRequest': document.getElementById('storeRequestHidden').value,
+                'finalTotal': document.getElementById('finalTotalHidden').value,
+                'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
+                'paymentMethod': document.getElementById('paymentMethodHidden').value,
+                'pointValue': document.getElementById('pointValueHidden').value
+            };
+            
+            // 폼에 필드 추가
+            for (const key in params) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = params[key];
+                form.appendChild(input);
+            }
+            
+            // 폼을 DOM에 추가하고 제출
+            document.body.appendChild(form);
+            form.submit();
         } else if (!isNaN(paymentMethod)) {
-            // 카드 결제인 경우 비밀번호 모달 표시
-            showPasswordModal(false);
+            // 카드 결제인 경우 결제 비밀번호 확인
+            if (hasPaymentPassword === false) {
+                // 결제 비밀번호가 없는 경우 - 비밀번호 설정 안내 모달 표시
+                showPasswordRegisterModal();
+            } else {
+                // 결제 비밀번호가 있는 경우 - 일반 비밀번호 입력 모달 표시
+                showPasswordModal(false);
+            }
         }
     });
+
+    // 비밀번호 설정 안내 모달 표시 함수
+    function showPasswordRegisterModal() {
+        // 모달 내용 변경
+        modalTitle.textContent = '결제 비밀번호 설정 필요';
+        modalDesc.textContent = '안전한 결제를 위해 결제 비밀번호 설정이 필요합니다.';
+        
+        // 입력 필드 숨기기
+        passwordInputContainer.style.display = 'none';
+        passwordError.style.display = 'none';
+        
+        // 버튼 텍스트 변경
+        cancelPaymentBtn.textContent = '취소';
+        confirmPaymentBtn.textContent = '비밀번호 설정하기';
+        
+        // 원래 이벤트 핸들러 백업
+        const originalConfirmHandler = confirmPaymentBtn.onclick;
+        
+        // 비밀번호 설정하기 버튼 이벤트 변경
+        confirmPaymentBtn.onclick = function() {
+            // 비밀번호 설정 페이지로 이동
+            window.location.href = '/user/paypassword';
+        };
+        
+        // 모달 표시
+        modal.style.display = 'block';
+        
+        // 취소 버튼 이벤트 - 모달 닫고 원래 상태로 복원
+        cancelPaymentBtn.onclick = function() {
+            closeModal();
+            // 모달 내용 원래대로 복원
+            modalTitle.textContent = '결제 비밀번호 입력';
+            modalDesc.textContent = '안전한 결제를 위해 결제 비밀번호를 입력해주세요.';
+            passwordInputContainer.style.display = 'block';
+            confirmPaymentBtn.textContent = '확인';
+            cancelPaymentBtn.textContent = '취소';
+            
+            // 이벤트 핸들러 복원
+            confirmPaymentBtn.onclick = originalConfirmHandler;
+            cancelPaymentBtn.onclick = closeModal;
+        };
+    }
 
     // 비밀번호 모달 표시 함수
     function showPasswordModal(showError) {
@@ -568,6 +709,11 @@ function setupPaymentPasswordModal() {
 
     // 확인 버튼 클릭
     confirmPaymentBtn.addEventListener('click', function() {
+        // 결제 비밀번호 설정 모달이면 별도 처리
+        if (modalTitle.textContent === '결제 비밀번호 설정 필요') {
+            return; // 이미 버튼에 이벤트가 설정되어 있음
+        }
+        
         const password = passwordInput.value;
         
         // 비밀번호가 6자리인지 확인
@@ -604,6 +750,13 @@ function setupPaymentPasswordModal() {
         passwordInput.value = '';
         passwordError.style.display = 'none';
         dots.forEach(dot => dot.classList.remove('filled'));
+        
+        // 모달 내용 원래대로 복원
+        modalTitle.textContent = '결제 비밀번호 입력';
+        modalDesc.textContent = '안전한 결제를 위해 결제 비밀번호를 입력해주세요.';
+        passwordInputContainer.style.display = 'block';
+        confirmPaymentBtn.textContent = '확인';
+        cancelPaymentBtn.textContent = '취소';
     }
     
     // AJAX로 비밀번호 검증
@@ -645,7 +798,8 @@ function setupPaymentPasswordModal() {
                             'storeRequest': document.getElementById('storeRequestHidden').value,
                             'finalTotal': document.getElementById('finalTotalHidden').value,
                             'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
-                            'paymentMethod': document.getElementById('paymentMethodHidden').value
+                            'paymentMethod': document.getElementById('paymentMethodHidden').value,
+                            'pointValue': document.getElementById('pointValueHidden').value
                         };
                         // 폼에 필드 추가
                         for (const key in params) {

@@ -508,37 +508,61 @@ public class UserStoreController {
 	@GetMapping(value = "/userStore/startOrder")
 	public ModelAndView startOrder(HttpSession session, String totalPrice, String deliveryFee, String finalTotalPrice,
 			String order_Id) {
-
+		
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 		ModelAndView mav = new ModelAndView("user/userMain");
 		mav.addObject("BODY", "../userstore/startOrder.jsp");
 		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
 		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(loginUser.getUser_id());
 		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
+		Integer password = userService.getPayPassword(loginUser.getUser_id());
 		mav.addObject("cardList", uc);
 		mav.addObject("userCoupons", userCoupons);
 		mav.addObject("userInfo", cu);
 		mav.addObject("totalPrice", totalPrice);
 		mav.addObject("deliveryFee", deliveryFee);
 		mav.addObject("finalTotalPrice", finalTotalPrice);
+		mav.addObject("hasPaymentPassword", password);
 		System.out.println("결제창 오더 아이디:" + order_Id);
 		mav.addObject("order_Id", order_Id);
-		Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
-		double pointRate = adminService.getpointRate();
-		Integer point = (int)(Integer.parseInt(finalTotalPrice) * pointRate);
-		Integer userTotalPoint = userPoint + point;
-		User user = new User();
-		user.setPoint(userTotalPoint);
-		user.setUser_id(loginUser.getUser_id());
-		this.userStoreService.updatePoint(user);
 		return mav;
 	}
 
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
-			String finalTotal, String selectedCouponId, String paymentMethod) {
+			String finalTotal, String selectedCouponId, String paymentMethod, String pointValue) {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+		// 포인트 처리 로직 추가
+	    if(pointValue != null && !pointValue.isEmpty()) {
+	        int usedPoints = Integer.parseInt(pointValue);
+	        if(usedPoints > 0) {
+	            // 현재 사용자의 포인트 가져오기
+	            Integer currentPoints = this.userStoreService.getPoint(loginUser.getUser_id());
+	            
+	            // 사용한 포인트만큼 차감
+	            Integer remainingPoints = currentPoints - usedPoints;
+	            
+	            // 사용자 객체에 업데이트할 포인트 설정
+	            User user = new User();
+	            user.setUser_id(loginUser.getUser_id());
+	            user.setPoint(remainingPoints);
+	            
+	            // 포인트 업데이트 서비스 호출
+	            this.userStoreService.updatePoint(user);
+	            
+	            System.out.println("사용한 포인트: " + usedPoints);
+	            System.out.println("남은 포인트: " + remainingPoints);
+	        }
+	    }
+	    Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
+		double pointRate = adminService.getpointRate();
+		Integer point = (int)(Integer.parseInt(finalTotal) * pointRate);
+		Integer userTotalPoint = userPoint + point;
+		User user = new User();
+		user.setPoint(userTotalPoint);
+		user.setUser_id(loginUser.getUser_id());
+		this.userStoreService.updatePoint(user);
 
 		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
 		OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
