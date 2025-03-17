@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springboot.delivery.model.LoginUser;
-import com.springboot.delivery.model.UserNotice;
-import com.springboot.delivery.model.OwnerNotice;
 import com.springboot.delivery.model.Maincategory;
-import com.springboot.delivery.service.NoticeService;
+import com.springboot.delivery.model.OwnerNotice;
+import com.springboot.delivery.model.StartEnd;
+import com.springboot.delivery.model.UserNotice;
 import com.springboot.delivery.service.AdminService;
+import com.springboot.delivery.service.NoticeService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -31,15 +32,34 @@ public class NoticeController {
     
     // 사용자 공지사항 목록
     @GetMapping("/user/notice")
-    public ModelAndView userNoticeList(HttpSession session) {
+    public ModelAndView userNoticeList(HttpSession session, Integer PAGE_NUM) {
         ModelAndView mav = new ModelAndView("user/userMain");
         
         // 메인 카테고리 목록 가져오기 (메뉴 표시용)
         List<Maincategory> maincategoryList = adminService.getAllMaincategory();
         mav.addObject("maincategoryList", maincategoryList);
         
-        List<UserNotice> noticeList = noticeService.getAllUserNotices();
-        mav.addObject("noticeList", noticeList);
+        int currentPage = 1;
+        if(PAGE_NUM != null) {
+        	currentPage = PAGE_NUM;
+        }
+        Integer count = this.noticeService.getMaxCountFromUserNotice();
+        int startRow = 0; int endRow = 0; int totalPageCount = 0;
+        if(count > 0) {
+        	totalPageCount = count / 5;
+        	if(count % 5 != 0) totalPageCount++;
+        	startRow = (currentPage - 1) * 5;
+        	endRow = ((currentPage - 1) * 5) + 6;
+        	if(endRow > count) endRow = count;
+        }
+        StartEnd se = new StartEnd(); se.setStart(startRow); se.setEnd(endRow);
+        
+        List<UserNotice> noticeList = noticeService.getAllUserNotices(se);
+        mav.addObject("START", startRow);
+        mav.addObject("END", endRow);
+        mav.addObject("TOTAL", count);
+        mav.addObject("currentPage", currentPage);
+        mav.addObject("LIST", noticeList);
         mav.addObject("BODY", "userNoticeList.jsp");
         return mav;
     }
@@ -93,8 +113,9 @@ public class NoticeController {
     
     // 사용자 공지사항 관리 페이지
     @GetMapping("/admin/userNotice")
-    public ModelAndView adminUserNoticeList(HttpSession session) {
+    public ModelAndView adminUserNoticeList(HttpSession session, Integer PAGE_NUM) {
         ModelAndView mav = new ModelAndView("admin/adminMain");
+        
         
         // 세션에서 로그인 사용자 확인 (관리자 권한 체크)
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -105,7 +126,21 @@ public class NoticeController {
             return mav;
         }
         
-        List<UserNotice> noticeList = noticeService.getAllUserNotices();
+        int currentPage = 1;
+        if(PAGE_NUM != null) {
+        	currentPage = PAGE_NUM;
+        }
+        Integer count = this.noticeService.getMaxCountFromUserNotice();
+        int startRow = 0; int endRow = 0; int totalPageCount = 0;
+        if(count > 0) {
+        	totalPageCount = count / 5;
+        	if(count % 5 != 0) totalPageCount++;
+        	startRow = (currentPage - 1) * 5;
+        	endRow = ((currentPage - 1) * 5) + 6;
+        	if(endRow > count) endRow = count;
+        }
+        StartEnd se = new StartEnd(); se.setStart(startRow); se.setEnd(endRow);
+        List<UserNotice> noticeList = noticeService.getAllUserNotices(se);
         mav.addObject("noticeList", noticeList);
         mav.addObject("activeMenu", "userNotice");
         mav.addObject("contentPage", "../admin/userNoticeManagement.jsp");

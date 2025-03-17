@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.springboot.delivery.mapper.NoticeMapper;
 import com.springboot.delivery.model.UserNotice;
 import com.springboot.delivery.model.OwnerNotice;
+import com.springboot.delivery.model.StartEnd;
 
 @Service
 public class NoticeService {
@@ -14,8 +15,8 @@ public class NoticeService {
     private NoticeMapper noticeMapper;
     
     // 사용자 공지사항
-    public List<UserNotice> getAllUserNotices() {
-        return noticeMapper.getAllUserNotices();
+    public List<UserNotice> getAllUserNotices(StartEnd se) {
+        return noticeMapper.getAllUserNotices(se);
     }
     
     public UserNotice getUserNoticeById(Integer notice_id) {
@@ -65,5 +66,9 @@ public class NoticeService {
   
     public void increaseOwnerNoticeViewCount(Integer notice_id) {
         noticeMapper.increaseOwnerNoticeViewCount(notice_id);
+    }
+    
+    public Integer getMaxCountFromUserNotice() {
+    	return this.noticeMapper.getMaxCountFromUserNotice();
     }
 }

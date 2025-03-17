@@ -10,6 +10,11 @@
 <div class="notice-container">
     <div class="card shadow-sm">
         <div class="card-body p-0">
+            <!-- 페이지 정보 표시 -->
+            <div align="right" style="padding: 10px 20px;">
+                ${START + 1}~${END - 1}/${TOTAL}
+            </div>
+            
             <div class="table-responsive">
                 <table class="notice-table">
                     <thead>
@@ -22,7 +27,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:if test="${empty noticeList}">
+                        <c:if test="${empty LIST}">
                             <tr>
                                 <td colspan="5" class="text-center py-4">
                                     <div class="d-flex flex-column align-items-center">
@@ -33,7 +38,7 @@
                             </tr>
                         </c:if>
                         
-                        <c:forEach var="notice" items="${noticeList}">
+                        <c:forEach var="notice" items="${LIST}">
                             <tr class="${notice.important == 'Y' ? 'notice-important' : ''}">
                                 <td class="text-center">${notice.notice_id}</td>
                                 <td>
@@ -60,37 +65,35 @@
         </div>
     </div>
     
-    <!-- 페이지네이션 (필요시 추가) -->
-    <c:if test="${not empty pagination}">
-    <div class="d-flex justify-content-center mt-3">
-        <ul class="pagination">
-            <!-- 이전 페이지 -->
-            <c:if test="${pagination.currentPage > 1}">
-                <li class="page-item">
-                    <a class="page-link" href="<c:url value='/user/notice?page=${pagination.currentPage - 1}'/>">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                </li>
+    <!-- 페이지네이션 (간소화된 버전) -->
+    <div align="center" style="margin-top: 20px;">
+        <c:set var="currentPage" value="${currentPage}"/>
+        <c:set var="pageCount" value="${(TOTAL + 4) / 5}"/>
+        <c:set var="startPage" value="${currentPage - (currentPage % 10 == 0 ? 10 : (currentPage % 10)) + 1}"/>
+        <c:set var="endPage" value="${startPage + 9}"/>
+        
+        <c:if test="${endPage > pageCount}">
+            <c:set var="endPage" value="${pageCount}"/>
+        </c:if>
+        
+        <c:if test="${startPage > 10}">
+            <a href="<c:url value='/user/notice?PAGE_NUM=${startPage - 1}'/>">[이전]</a>
+        </c:if>
+        
+        <c:forEach begin="${startPage}" end="${endPage}" var="i">
+            <c:if test="${currentPage == i}">
+                <font size="5">
             </c:if>
-            
-            <!-- 페이지 번호 -->
-            <c:forEach begin="${pagination.startPage}" end="${pagination.endPage}" var="pageNum">
-                <li class="page-item ${pageNum == pagination.currentPage ? 'active' : ''}">
-                    <a class="page-link" href="<c:url value='/user/notice?page=${pageNum}'/>">${pageNum}</a>
-                </li>
-            </c:forEach>
-            
-            <!-- 다음 페이지 -->
-            <c:if test="${pagination.currentPage < pagination.totalPages}">
-                <li class="page-item">
-                    <a class="page-link" href="<c:url value='/user/notice?page=${pagination.currentPage + 1}'/>">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                </li>
+            <a href="<c:url value='/user/notice?PAGE_NUM=${i}'/>">${i}</a>
+            <c:if test="${currentPage == i}">
+                </font>
             </c:if>
-        </ul>
+        </c:forEach>
+        
+        <c:if test="${endPage < pageCount}">
+            <a href="<c:url value='/user/notice?PAGE_NUM=${endPage + 1}'/>">[다음]</a>
+        </c:if>
     </div>
-    </c:if>
     
     <!-- 돌아가기 버튼 -->
     <div class="text-center mt-3">
