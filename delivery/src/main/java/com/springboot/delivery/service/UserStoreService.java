@@ -184,8 +184,8 @@ public class UserStoreService {
 	public List<Map<String, Object>> getStoreCouponList(StoreCoupon sc) {
 	    return this.userStoreMapper.getStoreCouponList(sc);
 	}
-	public List<Map<String, Object>> getUserCoupons(String userId) {
-	    return this.userStoreMapper.getUserCoupons(userId);
+	public List<Map<String, Object>> getUserCoupons(StoreCoupon sc) {
+	    return this.userStoreMapper.getUserCoupons(sc);
 	}
 	
 	public List<MenuItem> getAllMenusByStoreId(String store_id) {
@@ -239,6 +239,14 @@ public class UserStoreService {
 	
 	public List<UserCouponDetail> getCouponList(String user_id){
 		return this.userStoreMapper.getCouponList(user_id);
+	}
+	
+	public UsedCoupon getCouponNum(UserCoupon uc) {
+		return this.userStoreMapper.getCouponNum(uc);
+	}
+	
+	public Integer getMaxUserCouponId() {
+		return this.userStoreMapper.getMaxUserCouponId();
 	}
 
 }

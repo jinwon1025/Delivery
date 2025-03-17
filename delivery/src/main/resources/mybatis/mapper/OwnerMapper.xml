@@ -208,14 +208,16 @@
 		owner_id,
 		TO_CHAR(issued_date, 'YYYY-MM-DD') as issued_date,
 		TO_CHAR(expire_date, 'YYYY-MM-DD') as expire_date,
-		(total_quantity - NVL(store_used_quantity, 0)) as total_quantity
+		(total_quantity -
+		NVL(store_used_quantity, 0)) as total_quantity
 		FROM
 		b_owner_coupon_tbl
 		WHERE
 		(owner_id = #{ownerId} OR
 		owner_id IS NULL)
 		AND
-		expire_date >= SYSDATE
+		expire_date >=
+		SYSDATE
 		ORDER BY
 		expire_date
 	</select>
@@ -269,31 +271,25 @@
 	<select id="getAppliedStoreCoupons" parameterType="String"
 		resultType="map">
 		SELECT
-		MAX(sc.store_coupon_id) as store_coupon_id,
+		sc.store_coupon_id,
 		sc.store_id,
-		MAX(s.store_name) as store_name,
+		s.store_name as store_name,
 		sc.owner_coupon_id,
-		MAX(sc.cp_name) as cp_name,
-		MAX(sc.quantity) as quantity,
-		MAX(NVL(sc.used_quantity, 0)) as used_qty,
-		MAX(sc.quantity -
-		NVL(sc.used_quantity, 0)) as remaining_qty,
-		MAX(sc.minimum_purchase) as
-		minimum_purchase,
-		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')) as
-		expire_date
+		sc.cp_name,
+		sc.quantity,
+		NVL(sc.used_quantity, 0) as used_qty,
+		(sc.quantity - NVL(sc.used_quantity, 0)) as remaining_qty,
+		sc.minimum_purchase,
+		TO_CHAR(sc.expire_date, 'YYYY-MM-DD') as expire_date
 		FROM
 		b_store_coupon_tbl sc
 		JOIN
-		b_store_tbl s ON sc.store_id =
-		s.store_id
+		b_store_tbl s ON sc.store_id = s.store_id
 		WHERE
 		sc.owner_id = #{ownerId}
 		AND sc.expire_date >= SYSDATE
-		GROUP BY
-		sc.store_id, sc.owner_coupon_id
 		ORDER BY
-		MAX(TO_CHAR(sc.expire_date, 'YYYY-MM-DD')), MAX(s.store_name)
+		sc.expire_date, s.store_name
 	</select>
 
 	<delete id="deleteCoupon" parameterType="Integer">
@@ -431,6 +427,13 @@
 		resultType="Integer">
 		select totalprice from b_order_detail_tbl where order_id =
 		#{order_id}
+	</select>
+
+	<select id="getStoreUsedQuantity" parameterType="String">
+
+		select store_used_quantity from b_owner_coupon_tbl where owner_coupon_id =
+		#{owner_coupon_id}
+
 	</select>
 
 

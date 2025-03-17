@@ -672,7 +672,8 @@ public class UserController {
 	        Integer storeCouponId = Integer.parseInt(request.get("storeCouponId").toString());
 	        Integer ownerCouponId = Integer.parseInt(request.get("ownerCouponId").toString());
 	        String expireDate = request.get("expireDate").toString(); // 만료일 파라미터 추출
-
+	        // 최소 주문 금액 파라미터 추가
+	        Integer minimumPurchase = Integer.parseInt(request.get("minimumPurchase").toString());
 
 	        Integer maxCount = this.userService.getMaxUserCouponId();
 	        if(maxCount == null) {
@@ -686,16 +687,18 @@ public class UserController {
 	        uc.setOwner_coupon_id(ownerCouponId);
 	        uc.setDownload_date(new String());
 	        uc.setStatus(1); // 0: 사용 가능
-	        
+	        // 최소 주문 금액 설정
+	        uc.setMinimum_purchase(minimumPurchase);
+
 	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //0313
 	        Date date = formatter.parse(expireDate);//0313
 	        uc.setExpire_date(date); // 받아온 만료일 설정
-	        
+
 	        this.userService.increaseStoreCouponQuantity(storeCouponId);
 	        this.userService.increaseOwnerCouponQuantity(ownerCouponId);
 
 	        // 쿠폰 다운로드 처리
-	        userService.downloadCoupon(uc);
+	        this.userService.downloadCoupon(uc);
 
 	        response.put("success", true);
 	    } catch (Exception e) {

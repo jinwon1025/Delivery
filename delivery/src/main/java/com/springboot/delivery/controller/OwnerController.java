@@ -449,10 +449,12 @@ public class OwnerController {
 		
 		//b_store_coupon_tbl에 등록
 		this.ownerSerivce.registerCoupon(sc);
+		Integer store_used_quantity = this.ownerSerivce.getStoreUsedQuantity(owner_coupon_id);
 		
 		Coupon c = new Coupon();
 		c.setOwner_coupon_id(Integer.parseInt(owner_coupon_id));
-		c.setStore_used_quantity(Integer.parseInt(quantity));
+		c.setStore_used_quantity(store_used_quantity + Integer.parseInt(quantity));
+		System.out.println("등록된 쿠폰개수 :"+ (store_used_quantity + Integer.parseInt(quantity)));
 		
 		
 		//등록한 쿠폰 개수만큼 owner_coupon_tbl에서 깎기

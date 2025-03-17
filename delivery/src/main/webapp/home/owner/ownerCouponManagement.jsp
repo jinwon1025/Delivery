@@ -33,7 +33,7 @@
                                         <th>쿠폰명</th>
                                         <th>할인금액</th>
                                         <th>만료일</th>
-                                        <th>사용 가능 수량</th>
+                                        <th>등록 가능 수량</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -159,8 +159,8 @@
                                         <td><fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" type="currency" currencySymbol="₩" maxFractionDigits="0" /></td>
                                         <td>${coupon.EXPIRE_DATE}</td>
                                         <td>${coupon.QUANTITY}</td>
-                                        <td>${coupon.REMAINING_QTY}</td>
                                         <td>${coupon.USED_QTY}</td>
+                                        <td>${coupon.REMAINING_QTY}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-danger" 
                                                     onclick="removeCoupon(${coupon.STORE_COUPON_ID}, '${coupon.STORE_ID}', '${coupon.CP_NAME}')">

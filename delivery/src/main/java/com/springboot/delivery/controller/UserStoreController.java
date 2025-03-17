@@ -513,7 +513,12 @@ public class UserStoreController {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		mav.addObject("BODY", "../userstore/startOrder.jsp");
 		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
-		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(loginUser.getUser_id());
+		
+		StoreCoupon sc = new StoreCoupon();
+		sc.setUser_id(loginUser.getUser_id());
+		sc.setMinimum_purchase(Integer.parseInt(totalPrice));
+		
+		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(sc);
 		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
 		mav.addObject("cardList", uc);
 		mav.addObject("userCoupons", userCoupons);
@@ -587,12 +592,15 @@ public class UserStoreController {
 		UserCoupon uc = new UserCoupon();
 		uc.setOrder_id(order_Id);
 		uc.setUser_cp_id(Integer.parseInt(selectedCouponId));
+		
+		System.out.println("user_cp_id: "+Integer.parseInt(selectedCouponId));
 		// b_order_tbl에 user_cp_id 넣기
 		this.userStoreService.updateUserCoupon(uc);
 		
 		
 		// b_user_coupon_tbl의 status 변경
 		this.userStoreService.updateUserCouponStatus(Integer.parseInt(selectedCouponId));
+		
 		
 		Map<String, Object> couponInfo = this.userStoreService.getCouponInfoByUserCouponId(Integer.parseInt(selectedCouponId));
 		
