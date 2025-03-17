@@ -545,7 +545,7 @@ public class UserStoreController {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 
-		// 주문 정보와 사용자 주소가 포함된 OrderCart 객체 가져오기
+		// 주문 정보와 사용자 주소가 포함된  OrderCart 객체 가져오기
 		OrderCart orderWithAddress = this.userStoreService.getOrderInfoWithAddress(order_Id);
 		
 		OrderCart orderStatusCart = this.userStoreService.getOrderStatus(order_Id);
