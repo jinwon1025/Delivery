@@ -523,7 +523,7 @@ public class UserStoreController {
 		mav.addObject("deliveryFee", deliveryFee);
 		mav.addObject("finalTotalPrice", finalTotalPrice);
 		mav.addObject("hasPaymentPassword", password);
-		System.out.println("결제창 오더 아이디:" + order_Id);
+		System.out.println("결제창오더 아이디:" + order_Id);
 		mav.addObject("order_Id", order_Id);
 		return mav;
 	}
