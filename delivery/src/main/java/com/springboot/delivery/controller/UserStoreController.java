@@ -531,30 +531,6 @@ public class UserStoreController {
       mav.addObject("order_Id", order_Id);
       return mav;
    }
-		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-		ModelAndView mav = new ModelAndView("user/userMain");
-		mav.addObject("BODY", "../userstore/startOrder.jsp");
-		CartUser cu = this.userStoreService.cartUserData(loginUser.getUser_id());
-
-		StoreCoupon sc = new StoreCoupon();
-		sc.setUser_id(loginUser.getUser_id());
-		sc.setMinimum_purchase(Integer.parseInt(totalPrice));
-
-		List<Map<String, Object>> userCoupons = userStoreService.getUserCoupons(sc);
-		List<UserCard> uc = this.userService.userCardLIst(loginUser.getUser_id());
-		Integer password = userService.getPayPassword(loginUser.getUser_id());
-		mav.addObject("cardList", uc);
-		mav.addObject("userCoupons", userCoupons);
-		mav.addObject("userInfo", cu);
-		mav.addObject("totalPrice", totalPrice);
-		mav.addObject("deliveryFee", deliveryFee);
-		mav.addObject("finalTotalPrice", finalTotalPrice);
-		mav.addObject("hasPaymentPassword", password);
-		System.out.println("결제창 오더 아이디:" + order_Id);
-		mav.addObject("order_Id", order_Id);
-		return mav;
-	}
-
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
 	                        String finalTotal, String selectedCouponId, String paymentMethod, String pointValue) {
