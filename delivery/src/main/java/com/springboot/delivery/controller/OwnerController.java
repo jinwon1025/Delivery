@@ -25,6 +25,7 @@ import com.springboot.delivery.model.Reply;
 import com.springboot.delivery.model.Store;
 import com.springboot.delivery.model.StoreCoupon;
 import com.springboot.delivery.model.User;
+import com.springboot.delivery.service.AdminService;
 import com.springboot.delivery.service.OwnerService;
 import com.springboot.delivery.service.UserStoreService;
 
@@ -40,6 +41,8 @@ public class OwnerController {
 	private OwnerService ownerSerivce;
 	@Autowired
 	private UserStoreService userStoreService;
+	@Autowired
+	private AdminService adminService;
 
 	@GetMapping(value = "/owner/index")
 	public ModelAndView ownerIndex(HttpSession session) {
@@ -316,10 +319,8 @@ public class OwnerController {
 	        
 	        if(status == 5) {
 	        	String user_id = this.ownerSerivce.getUserId(orderId);
-	        	System.out.println("유저 아이디 :"+user_id);
 		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId);
-		        System.out.println("토탈 금액 :"+totalprice);
-		        double pointRate = 0.02;
+		        double pointRate = this.adminService.getpointRate();
 		        Integer point = (int)(totalprice * pointRate);
 	        	Integer totalPoint = this.userStoreService.getPoint(user_id);
 	        	Integer userPoint = totalPoint - point;

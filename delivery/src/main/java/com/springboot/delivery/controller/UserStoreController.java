@@ -529,8 +529,8 @@ public class UserStoreController {
 		System.out.println("결제창 오더 아이디:" + order_Id);
 		mav.addObject("order_Id", order_Id);
 		Integer userPoint = this.userStoreService.getPoint(loginUser.getUser_id());
-		double pointRate = 0.02;
-		Integer point = (int) (Integer.parseInt(finalTotalPrice) * pointRate);
+		double pointRate = adminService.getpointRate();
+		Integer point = (int)(Integer.parseInt(finalTotalPrice) * pointRate);
 		Integer userTotalPoint = userPoint + point;
 		User user = new User();
 		user.setPoint(userTotalPoint);

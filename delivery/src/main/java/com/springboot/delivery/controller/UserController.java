@@ -627,10 +627,9 @@ public class UserController {
 		ModelAndView mav = new ModelAndView("user/userMain");
 		LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 		String user_id = loginUser.getUser_id();
-		Integer Password = Integer.parseInt(payPassword);
 		User user = new User();
 		user.setUser_id(user_id);
-		user.setPay_password(Password);
+		user.setPay_password(payPassword);
 		this.userService.payPasswordRegister(user);
 		mav.setViewName("redirect:/user/paypassword");
 		return mav;
@@ -648,9 +647,8 @@ public class UserController {
             mav.setViewName("redirect:/user/paypassword");
             return mav;
 		}
-		Integer Password = Integer.parseInt(newPayPassword);
 		user.setUser_id(user_id);
-		user.setPay_password(Password);
+		user.setPay_password(newPayPassword);
 		this.userService.payPasswordRegister(user);
 		session.setAttribute("successMsg", "비밀번호가 변경되었습니다.");
 		mav.setViewName("redirect:/user/paypassword");

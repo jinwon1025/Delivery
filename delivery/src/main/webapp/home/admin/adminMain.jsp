@@ -257,6 +257,11 @@ body {
 					onclick="location.href='<c:url value='/admin/couponManagement'/>'">
 					<i class="fas fa-ticket-alt"></i> <span>쿠폰관리</span>
 				</li>
+				<li
+				    class="admin-menu-item ${activeMenu eq 'pointManagement' ? 'active' : ''}"
+				    onclick="location.href='<c:url value='/admin/pointManagement'/>'">
+				    <i class="fas fa-coins"></i> <span>포인트관리</span>
+				</li>
 				<!-- 공지사항 관리 메뉴 추가 -->
 				<li
 					class="admin-menu-item ${activeMenu eq 'userNotice' ? 'active' : ''}"
