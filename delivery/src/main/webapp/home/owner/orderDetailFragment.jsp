@@ -78,7 +78,7 @@
             <table class="table table-bordered">
             	<tr>
             		<th>결제 수단</th>
-            		<td id="paymentMethod">${orderInfo.PAYMENT_METHOD}</td>
+            		<td>${orderInfo.PAYMENT_METHOD}</td>
             	</tr>
                 <tr>
                     <th width="20%">가게 요청사항</th>

@@ -174,6 +174,11 @@
                     </div>
                 </div>
             </c:forEach>
+            <%-- 메뉴 금액 합계 계산 --%>
+            <c:set var="menuTotalSum" value="0" />
+			<c:forEach var="item" items="${orderItems}">
+			    <c:set var="menuTotalSum" value="${menuTotalSum + item.ITEM_TOTAL_PRICE}" />
+			</c:forEach>
             
             <div class="info-row">
                 <div class="info-label">주문일시</div>
@@ -194,7 +199,7 @@
             <div class="info-row">
                 <div class="info-label">메뉴 금액</div>
                 <div class="info-value">
-                    <fmt:formatNumber value="${orderInfo.MENU_PRICE}" pattern="#,###원" />
+                    <fmt:formatNumber value="${menuTotalSum}" pattern="#,###원" />
                 </div>
             </div>
             <div class="info-row">
