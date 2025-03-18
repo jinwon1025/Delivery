@@ -366,11 +366,20 @@ body {
 							<div class="cart-item-actions">
 								<div class="quantity-container">
 									<button type="button" class="quantity-btn"
+									    data-menu-id="${item.MENU_ITEM_ID}"
+                                        data-option-id="${item.ORDER_OPTION_ID}"
+                                        data-order-id="${item.ORDER_ID}"
 										onclick="decreaseQuantity(this)">-</button>
 									<input type="number" name="quantity" class="quantity-input"
 										value="${empty item.QUANTITY ? 1 : item.QUANTITY}" min="1"
-										max="10">
+										max="10"
+										data-menu-id="${item.MENU_ITEM_ID}"
+                                        data-option-id="${item.ORDER_OPTION_ID}"
+                                        data-order-id="${item.ORDER_ID}">
 									<button type="button" class="quantity-btn"
+									    data-menu-id="${item.MENU_ITEM_ID}"
+                                        data-option-id="${item.ORDER_OPTION_ID}"
+                                        data-order-id="${item.ORDER_ID}"
 										onclick="increaseQuantity(this)">+</button>
 								</div>
 
@@ -437,12 +446,11 @@ body {
 					</div>
 				</div>
 
-				<!-- 하단 주문 정보 및 버튼   컨테이너 -->
+				<!-- 하단 주문 정보 및 버튼 컨테이너 -->
 				<div class="order-footer">
 					<div class="order-footer-right">
-						<a
-							href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}"
-							class="btn">메뉴 추가</a>
+						
+							<a href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}" class="btn">메뉴 추가</a>
 						<form action="/userStore/startOrder" method="get"
 							onsubmit="return validateForm()">
 							<input type="hidden" id="orderTotalPrice" name="totalPrice"
@@ -473,6 +481,11 @@ body {
 	</c:choose>
 
 	<script>
+	    // 숫자에 천 단위 쉼표 추가하는 함수
+        function formatNumberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+	
 		//전체 선택 체크박스 동작 함수
 		function selectAll(source) {
 			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
@@ -537,11 +550,9 @@ body {
 			const finalTotalPrice = totalPrice + deliveryFee;
 
 			// 화면의 가격 정보 업데이트
-			document.getElementById('menuPriceDisplay').innerText = totalPrice
-					.toLocaleString()
+			document.getElementById('menuPriceDisplay').innerText = formatNumberWithCommas(totalPrice)
 					+ '원'; // 메뉴 금액 표시
-			document.getElementById('finalTotalPriceDisplay').innerText = finalTotalPrice
-					.toLocaleString()
+			document.getElementById('finalTotalPriceDisplay').innerText = formatNumberWithCommas(finalTotalPrice)
 					+ '원'; // 최종 결제 금액 표시
 
 			// 숨겨진 입력 필드 업데이트
@@ -627,50 +638,176 @@ body {
 		function deleteCheck() {
 			return confirm('선택한 메뉴를 장바구니에서 삭제하시겠습니까?'); // 삭제 전 확인 대화상자 표시
 		}
-
-		// 수량 증가 함수
-		function increaseQuantity(button) {
-			const quantityInput = button.parentElement
-					.querySelector('.quantity-input'); // 수량 입력 필드 찾기
-			const currentValue = parseInt(quantityInput.value); // 현재 수량 값을 정수로 변환
-			if (currentValue < 10) { // 최대값(10)보다 작은 경우에만 증가
-				quantityInput.value = currentValue + 1; // 수량 증가
-				updateItemPrice(quantityInput); // 아이템 가격 업데이트
-			}
-		}
-
-		// 수량 감소 함수
-		function decreaseQuantity(button) {
-			const quantityInput = button.parentElement
-					.querySelector('.quantity-input'); // 수량 입력 필드 찾기
-			const currentValue = parseInt(quantityInput.value); // 현재 수량 값을 정수로 변환
-			if (currentValue > 1) { // 최소값(1)보다 큰 경우에만 감소
-				quantityInput.value = currentValue - 1; // 수량 감소
-				updateItemPrice(quantityInput); // 아이템 가격 업데이트
-			}
-		}
-
+		
 		// 개별 아이템 가격 업데이트 함수
-		function updateItemPrice(quantityInput) {
-			const cartItem = quantityInput.closest('.cart-item'); // 현재 수량 입력 필드가 속한 아이템 요소 찾기
-			const checkbox = cartItem.querySelector('input[type="checkbox"]'); // 체크박스 요소 찾기
+        function updateItemPrice(quantityInput) {
+            const cartItem = quantityInput.closest('.cart-item'); // 현재 수량 입력 필드가 속한 아이템 요소 찾기
+            const checkbox = cartItem.querySelector('input[type="checkbox"]'); // 체크박스 요소 찾기
 
-			// 숫자 형식으로 변환 보장
-			const originalPrice = Number(checkbox.getAttribute('data-price')); // 아이템 단가 가져오기
-			const optionPrice = Number(checkbox
-					.getAttribute('data-option-price') || 0); // 옵션 가격 가져오기
-			const quantity = Number(quantityInput.value); // 현재 수량 값 가져오기
+            // 숫자 형식으로 변환 보장
+            const originalPrice = Number(checkbox.getAttribute('data-price')); // 아이템 단가 가져오기
+            const optionPrice = Number(checkbox
+                    .getAttribute('data-option-price') || 0); // 옵션 가격 가져오기
+            const quantity = Number(quantityInput.value); // 현재 수량 값 가져오기
 
-			const calculatedPrice = (originalPrice + optionPrice) * quantity; // (단가 + 옵션가격) × 수량으로 계산된 가격
+            const calculatedPrice = (originalPrice + optionPrice) * quantity; // (단가 + 옵션가격) × 수량으로 계산된 가격
 
-			const priceElement = cartItem.querySelector('.cart-item-price'); // 가격 표시 요소 찾기
-			priceElement.textContent = calculatedPrice.toLocaleString() + '원'; // 계산된 가격 표시 (천 단위 구분자 포함)
+            const priceElement = cartItem.querySelector('.cart-item-price'); // 가격 표시 요소 찾기
+            priceElement.textContent = formatNumberWithCommas(calculatedPrice) + '원'; // 계산된 가격 표시 (천 단위 구분자 포함)
 
-			// 체크박스의 data-quantity 속성도 업데이트
-			checkbox.setAttribute('data-quantity', quantity); // 수량 데이터 속성 업데이트
+            // 체크박스의 data-quantity 속성도 업데이트
+            checkbox.setAttribute('data-quantity', quantity); // 수량 데이터 속성 업데이트
 
-			updateTotalPrice(); // 총 가격 업데이트
-		}
-	</script>
-</body>
-</html>
+            // 전체선택 체크박스 상태 유지
+            const selectAllCheckbox = document.getElementById('selectAll');
+            checkbox.checked = true; // 아이템 체크박스를 항상 선택 상태로 유지
+            selectAllCheckbox.checked = true; // 전체선택 체크박스도 선택 상태로 유지
+
+            updateTotalPrice(); // 총 가격 업데이트
+        }
+        
+     // 서버에 장바구니 수량 업데이트 요청 보내는 함수
+        function updateCartQuantity(menuItemId, quantity, orderId, orderOptionId) {
+            console.log("AJAX 요청 준비:", { menuItemId, quantity, orderId, orderOptionId });
+            
+            // AJAX 요청
+            fetch('/userstore/updateCartQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'menu_item_id': menuItemId,
+                    'quantity': quantity,
+                    'order_id': orderId,
+                    'order_option_id': orderOptionId
+                })
+            })
+            .then(response => {
+                console.log("응답 상태:", response.status);
+                
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('서버 응답 오류: ' + response.status);
+                }
+            })
+            .then(data => {
+                console.log("응답 데이터:", data);
+                if (data.success) {
+                    console.log("수량 업데이트 성공!");
+                }
+            })
+            .catch(error => {
+                console.error("AJAX 오류:", error);
+            });
+        }
+
+    	// 수량 증가 함수
+    	function increaseQuantity(button) {
+            console.log("증가 버튼 클릭됨");
+            
+            // 버튼에서 직접 데이터 가져오기
+            const menuItemId = button.getAttribute('data-menu-id');
+            const orderOptionId = button.getAttribute('data-option-id');
+            const orderId = button.getAttribute('data-order-id');
+            
+            if (!menuItemId || !orderOptionId || !orderId) {
+                console.error("필수 데이터가 없습니다:", { menuItemId, orderOptionId, orderId });
+                return false;
+            }
+            
+            const quantityInput = button.parentElement.querySelector('.quantity-input');
+            const currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue < 10) {
+                // 수량 증가
+                quantityInput.value = currentValue + 1;
+                const newQuantity = currentValue + 1;
+                
+                // UI 업데이트
+                updateItemPrice(quantityInput);
+                
+                // AJAX 요청 전송
+                updateCartQuantity(menuItemId, newQuantity, orderId, orderOptionId);
+            }
+            
+            return false; // 기본 이벤트 방지
+        }
+
+    	// 수량 감소 함수
+    	function decreaseQuantity(button) {
+            console.log("감소 버튼 클릭됨");
+            
+            // 버튼에서 직접 데이터 가져오기
+            const menuItemId = button.getAttribute('data-menu-id');
+            const orderOptionId = button.getAttribute('data-option-id');
+            const orderId = button.getAttribute('data-order-id');
+            
+            if (!menuItemId || !orderOptionId || !orderId) {
+                console.error("필수 데이터가 없습니다:", { menuItemId, orderOptionId, orderId });
+                return false;
+            }
+            
+            const quantityInput = button.parentElement.querySelector('.quantity-input');
+            const currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue > 1) {
+                // 수량 감소
+                quantityInput.value = currentValue - 1;
+                const newQuantity = currentValue - 1;
+                
+                // UI 업데이트
+                updateItemPrice(quantityInput);
+                
+                // AJAX 요청 전송
+                updateCartQuantity(menuItemId, newQuantity, orderId, orderOptionId);
+            }
+            
+            return false; // 기본 이벤트 방지
+        }
+        
+        // 수량 입력 필드 직접 변경 시 호출되는 함수
+        function handleQuantityChange(input) {
+            console.log("수량 직접 입력됨");
+            
+            // 입력값 범위 검증 (1~10)
+            let value = parseInt(input.value);
+            if (isNaN(value) || value < 1) {
+                value = 1;
+                input.value = 1;
+            } else if (value > 10) {
+                value = 10;
+                input.value = 10;
+            }
+            
+            // 데이터 가져오기
+            const menuItemId = input.getAttribute('data-menu-id');
+            const orderOptionId = input.getAttribute('data-option-id');
+            const orderId = input.getAttribute('data-order-id');
+            
+            if (!menuItemId || !orderOptionId || !orderId) {
+                console.error("필수 데이터가 없습니다:", { menuItemId, orderOptionId, orderId });
+                return;
+            }
+            
+            // UI 업데이트
+            updateItemPrice(input);
+            
+            // AJAX 요청 전송
+            updateCartQuantity(menuItemId, value, orderId, orderOptionId);
+        }
+    	
+    	// 페이지 로드 시 초기화
+    	document.addEventListener('DOMContentLoaded', function() {
+    	    // 수량 입력 필드에 change 이벤트 리스너 추가
+    	    const quantityInputs = document.querySelectorAll('.quantity-input');
+    	    quantityInputs.forEach(input => {
+    	        input.addEventListener('change', function() {
+    	            handleQuantityChange(this);
+    	        });
+    	    });
+    	});
+    </script>
+ </body>
+ </html>

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.springboot.delivery.model.CartOption;
 import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.LoginUser;
 import com.springboot.delivery.model.Maincategory;
@@ -1044,5 +1045,35 @@ public class UserStoreController {
 		mav.addObject("BODY", "../userstore/couponList.jsp");
 
 		return mav;
+	}
+	
+	@PostMapping("/userstore/updateCartQuantity")
+	@ResponseBody
+	public Map<String, Object> updateCartQuantity(
+	    @RequestParam("menu_item_id") int menuItemId,
+	    @RequestParam("quantity") int quantity,
+	    @RequestParam("order_id") String orderId,  // int가 아닌 String으로 받기
+	    @RequestParam("order_option_id") int orderOptionId) {
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    try {
+	        // 서비스 레이어를 통해 장바구니 아이템 수량 업데이트
+	        CartOption ca = new CartOption();
+	        ca.setOrder_id(orderId);  // 변환 없이 바로 사용
+	        ca.setOrder_option_id(orderOptionId);
+	        ca.setQuantity(quantity);
+	        
+	        this.userStoreService.updateCartItemQuantity(ca);
+	        
+	        response.put("success", true);  // 성공 표시 추가
+	        response.put("message", "수량이 성공적으로 업데이트되었습니다.");
+	        
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "수량 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+	    }
+	    
+	    return response;
 	}
 }

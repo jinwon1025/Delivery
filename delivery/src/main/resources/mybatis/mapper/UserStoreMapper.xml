@@ -836,6 +836,14 @@
 		where order_id=#{order_id}
 
 	</update>
+	
+	<update id="updateCartItemQuantity"
+		parameterType="com.springboot.delivery.model.CartOption">
+	
+	update order_quantity_tbl set quantity = #{quantity} where order_option_id=#{order_option_id} and order_id=#{order_id}
+	
+	
+	</update>
 
 
 </mapper>

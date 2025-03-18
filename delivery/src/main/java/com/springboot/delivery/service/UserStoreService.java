@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.delivery.mapper.UserStoreMapper;
+import com.springboot.delivery.model.CartOption;
 import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
@@ -260,6 +261,10 @@ public class UserStoreService {
 	
 	public List<Map<String, Object>> getMenuOptions(Map<String, Object> params) {
 	    return userStoreMapper.getMenuOptions(params);
+	}
+	
+	public void updateCartItemQuantity(CartOption ca) {
+		this.userStoreMapper.updateCartItemQuantity(ca);
 	}
 
 }

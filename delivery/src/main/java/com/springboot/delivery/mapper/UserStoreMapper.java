@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.springboot.delivery.model.CartOption;
 import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
@@ -113,4 +114,6 @@ public interface UserStoreMapper {
 	void updateDiscount(Order o);
 	
 	List<Map<String, Object>> getMenuOptions(Map<String, Object> params);
+	
+	void updateCartItemQuantity(CartOption ca);
 }	
