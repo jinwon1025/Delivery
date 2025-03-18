@@ -466,23 +466,8 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/returnToStore")
    public ModelAndView returnToStore(String store_id, HttpSession session) {
-      System.out.println(store_id);
-      ModelAndView mav = new ModelAndView("user/userMain");
-      Store currentStore = (Store) storeService.getStore(store_id);
-      session.setAttribute("currentStore", currentStore);
-      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-      List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
-      mav.addObject("maincategoryList", maincategoryList);
-      mav.addObject("storeCategory", mc);
-      mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-
-      if (!mc.isEmpty()) {
-         Integer firstCategoryId = mc.get(0).getMenu_category_id();
-         List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
-         mav.addObject("menuList", menuList);
-         mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
-      }
-      return mav;
+       // 리다이렉트로 변경
+       return new ModelAndView("redirect:/userstore/detail?store_id=" + store_id);
    }
 
    @PostMapping(value = "/userstore/deleteItemInCart")

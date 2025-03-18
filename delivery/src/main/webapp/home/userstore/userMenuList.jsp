@@ -257,8 +257,8 @@ function downloadCouponFromElement(buttonElement) {
     const expireDate = buttonElement.getAttribute('data-expire-date');
     const minimumPurchase = buttonElement.getAttribute('data-min-purchase');
     
-    if(confirm(`쿠폰을 다운로드하시겠습니까?`)) {
-        // AJAX를 통한 쿠폰 다운로드 요청
+    // 일반 문자열 연결 방식으로 변경
+    if(confirm('"' + couponName + '" 쿠폰을 다운로드하시겠습니까?')) {
         fetch('/user/downloadCoupon', {
             method: 'POST',
             headers: {
@@ -274,8 +274,8 @@ function downloadCouponFromElement(buttonElement) {
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                alert('쿠폰이 다운로드되었습니다.');
-                // 페이지 새로고침하여 변경된 상태 반영
+                // 일반 문자열 연결 방식으로 변경
+                alert('"' + couponName + '" 쿠폰이 다운로드되었습니다.');
                 window.location.reload();
             } else {
                 alert(data.message || '쿠폰 다운로드에 실패했습니다.');
