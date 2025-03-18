@@ -437,7 +437,7 @@ body {
 					</div>
 				</div>
 
-				<!-- 하단 주문 정보 및 버튼 컨테이너 -->
+				<!-- 하단 주문 정보 및 버튼   컨테이너 -->
 				<div class="order-footer">
 					<div class="order-footer-right">
 						<a

@@ -63,7 +63,7 @@
 		WHERE owner_id = #{owner_id}
 	</update>
 
-	<!-- 수정된 쿼리: 업주의 모든 가게 목록 조회 -->
+	<!-- 수정된 쿼리:    업주의 모든 가게 목록 조회 -->
 	<select id="getOwnerStores" parameterType="String"
 		resultType="com.springboot.delivery.model.Store">
 		SELECT s.store_id, s.store_name, s.store_address,
