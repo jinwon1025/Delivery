@@ -76,6 +76,10 @@
         <div class="col-12">
             <h5>요청사항</h5>
             <table class="table table-bordered">
+            	<tr>
+            		<th>결제 수단</th>
+            		<td>${orderInfo.PAYMENT_METHOD}</td>
+            	</tr>
                 <tr>
                     <th width="20%">가게 요청사항</th>
                     <td>${empty orderInfo.OWNER_REQUEST ? '없음' : orderInfo.OWNER_REQUEST}</td>

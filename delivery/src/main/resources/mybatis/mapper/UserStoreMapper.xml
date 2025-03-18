@@ -334,17 +334,18 @@
 
 	</select>
 
-	<update id="insertPay"
-		parameterType="com.springboot.delivery.model.OrderCart">
-
-		update b_order_detail_tbl set
-		toowner=#{toowner},torider=#{torider},
-		order_status=#{order_status},
-		totalprice=#{totalPrice} where
-		order_id=#{order_id}
-
-
+	<update id="insertPay" parameterType="com.springboot.delivery.model.OrderCart">
+	    update b_order_detail_tbl set
+	        toowner=#{toowner},
+	        torider=#{torider},
+	        order_status=#{order_status},
+	        totalprice=#{totalPrice},
+	        payment_method=#{payment_method},
+	        discount_amount=#{discount_amount}
+	    where
+	        order_id=#{order_id}
 	</update>
+	
 	<update id="updateOrderStore"
 		parameterType="com.springboot.delivery.model.OrderCart">
 		UPDATE b_order_detail_tbl
@@ -417,11 +418,10 @@
 		GROUP BY
 		oo.ORDER_OPTION_ID) AS menu_price,
 		s.DELIVERY_FEE,
-		0 AS discount_amount,
+		od.DISCOUNT_AMOUNT AS discount_amount,
 		od.TOOWNER AS message_to_owner,
 		od.TORIDER AS message_to_rider,
-		'Card'
-		AS payment_method
+		od.payment_method AS payment_method
 		FROM
 		b_order_tbl o
 		JOIN b_order_detail_tbl od ON
@@ -798,7 +798,8 @@
 	SELECT 
     USER_CP_ID,
     OWNER_COUPON_ID,
-    STORE_COUPON_ID
+    STORE_COUPON_ID,
+    SALE_PRICE
 FROM 
     b_user_coupon_tbl
 WHERE 
