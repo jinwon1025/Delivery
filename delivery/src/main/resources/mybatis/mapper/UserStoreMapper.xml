@@ -334,18 +334,19 @@
 
 	</select>
 
-	<update id="insertPay" parameterType="com.springboot.delivery.model.OrderCart">
-	    update b_order_detail_tbl set
-	        toowner=#{toowner},
-	        torider=#{torider},
-	        order_status=#{order_status},
-	        totalprice=#{totalPrice},
-	        payment_method=#{payment_method},
-	        discount_amount=#{discount_amount}
-	    where
-	        order_id=#{order_id}
+	<update id="insertPay"
+		parameterType="com.springboot.delivery.model.OrderCart">
+		update b_order_detail_tbl set
+		toowner=#{toowner},
+		torider=#{torider},
+		order_status=#{order_status},
+		totalprice=#{totalPrice},
+		payment_method=#{payment_method},
+		discount_amount=#{discount_amount}
+		where
+		order_id=#{order_id}
 	</update>
-	
+
 	<update id="updateOrderStore"
 		parameterType="com.springboot.delivery.model.OrderCart">
 		UPDATE b_order_detail_tbl
@@ -418,65 +419,70 @@
 		GROUP BY
 		oo.ORDER_OPTION_ID) AS menu_price,
 		s.DELIVERY_FEE,
-		od.DISCOUNT_AMOUNT AS discount_amount,
+		od.DISCOUNT_AMOUNT AS
+		discount_amount,
+		od.POINT_DISCOUNT AS point_discount,
+		od.COUPON_DISCOUNT AS coupon_discount,
 		od.TOOWNER AS message_to_owner,
 		od.TORIDER AS message_to_rider,
 		od.payment_method AS payment_method
 		FROM
 		b_order_tbl o
-		JOIN b_order_detail_tbl od ON
-		o.ORDER_ID = od.ORDER_ID
+		JOIN b_order_detail_tbl od ON o.ORDER_ID =
+		od.ORDER_ID
 		JOIN b_store_tbl s ON od.STORE_ID = s.STORE_ID
-		JOIN b_user_info u ON o.USER_ID = u.USER_ID
+		JOIN
+		b_user_info u ON o.USER_ID = u.USER_ID
 		WHERE
-		o.ORDER_ID =
-		#{orderId}
+		o.ORDER_ID = #{orderId}
 	</select>
 
-	<select id="getOrderItemsByOrderId" parameterType="String"
-		resultType="map">
-		WITH menu_options AS (
+	<select id="getOrderItemsByOrderId" parameterType="String" resultType="map">
+    SELECT 
+        oo.ORDER_OPTION_ID,
+        oo.MENU_ITEM_ID,
+        mi.MENU_NAME,
+        oq.QUANTITY,
+        mi.PRICE AS MENU_PRICE,
+        (
+            SELECT LISTAGG(opt.OPTION_NAME || '|' || opt.OPTION_PRICE, ',') WITHIN GROUP (ORDER BY opt.OPTION_ID)
+            FROM order_option_tbl oot
+            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
+            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
+        ) AS OPTION_INFO,
+        (
+            SELECT SUM(opt.OPTION_PRICE)
+            FROM order_option_tbl oot
+            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
+            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
+        ) AS TOTAL_OPTION_PRICE,
+        (mi.PRICE * oq.QUANTITY) + (
+            SELECT NVL(SUM(opt.OPTION_PRICE), 0)
+            FROM order_option_tbl oot
+            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
+            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
+        ) AS ITEM_TOTAL_PRICE
+    FROM 
+        order_option_tbl oo
+        JOIN b_menu_item_tbl mi ON oo.MENU_ITEM_ID = mi.MENU_ITEM_ID
+        JOIN order_quantity_tbl oq ON oo.ORDER_OPTION_ID = oq.ORDER_OPTION_ID
+    WHERE 
+        oo.ORDER_ID = #{orderId}
+    GROUP BY 
+        oo.ORDER_OPTION_ID, oo.ORDER_ID, oo.MENU_ITEM_ID, mi.MENU_NAME, oq.QUANTITY, mi.PRICE
+</select>
+
+	<select id="getMenuOptions" parameterType="map" resultType="map">
 		SELECT
-		oo.ORDER_OPTION_ID,
-		oo.MENU_ITEM_ID,
-		mi.MENU_NAME,
-		mi.PRICE AS menu_price,
-		oq.QUANTITY,
-		bo.OPTION_NAME,
-		bo.OPTION_PRICE,
-		bo.OPTION_ID,
-		oo.OPTION_GROUP_ID
+		opt.OPTION_NAME,
+		opt.OPTION_PRICE
 		FROM
 		order_option_tbl oo
-		JOIN b_menu_item_tbl mi ON oo.MENU_ITEM_ID =
-		mi.MENU_ITEM_ID
-		JOIN order_quantity_tbl oq ON oo.ORDER_OPTION_ID =
-		oq.ORDER_OPTION_ID
-		LEFT JOIN b_option_tbl bo ON oo.OPTION_ID =
-		bo.OPTION_ID
+		JOIN b_option_tbl opt ON oo.OPTION_ID = opt.OPTION_ID
 		WHERE
 		oo.ORDER_ID = #{orderId}
-		)
-		SELECT
-		mo.ORDER_OPTION_ID,
-		mo.MENU_ITEM_ID,
-		mo.MENU_NAME,
-		mo.menu_price,
-		mo.QUANTITY,
-		LISTAGG(mo.OPTION_NAME, '|') WITHIN GROUP (ORDER BY
-		mo.OPTION_GROUP_ID, mo.OPTION_ID) AS
-		option_names,
-		SUM(NVL(mo.OPTION_PRICE, 0)) AS total_option_price,
-		(mo.menu_price +
-		SUM(NVL(mo.OPTION_PRICE, 0))) * mo.QUANTITY AS item_total_price
-		FROM
-		menu_options mo
-		GROUP BY
-		mo.ORDER_OPTION_ID, mo.MENU_ITEM_ID,
-		mo.MENU_NAME, mo.menu_price, mo.QUANTITY
-		ORDER BY
-		mo.ORDER_OPTION_ID
-	</select>
+		AND oo.MENU_ITEM_ID = #{menuItemId}
+	</select>	
 
 	<insert id="registerReview"
 		parameterType="com.springboot.delivery.model.Review">
@@ -594,13 +600,18 @@
 
 	<select id="getUserCoupons" parameterType="map" resultType="map">
 		SELECT uc.user_cp_id, uc.store_coupon_id, sc.cp_name,
-		oc.sale_price, sc.minimum_purchase, uc.status
+		oc.sale_price,
+		sc.minimum_purchase, uc.status
 		FROM b_user_coupon_tbl uc
-		JOIN b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
-		JOIN b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
-		WHERE uc.user_id = #{user_id}
+		JOIN
+		b_store_coupon_tbl sc ON uc.store_coupon_id = sc.store_coupon_id
+		JOIN
+		b_owner_coupon_tbl oc ON uc.owner_coupon_id = oc.owner_coupon_id
+		WHERE
+		uc.user_id = #{user_id}
 		AND uc.status = 1
-		AND sc.minimum_purchase &lt;= #{minimum_purchase}
+		AND sc.minimum_purchase &lt;=
+		#{minimum_purchase}
 		ORDER BY oc.sale_price DESC
 	</select>
 
@@ -782,7 +793,8 @@
 		parameterType="com.springboot.delivery.model.UserCoupon"
 		resultType="com.springboot.delivery.model.UsedCoupon">
 
-		select owner_coupon_id, store_coupon_id from b_user_coupon_tbl where
+		select owner_coupon_id, store_coupon_id from
+		b_user_coupon_tbl where
 		user_cp_id = #{user_cp_id}
 
 	</select>
@@ -792,28 +804,38 @@
 		select max(used_cp_id) from b_used_coupon_tbl
 
 	</select>
-	
+
 	<select id="getCouponInfoByUserCouponId" parameterType="Integer">
-	
-	SELECT 
-    USER_CP_ID,
-    OWNER_COUPON_ID,
-    STORE_COUPON_ID,
-    SALE_PRICE
-FROM 
-    b_user_coupon_tbl
-WHERE 
-    USER_CP_ID = #{user_cp_id}
-	
-	</select> 
-	
+
+		SELECT
+		USER_CP_ID,
+		OWNER_COUPON_ID,
+		STORE_COUPON_ID
+		FROM
+		b_user_coupon_tbl
+		WHERE
+		USER_CP_ID = #{user_cp_id}
+
+	</select>
+
 	<update id="insertOrderDate" parameterType="String">
-	
-	update b_order_tbl set order_time = sysdate where order_id=#{order_id}
-	
-	
+
+		update b_order_tbl
+		set order_time = sysdate where order_id=#{order_id}
+
+
 	</update>
 
+	<update id="updateDiscount"
+		parameterType="com.springboot.delivery.model.Order">
+
+		update b_order_detail_tbl set
+		discount_amount=#{discount_amount},
+		point_discount = #{point_discount},
+		coupon_discount=#{coupon_discount}
+		where order_id=#{order_id}
+
+	</update>
 
 
 </mapper>

@@ -3,7 +3,6 @@ package com.springboot.delivery.controller;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionOrder;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.Order;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
@@ -466,23 +466,8 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/returnToStore")
    public ModelAndView returnToStore(String store_id, HttpSession session) {
-      System.out.println(store_id);
-      ModelAndView mav = new ModelAndView("user/userMain");
-      Store currentStore = (Store) storeService.getStore(store_id);
-      session.setAttribute("currentStore", currentStore);
-      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-      List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
-      mav.addObject("maincategoryList", maincategoryList);
-      mav.addObject("storeCategory", mc);
-      mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-
-      if (!mc.isEmpty()) {
-         Integer firstCategoryId = mc.get(0).getMenu_category_id();
-         List<MenuItem> menuList = userStoreService.menuList(firstCategoryId);
-         mav.addObject("menuList", menuList);
-         mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
-      }
-      return mav;
+       // 리다이렉트로 변경
+       return new ModelAndView("redirect:/userstore/detail?store_id=" + store_id);
    }
 
    @PostMapping(value = "/userstore/deleteItemInCart")
@@ -536,6 +521,10 @@ public class UserStoreController {
 	                        String finalTotal, String selectedCouponId, String paymentMethod, String pointValue, String  couponValue) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
+	    
+	    System.out.println("포인트 적용 할인 금액 : "+pointValue);
+	    System.out.println("쿠폰 적용 할인 금액 : "+couponValue);
+	    
 	    
 	    // 주문 상태 확인
 	    OrderCart orderStatusCart = this.userStoreService.getOrderStatus(order_Id);
@@ -615,16 +604,13 @@ public class UserStoreController {
 	                System.out.println("USER_CP_ID: " + couponInfo.get("USER_CP_ID"));
 	                System.out.println("STORE_COUPON_ID: " + couponInfo.get("STORE_COUPON_ID"));
 	                System.out.println("OWNER_COUPON_ID: " + couponInfo.get("OWNER_COUPON_ID"));
-	                System.out.println("CP_NAME: " + couponInfo.get("CP_NAME"));
-	                System.out.println("SALE_PRICE: " + couponInfo.get("SALE_PRICE"));
-	                System.out.println("MINIMUM_PURCHASE: " + couponInfo.get("MINIMUM_PURCHASE"));
 	                
 	                // 사용된 쿠폰 정보 저장
 	                UsedCoupon udc = new UsedCoupon();
 	                
 	                //할인 금액 저장
-	                discountAmount += Integer.valueOf(couponInfo.get("SALE_PRICE").toString());
-	                
+	                discountAmount += Integer.parseInt(couponValue);
+	                System.out.println("쿠폰 할인 금액(적용하는 중) : "+discountAmount);
 	                Integer maxCount = this.userStoreService.getMaxCountUsedCoupon();
 	                if(maxCount == null) {
 	                    maxCount = 0;
@@ -682,6 +668,8 @@ public class UserStoreController {
 	                }
 	            }
 	            
+	            
+	            
 	            // 결제 정보 저장
 	            this.userStoreService.insertPay(oc);
 	            
@@ -697,8 +685,14 @@ public class UserStoreController {
 	        mav.addObject("error", "결제 처리 중 오류가 발생했습니다.");
 	        return mav;
 	    }
-	    System.out.println("할인금액 : "+discountAmount);
-	    // 추가 정보 모델에 추가
+	    Order o = new Order();
+	    o.setOrder_id(order_Id);
+	    o.setDiscount_amount(discountAmount);
+	    o.setPoint_discount(Integer.parseInt(pointValue));
+	    o.setCoupon_discount(Integer.parseInt(couponValue));
+	    
+	    //b_order_detail_tbl에 전체 할인금액, 쿠폰 할인금액, 포인트 할인 금액 처리
+	    this.userStoreService.updateDiscount(o);
 	    mav.addObject("TOTALPRICE", finalTotal);
 	    mav.addObject("BODY", "../userstore/end.jsp");
 	    System.out.println("결제카드 아이디 : " + paymentMethod);

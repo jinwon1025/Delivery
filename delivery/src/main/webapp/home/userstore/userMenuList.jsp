@@ -221,7 +221,13 @@
                             <button class="coupon-download" disabled>다운로드 완료</button>
                         </c:when>
                         <c:otherwise>
-                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID}, '${coupon.EXPIRE_DATE}', ${coupon.MINIMUM_PURCHASE})">다운로드</button>
+                            <button class="coupon-download"
+                                    data-coupon-id="${coupon.STORE_COUPON_ID}"
+                                    data-coupon-name="${coupon.CP_NAME}"
+                                    data-owner-id="${coupon.OWNER_COUPON_ID}"
+                                    data-expire-date="${coupon.EXPIRE_DATE}"
+                                    data-min-purchase="${coupon.MINIMUM_PURCHASE}"
+                                    onclick="downloadCouponFromElement(this)">다운로드</button>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -244,9 +250,15 @@
 
 <!-- 쿠폰 다운로드 스크립트 -->
 <script>
-function downloadCoupon(couponId, couponName, ownerCouponId, expireDate, minimumPurchase) {
-    if(confirm(`'${couponName}' 쿠폰을 다운로드하시겠습니까?`)) {
-        // AJAX를 통한 쿠폰 다운로드 요청
+function downloadCouponFromElement(buttonElement) {
+    const couponId = buttonElement.getAttribute('data-coupon-id');
+    const couponName = buttonElement.getAttribute('data-coupon-name');
+    const ownerCouponId = buttonElement.getAttribute('data-owner-id');
+    const expireDate = buttonElement.getAttribute('data-expire-date');
+    const minimumPurchase = buttonElement.getAttribute('data-min-purchase');
+    
+    // 일반 문자열 연결 방식으로 변경
+    if(confirm('"' + couponName + '" 쿠폰을 다운로드하시겠습니까?')) {
         fetch('/user/downloadCoupon', {
             method: 'POST',
             headers: {
@@ -262,8 +274,8 @@ function downloadCoupon(couponId, couponName, ownerCouponId, expireDate, minimum
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                alert('쿠폰이 다운로드되었습니다.');
-                // 페이지 새로고침하여 변경된 상태 반영
+                // 일반 문자열 연결 방식으로 변경
+                alert('"' + couponName + '" 쿠폰이 다운로드되었습니다.');
                 window.location.reload();
             } else {
                 alert(data.message || '쿠폰 다운로드에 실패했습니다.');

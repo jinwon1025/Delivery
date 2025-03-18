@@ -606,7 +606,8 @@ function setupPaymentPasswordModal() {
                 'finalTotal': document.getElementById('finalTotalHidden').value,
                 'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
                 'paymentMethod': document.getElementById('paymentMethodHidden').value,
-                'pointValue': document.getElementById('pointValueHidden').value
+                'pointValue': document.getElementById('pointValueHidden').value,
+                'couponValue': document.getElementById('couponValueHidden').value
             };
             
             // 폼에 필드 추가
@@ -799,7 +800,9 @@ function setupPaymentPasswordModal() {
                             'finalTotal': document.getElementById('finalTotalHidden').value,
                             'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
                             'paymentMethod': document.getElementById('paymentMethodHidden').value,
-                            'pointValue': document.getElementById('pointValueHidden').value
+                            'pointValue': document.getElementById('pointValueHidden').value,
+                            'couponValue': document.getElementById('couponValueHidden').value
+                            
                         };
                         // 폼에 필드 추가
                         for (const key in params) {
@@ -881,28 +884,30 @@ function setupDiscountHandlers() {
     });
     
     // 포인트 입력시 금액 변경
-    document.getElementById('point').addEventListener('input', function() {
-        const pointValue = this.value ? parseInt(this.value) : 0;
-        const availablePointText = document.querySelector('.available-point').textContent;
-        const availablePoint = parseInt(availablePointText.match(/\d+/)[0]);
+
+document.getElementById('point').addEventListener('input', function() {
+    const pointValue = this.value ? parseInt(this.value) : 0;
+    const availablePointText = document.querySelector('.available-point').textContent;
+    const availablePointMatch = availablePointText.match(/\d+/);
+    const availablePoint = availablePointMatch ? parseInt(availablePointMatch[0]) : 0;
+    
+    // 사용 가능 포인트 초과 체크
+    if (pointValue > availablePoint) {
+        alert('사용 가능한 포인트를 초과했습니다. 최대 ' + availablePoint.toLocaleString() + 'P까지 사용 가능합니다.');
+        this.value = availablePoint;
+        document.getElementById('pointDisplay').textContent = '-' + availablePoint.toLocaleString() + '원';
+        document.getElementById('pointValueHidden').value = availablePoint;
+    } else {
+        // 포인트 사용 금액 표시 업데이트
+        const pointDisplay = document.getElementById('pointDisplay');
+        pointDisplay.textContent = '-' + pointValue.toLocaleString() + '원';
         
-        // 사용 가능 포인트 초과 체크
-        if (pointValue > availablePoint) {
-            alert(`사용 가능한 포인트를 초과했습니다. 최대 ${availablePoint.toLocaleString()}P까지 사용 가능합니다.`);
-            this.value = availablePoint;
-            document.getElementById('pointDisplay').textContent = '-' + availablePoint.toLocaleString() + '원';
-            document.getElementById('pointValueHidden').value = availablePoint;
-        } else {
-            // 포인트 사용 금액 표시 업데이트
-            const pointDisplay = document.getElementById('pointDisplay');
-            pointDisplay.textContent = '-' + pointValue.toLocaleString() + '원';
-            
-            // 포인트 값 hidden 필드에 저장
-            document.getElementById('pointValueHidden').value = pointValue;
-        }
-        
-        updateTotalPrice();
-    });
+        // 포인트 값 hidden 필드에 저장
+        document.getElementById('pointValueHidden').value = pointValue;
+    }
+    
+    updateTotalPrice();
+});
     
     // 전액사용 버튼
     document.querySelector('.point-btn').addEventListener('click', function() {

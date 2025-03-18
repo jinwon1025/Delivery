@@ -10,6 +10,7 @@ import com.springboot.delivery.model.MatchingOptionParam;
 import com.springboot.delivery.model.MenuCategory;
 import com.springboot.delivery.model.MenuItem;
 import com.springboot.delivery.model.OptionSet;
+import com.springboot.delivery.model.Order;
 import com.springboot.delivery.model.OrderCart;
 import com.springboot.delivery.model.OrderQuantity;
 import com.springboot.delivery.model.QuantityUpdateParam;
@@ -108,4 +109,8 @@ public interface UserStoreMapper {
 	Integer getMaxUserCouponId();
 	
 	void insertOrderDate(String order_id);
+	
+	void updateDiscount(Order o);
+	
+	List<Map<String, Object>> getMenuOptions(Map<String, Object> params);
 }	
