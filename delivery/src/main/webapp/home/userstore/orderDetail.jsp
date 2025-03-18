@@ -160,11 +160,26 @@
             <c:forEach var="item" items="${orderItems}">
                 <div class="menu-item">
                     <div class="menu-name">${item.MENU_NAME} × ${item.QUANTITY}개</div>
-                    <c:if test="${not empty item.OPTION_NAMES}">
+                    
+                    <!-- 옵션 정보 표시 -->
+                    <c:if test="${not empty item.OPTION_INFO}">
+                        <c:forEach var="optionItem" items="${fn:split(item.OPTION_INFO, ',')}">
+                            <c:set var="optionData" value="${fn:split(optionItem, '|')}" />
+                            <div class="menu-option">
+                                - ${optionData[0]} 
+                                <c:if test="${optionData[1] > 0}">(+<fmt:formatNumber value="${optionData[1]}" pattern="#,###원" />)</c:if>
+                                <c:if test="${optionData[1] == 0}">(+0원)</c:if>
+                            </div>
+                        </c:forEach>
+                    </c:if>
+                    
+                    <!-- 기존 OPTION_NAMES 대체 코드 (필요시 사용) -->
+                    <c:if test="${empty item.OPTION_INFO && not empty item.OPTION_NAMES}">
                         <c:forEach var="option" items="${fn:split(item.OPTION_NAMES, '|')}">
                             <div class="menu-option">- ${option}</div>
                         </c:forEach>
                     </c:if>
+                    
                     <div class="menu-price">
                         <c:if test="${item.TOTAL_OPTION_PRICE > 0}">
                             <span>메뉴: <fmt:formatNumber value="${item.MENU_PRICE}" pattern="#,###원" /> + 옵션: <fmt:formatNumber value="${item.TOTAL_OPTION_PRICE}" pattern="#,###원" /></span>
@@ -174,11 +189,12 @@
                     </div>
                 </div>
             </c:forEach>
+            
             <%-- 메뉴 금액 합계 계산 --%>
             <c:set var="menuTotalSum" value="0" />
-			<c:forEach var="item" items="${orderItems}">
-			    <c:set var="menuTotalSum" value="${menuTotalSum + item.ITEM_TOTAL_PRICE}" />
-			</c:forEach>
+            <c:forEach var="item" items="${orderItems}">
+                <c:set var="menuTotalSum" value="${menuTotalSum + item.ITEM_TOTAL_PRICE}" />
+            </c:forEach>
             
             <div class="info-row">
                 <div class="info-label">주문일시</div>
@@ -208,15 +224,40 @@
                     <fmt:formatNumber value="${orderInfo.DELIVERY_FEE}" pattern="#,###원" />
                 </div>
             </div>
+            
             <c:if test="${orderInfo.DISCOUNT_AMOUNT > 0}">
-                <div class="info-row">
-                    <div class="info-label">할인 금액</div>
-                    <div class="info-value" style="color: #2196F3;">
-                        <fmt:formatNumber value="${orderInfo.DISCOUNT_AMOUNT}" pattern="#,###원" />
+                <div class="info-row" style="border-top: 1px dashed #eee; margin-top: 5px; padding-top: 10px;">
+                    <div class="info-label"><strong>할인 내역</strong></div>
+                    <div class="info-value"></div>
+                </div>
+                
+                <c:if test="${orderInfo.POINT_DISCOUNT > 0}">
+                    <div class="info-row" style="border-bottom: none; padding-bottom: 5px;">
+                        <div class="info-label" style="padding-left: 10px;">포인트 할인</div>
+                        <div class="info-value" style="color: #2196F3;">
+                            - <fmt:formatNumber value="${orderInfo.POINT_DISCOUNT}" pattern="#,###원" />
+                        </div>
+                    </div>
+                </c:if>
+                
+                <c:if test="${orderInfo.COUPON_DISCOUNT > 0}">
+                    <div class="info-row" style="border-bottom: none; padding-bottom: 5px;">
+                        <div class="info-label" style="padding-left: 10px;">쿠폰 할인</div>
+                        <div class="info-value" style="color: #2196F3;">
+                            - <fmt:formatNumber value="${orderInfo.COUPON_DISCOUNT}" pattern="#,###원" />
+                        </div>
+                    </div>
+                </c:if>
+                
+                <div class="info-row" style="border-top: 1px dashed #eee; padding-top: 10px;">
+                    <div class="info-label">총 할인 금액</div>
+                    <div class="info-value" style="color: #2196F3; font-weight: bold;">
+                        - <fmt:formatNumber value="${orderInfo.DISCOUNT_AMOUNT}" pattern="#,###원" />
                     </div>
                 </div>
             </c:if>
-            <div class="info-row">
+            
+            <div class="info-row" style="border-top: 1px solid #ddd; margin-top: 5px; padding-top: 15px;">
                 <div class="info-label">총 결제 금액</div>
                 <div class="info-value total-price">
                     <fmt:formatNumber value="${orderInfo.TOTALPRICE}" pattern="#,###원" />

@@ -606,7 +606,8 @@ function setupPaymentPasswordModal() {
                 'finalTotal': document.getElementById('finalTotalHidden').value,
                 'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
                 'paymentMethod': document.getElementById('paymentMethodHidden').value,
-                'pointValue': document.getElementById('pointValueHidden').value
+                'pointValue': document.getElementById('pointValueHidden').value,
+                'couponValue': document.getElementById('couponValueHidden').value
             };
             
             // 폼에 필드 추가
@@ -799,7 +800,9 @@ function setupPaymentPasswordModal() {
                             'finalTotal': document.getElementById('finalTotalHidden').value,
                             'selectedCouponId': document.getElementById('selectedCouponIdHidden').value,
                             'paymentMethod': document.getElementById('paymentMethodHidden').value,
-                            'pointValue': document.getElementById('pointValueHidden').value
+                            'pointValue': document.getElementById('pointValueHidden').value,
+                            'couponValue': document.getElementById('couponValueHidden').value
+                            
                         };
                         // 폼에 필드 추가
                         for (const key in params) {

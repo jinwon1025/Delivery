@@ -221,7 +221,13 @@
                             <button class="coupon-download" disabled>다운로드 완료</button>
                         </c:when>
                         <c:otherwise>
-                            <button class="coupon-download" onclick="downloadCoupon(${coupon.STORE_COUPON_ID}, '${coupon.CP_NAME}', ${coupon.OWNER_COUPON_ID}, '${coupon.EXPIRE_DATE}', ${coupon.MINIMUM_PURCHASE})">다운로드</button>
+                            <button class="coupon-download"
+                                    data-coupon-id="${coupon.STORE_COUPON_ID}"
+                                    data-coupon-name="${coupon.CP_NAME}"
+                                    data-owner-id="${coupon.OWNER_COUPON_ID}"
+                                    data-expire-date="${coupon.EXPIRE_DATE}"
+                                    data-min-purchase="${coupon.MINIMUM_PURCHASE}"
+                                    onclick="downloadCouponFromElement(this)">다운로드</button>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -244,8 +250,14 @@
 
 <!-- 쿠폰 다운로드 스크립트 -->
 <script>
-function downloadCoupon(couponId, couponName, ownerCouponId, expireDate, minimumPurchase) {
-    if(confirm(`'${couponName}' 쿠폰을 다운로드하시겠습니까?`)) {
+function downloadCouponFromElement(buttonElement) {
+    const couponId = buttonElement.getAttribute('data-coupon-id');
+    const couponName = buttonElement.getAttribute('data-coupon-name');
+    const ownerCouponId = buttonElement.getAttribute('data-owner-id');
+    const expireDate = buttonElement.getAttribute('data-expire-date');
+    const minimumPurchase = buttonElement.getAttribute('data-min-purchase');
+    
+    if(confirm(`쿠폰을 다운로드하시겠습니까?`)) {
         // AJAX를 통한 쿠폰 다운로드 요청
         fetch('/user/downloadCoupon', {
             method: 'POST',
