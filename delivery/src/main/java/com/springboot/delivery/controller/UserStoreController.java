@@ -1037,13 +1037,13 @@ public class UserStoreController {
 		LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
 		List<UserCouponDetail> couponList = this.userStoreService.getCouponList(loginUser.getUser_id());
-
+		System.out.println("쿠폰 개수 : "+couponList.size());
 		Date currentDate = new Date();
 
 		mav.addObject("couponList", couponList);
-		mav.addObject("currentDate", currentDate);
-		mav.addObject("BODY", "../userstore/couponList.jsp");
-
+		mav.addObject("contentPage", "myCouponList");
+		mav.addObject("activeMenu", "myCouponList");
+		mav.addObject("BODY", "mypage.jsp");
 		return mav;
 	}
 	

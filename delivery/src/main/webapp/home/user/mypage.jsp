@@ -38,8 +38,10 @@
 					class="mypage-menu-link ${activeMenu eq 'myOrderList' ? 'active' : ''}">
 						<i class="fas fa-history"></i> <span>주문 내역</span>
 				</a></li>
-				<li class="mypage-menu-item"><a href="/userstore/myCouponList"
-					class="mypage-menu-link"> <i class="fas fa-ticket-alt"></i> <span>쿠폰함</span>
+				<li class="mypage-menu-item"><a
+					href="<c:url value='/userstore/myCouponList'/>"
+					class="mypage-menu-link ${activeMenu eq 'myCouponList' ? 'active' : ''}">
+						<i class="fas fa-history"></i> <span>쿠폰함</span>
 				</a></li>
 				<li class="mypage-menu-item"><a
 					href="<c:url value='/userstore/myReviewList'/>"
@@ -60,13 +62,16 @@
 				<%@ include file="viewPay.jsp"%>
 			</c:when>
 			<c:when test="${contentPage eq 'viewCart'}">
-				<%@ include file="../userstore/mypage-userCart.jsp"%>
+				<%@ include file="../userstore/userCart.jsp"%>
 			</c:when>
 			<c:when test="${contentPage eq 'myOrderList'}">
 				<%@ include file="../userstore/myOrderList.jsp"%>
 			</c:when>
 			<c:when test="${contentPage eq 'myReviewList'}">
 				<%@ include file="../userstore/reviewList.jsp"%>
+			</c:when>
+			<c:when test="${contentPage eq 'myCouponList'}">
+				<%@ include file="../userstore/couponList.jsp"%>
 			</c:when>
 			<c:otherwise>
 				<!-- 기본 내 정보 표시 -->
