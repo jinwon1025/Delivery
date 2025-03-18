@@ -212,7 +212,7 @@
                 <div class="info-row">
                     <div class="info-label">할인 금액</div>
                     <div class="info-value" style="color: #2196F3;">
-                        -<fmt:formatNumber value="${orderInfo.DISCOUNT_AMOUNT}" pattern="#,###원" />
+                        <fmt:formatNumber value="${orderInfo.DISCOUNT_AMOUNT}" pattern="#,###원" />
                     </div>
                 </div>
             </c:if>

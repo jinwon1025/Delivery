@@ -533,7 +533,7 @@ public class UserStoreController {
    }
 	@PostMapping(value = "/userstore/pay")
 	public ModelAndView pay(HttpSession session, String riderRequest, String storeRequest, String order_Id,
-	                        String finalTotal, String selectedCouponId, String paymentMethod, String pointValue) {
+	                        String finalTotal, String selectedCouponId, String paymentMethod, String pointValue, String  couponValue) {
 	    ModelAndView mav = new ModelAndView("user/userMain");
 	    LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
 	    
@@ -545,6 +545,8 @@ public class UserStoreController {
 	    
 	    Integer currentStatus = orderStatusCart.getOrder_status();
 	    
+	    //할인 금액
+	    Integer discountAmount = 0;
 	    // 이미 처리된 주문인 경우 (주문 상태가 0이 아닌 경우)
 	       if (currentStatus != 0) {
 	           System.out.println("새로고침 했는데 상태가 0이 아님: " + currentStatus);
@@ -558,6 +560,7 @@ public class UserStoreController {
 	        // 포인트 처리 로직 추가
 	        if(pointValue != null && !pointValue.isEmpty()) {
 	            int usedPoints = Integer.parseInt(pointValue);
+	            discountAmount += Integer.parseInt(pointValue);
 	            if(usedPoints > 0) {
 	                // 현재 사용자의 포인트 가져오기
 	                Integer currentPoints = this.userStoreService.getPoint(loginUser.getUser_id());
@@ -619,6 +622,9 @@ public class UserStoreController {
 	                // 사용된 쿠폰 정보 저장
 	                UsedCoupon udc = new UsedCoupon();
 	                
+	                //할인 금액 저장
+	                discountAmount += Integer.valueOf(couponInfo.get("SALE_PRICE").toString());
+	                
 	                Integer maxCount = this.userStoreService.getMaxCountUsedCoupon();
 	                if(maxCount == null) {
 	                    maxCount = 0;
@@ -645,6 +651,7 @@ public class UserStoreController {
 	            orderWithAddress.setOrder_id(order_Id);
 	            orderWithAddress.setOrder_status(1); // 주문완료 처리
 	            orderWithAddress.setPayment_method(paymentDisplay);
+	            orderWithAddress.setDiscount_amount(discountAmount); 	
 	            // 수정된 객체로 결제 정보 저장
 	            this.userStoreService.insertPay(orderWithAddress);
 	            
@@ -659,6 +666,7 @@ public class UserStoreController {
 	            oc.setTotalPrice(Integer.parseInt(finalTotal));
 	            oc.setOrder_status(1);
 	            oc.setPayment_method(paymentDisplay);
+	            oc.setDiscount_amount(discountAmount);
 	            // 현금 결제 시 주소 정보를 추가
 	            CartUser cartUser = this.userStoreService.cartUserData(loginUser.getUser_id());
 	            if (cartUser != null) {
@@ -689,7 +697,7 @@ public class UserStoreController {
 	        mav.addObject("error", "결제 처리 중 오류가 발생했습니다.");
 	        return mav;
 	    }
-	    
+	    System.out.println("할인금액 : "+discountAmount);
 	    // 추가 정보 모델에 추가
 	    mav.addObject("TOTALPRICE", finalTotal);
 	    mav.addObject("BODY", "../userstore/end.jsp");
