@@ -509,7 +509,7 @@
                 4: { text: "배달 완료", class: "bg-success" },
                 5: { text: "주문 취소", class: "bg-danger" }
             };
-            
+           
             // 배달 트래커 막대 업데이트
             const progressWidth = status === 5 ? 0 : Math.min(status, 4) * 25;
             console.log("Setting progress width to:", progressWidth + '%');
