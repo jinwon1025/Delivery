@@ -416,7 +416,8 @@
 	<select id="getCountMenuFromStore" parameterType="String"
 		resultType="Integer">
 
-		select count(menu_item_id) from b_menu_item_tbl where store_id=#{store_id}
+		select count(menu_item_id) from b_menu_item_tbl where
+		store_id=#{store_id}
 
 
 	</select>
@@ -424,27 +425,53 @@
 	<select id="getRatingFromStore" parameterType="String"
 		resultType="com.springboot.delivery.model.Rating">
 
-		select sum(rating) as sum, count(rating) as count from b_review_tbl where
+		select sum(rating) as sum, count(rating) as count from
+		b_review_tbl where
 		store_id=#{store_id}
 
 
 	</select>
 
-<select id="getTodayOrderCountByStore" parameterType="String" resultType="Integer">
-  SELECT COUNT(o.order_id) 
-  FROM b_order_tbl o
-  JOIN b_order_detail_tbl od ON o.order_id = od.order_id
-  WHERE TRUNC(o.order_time) = TRUNC(SYSDATE)
-  AND od.store_id = #{store_id}
-</select>
+	<select id="getTodayOrderCountByStore" parameterType="String"
+		resultType="Integer">
+		SELECT COUNT(o.order_id)
+		FROM b_order_tbl o
+		JOIN
+		b_order_detail_tbl od ON o.order_id = od.order_id
+		WHERE
+		TRUNC(o.order_time) = TRUNC(SYSDATE)
+		AND od.store_id = #{store_id}
+	</select>
 
-<select id="getTodayOrderTotalByStore" parameterType="String" resultType="Integer">
-  SELECT SUM(od.totalprice) 
-  FROM b_order_detail_tbl od
-  JOIN b_order_tbl o ON od.order_id = o.order_id
-  WHERE TRUNC(o.order_time) = TRUNC(SYSDATE)
-  AND od.store_id = #{store_id}
-</select>
+	<select id="getTodayOrderTotalByStore" parameterType="String"
+		resultType="Integer">
+		SELECT SUM(od.totalprice)
+		FROM b_order_detail_tbl od
+		JOIN
+		b_order_tbl o ON od.order_id = o.order_id
+		WHERE TRUNC(o.order_time) =
+		TRUNC(SYSDATE)
+		AND od.store_id = #{store_id}
+	</select>
+
+	<select id="getStoreStatus" parameterType="String"
+		resultType="map">
+		SELECT
+		s.store_id AS STORE_ID,
+		s.store_name AS STORE_NAME,
+		COUNT(DISTINCT od.order_id) AS ORDER_COUNT,
+		NVL(ROUND(AVG(r.rating), 1), 0) AS AVG_RATING
+		FROM
+		b_store_tbl s
+		LEFT JOIN
+		b_order_detail_tbl od ON s.store_id = od.store_id
+		LEFT JOIN
+		b_review_tbl r ON s.store_id = r.store_id
+		WHERE
+		s.owner_id = #{owner_id}
+		GROUP BY
+		s.store_id, s.store_name
+	</select>
 
 
 </mapper>

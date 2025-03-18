@@ -1,6 +1,7 @@
 package com.springboot.delivery.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -205,5 +206,9 @@ public class StoreService {
 	
 	public Integer getTodayOrderTotalByStore(String store_id) {
 		return this.storeMapper.getTodayOrderTotalByStore(store_id);
+	}
+	
+	public List<Map<String, Object>> getStoreStatus(String owner_id){
+		return this.storeMapper.getStoreStatus(owner_id);
 	}
 }

@@ -1,5 +1,6 @@
 package com.springboot.delivery.mapper;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -64,4 +65,6 @@ public interface StoreMapper {
 	
 	Integer getTodayOrderCountByStore(String store_id);
 	Integer getTodayOrderTotalByStore(String store_id);
+	
+	List<Map<String, Object>> getStoreStatus(String owner_id);
 }

@@ -122,12 +122,31 @@ public class StoreController {
 
 	@GetMapping(value = "/store/storeList")
 	public ModelAndView storeList(HttpSession session) {
-		ModelAndView mav = new ModelAndView("owner/ownerMain");
-		LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
-		List<Store> storeList = this.storeService.storeList(owner.getId());
-		mav.addObject("storeList", storeList);
-		mav.addObject("BODY", "storeList.jsp");
-		return mav;
+	    ModelAndView mav = new ModelAndView("owner/ownerMain");
+	    LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
+	    List<Store> storeList = this.storeService.storeList(owner.getId());
+	    List<Map<String,Object>> storeInfoList = this.storeService.getStoreStatus(owner.getId());
+	    
+	    // storeInfoList 내용 확인
+	    System.out.println("===== storeInfoList 내용 =====");
+	    for (Map<String, Object> storeInfo : storeInfoList) {
+	        System.out.println(storeInfo);
+	    }
+	    
+	    // 더 자세한 내용을 보려면 각 맵의 키와 값을 개별적으로 출력
+	    System.out.println("===== storeInfoList 상세 내용 =====");
+	    for (int i = 0; i < storeInfoList.size(); i++) {
+	        Map<String, Object> storeInfo = storeInfoList.get(i);
+	        System.out.println("가게 #" + (i+1) + " 정보:");
+	        for (String key : storeInfo.keySet()) {
+	            System.out.println("    " + key + ": " + storeInfo.get(key));
+	        }
+	    }
+	    
+	    mav.addObject("storeList", storeList);
+	    mav.addObject("storeInfoList", storeInfoList);
+	    mav.addObject("BODY", "storeList.jsp");
+	    return mav;
 	}
 
 	@GetMapping(value = "/store/storeMain")
