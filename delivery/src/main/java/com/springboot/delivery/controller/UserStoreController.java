@@ -635,7 +635,7 @@ public class UserStoreController {
 	                this.userStoreService.insertUsedCoupon(udc);
 	            }
 	        }
-	        
+	        String paymentDisplay = paymentMethod.equals("cash") ? "만나서결제" : "카드결제";
 	        // 최종적으로 주문 상태 업데이트 (가장 마지막에 수행)
 	        if (orderWithAddress != null) {
 	            // 필요한 정보 설정
@@ -644,7 +644,7 @@ public class UserStoreController {
 	            orderWithAddress.setTotalPrice(Integer.parseInt(finalTotal));
 	            orderWithAddress.setOrder_id(order_Id);
 	            orderWithAddress.setOrder_status(1); // 주문완료 처리
-	            
+	            orderWithAddress.setPayment_method(paymentDisplay);
 	            // 수정된 객체로 결제 정보 저장
 	            this.userStoreService.insertPay(orderWithAddress);
 	            
@@ -658,7 +658,7 @@ public class UserStoreController {
 	            oc.setOrder_id(order_Id);
 	            oc.setTotalPrice(Integer.parseInt(finalTotal));
 	            oc.setOrder_status(1);
-	            
+	            oc.setPayment_method(paymentDisplay);
 	            // 현금 결제 시 주소 정보를 추가
 	            CartUser cartUser = this.userStoreService.cartUserData(loginUser.getUser_id());
 	            if (cartUser != null) {

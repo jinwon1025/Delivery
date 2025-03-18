@@ -26,4 +26,5 @@ public class OrderCart {
     private String owner_id;
     private String user_address;
     private String delivery_time;  // 이 필드 추가
+    private String payment_method;
 }

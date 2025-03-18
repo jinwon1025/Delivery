@@ -155,6 +155,7 @@
 		od.torider as rider_request,
 		od.order_status,
 		od.totalprice,
+		od.payment_method,
 		u.user_name,
 		u.user_phone
 		FROM
