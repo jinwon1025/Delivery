@@ -118,12 +118,34 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/menuList")
    public ModelAndView storeMenuList(Integer menu_category_id, HttpSession session) {
+	  LoginUser loginUser = (LoginUser)session.getAttribute("loginUser");
       Store store = (Store) session.getAttribute("currentStore");
       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
       ModelAndView mav = new ModelAndView("user/userMain");
       mav.addObject("maincategoryList", maincategoryList);
       List<MenuItem> mi = this.userStoreService.menuList(menu_category_id);
       List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
+   // 로그인한 경우에만 쿠폰 정보 조회
+      if (loginUser != null) {
+          StoreCoupon sc = new StoreCoupon();
+          sc.setStore_id(store.getStore_id());
+          sc.setUser_id(loginUser.getUser_id());
+          
+          // 사용 가능한 쿠폰 목록 조회
+          List<Map<String, Object>> availableCoupons = userStoreService.getStoreCouponList(sc);
+          mav.addObject("availableCoupons", availableCoupons);
+          System.out.println("=== 조회된 쿠폰 정보 ===");
+          System.out.println("조회된 쿠폰 수: " + (availableCoupons != null ? availableCoupons.size() : "null"));
+          
+          if (availableCoupons != null && !availableCoupons.isEmpty()) {
+              for (Map<String, Object> coupon : availableCoupons) {
+                  System.out.println(coupon);
+              }
+          }
+      } else {
+          // 로그인하지 않은 경우에는 빈 리스트를 전달하거나 null을 전달
+          mav.addObject("availableCoupons", null);
+      }
       mav.addObject("storeCategory", mc);
       mav.addObject("BODY", "../userstore/userStoreMain.jsp");
       mav.addObject("menuList", mi);

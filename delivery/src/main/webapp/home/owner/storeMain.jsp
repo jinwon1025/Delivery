@@ -188,10 +188,7 @@
                 <a href="<c:url value='/store/goStoreModify'/>" class="nav-item ${fn:contains(pageContext.request.requestURI, 'Modify') ? 'active' : ''}">
                     <i class="fas fa-edit mr-2"></i> 가게 정보 수정
                 </a> 
-                <span class="nav-divider">|</span> 
-                <a href="#" class="nav-item ${fn:contains(pageContext.request.requestURI, 'coupon') ? 'active' : ''}">
-                    <i class="fas fa-ticket-alt mr-2"></i> 쿠폰 등록
-                </a>
+     
             </div>
         </div>
     </nav>
