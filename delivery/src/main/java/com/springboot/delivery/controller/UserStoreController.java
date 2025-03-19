@@ -878,26 +878,27 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/myReviewList")
    public ModelAndView myReviewList(HttpSession session) {
-      ModelAndView mav = new ModelAndView("user/userMain");
-
-      LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-      if (loginUser == null) {
-         return new ModelAndView("redirect:/user/index");
-      }
-
-      // 사용자의 리뷰 목록 조회
-      List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
-
-      mav.addObject("reviewList", reviewList);
-
-      // 기본 페이지 설정
-      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-      mav.addObject("maincategoryList", maincategoryList);
-      mav.addObject("activeMenu", "myReviewList");
-      mav.addObject("contentPage", "myReviewList");
-      mav.addObject("BODY", "mypage.jsp");
-
-      return mav;
+       ModelAndView mav = new ModelAndView("user/userMain");
+       
+       LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+       if (loginUser == null) {
+           return new ModelAndView("redirect:/user/index");
+       }
+       
+       // 사용자의 리뷰 목록 조회
+       List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
+       
+       // 이 부분이 중요! reviewList를 모델에 추가
+       mav.addObject("reviewList", reviewList);
+       
+       // 기본 페이지 설정
+       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+       mav.addObject("maincategoryList", maincategoryList);
+       mav.addObject("activeMenu", "myReviewList");
+       mav.addObject("contentPage", "myReviewList");
+       mav.addObject("BODY", "mypage.jsp");
+       
+       return mav;
    }
 
    @GetMapping(value = "/userstore/deleteReview")

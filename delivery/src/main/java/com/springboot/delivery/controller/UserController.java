@@ -231,12 +231,14 @@ public class UserController {
         }
         
         List<BookMarkStore> bmsList = this.userService.getBookMarkStoreByUserId(loginUser.getUser_id());
-
+        mav.addObject("bmsList", bmsList);
+        
         List<Maincategory> maincategoryList = adminService.getAllMaincategory();
         mav.addObject("maincategoryList", maincategoryList);
 
         List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id());
-
+        mav.addObject("bookMarkList", bookMarkList);
+        
         mav.addObject("activeMenu", "bookMarkList");
         mav.addObject("contentPage", "bookMarkList");
         mav.addObject("BODY", "mypage.jsp");
