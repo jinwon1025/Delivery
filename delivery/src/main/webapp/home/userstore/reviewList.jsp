@@ -2,158 +2,198 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 리뷰 관리</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .review-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .review-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .review-list {
-            padding: 15px;
-        }
-        .review-item {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            padding: 20px;
-            position: relative;
-            border: 1px solid #e0e0e0;
-            transition: all 0.2s;
-        }
-        .review-item:hover {
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-        .review-store {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .review-date {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        .rating {
-            margin-bottom: 15px;
-        }
-        .text-warning {
-            color: #ffcc00 !important;
-        }
-        .text-muted {
-            color: #bdc3c7 !important;
-        }
-        .review-content {
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        .review-image {
-            margin-bottom: 15px;
-        }
-        .review-image img {
-            max-height: 180px;
-            border-radius: 5px;
-        }
-        .btn {
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-outline-danger {
-            color: #e74c3c;
-            background-color: transparent;
-            border: 1px solid #e74c3c;
-        }
-        .btn-outline-danger:hover {
-            color: #fff;
-            background-color: #e74c3c;
-        }
-        .no-reviews {
-            text-align: center;
-            color: #7f8c8d;
-            padding: 40px 20px;
-            font-size: 1em;
-        }
-        .no-reviews p {
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="review-container">
-        <div class="review-header">
-            내 리뷰 관리 (<span class="review-count">${fn:length(reviewList)}개</span>)
-        </div>
-        <div class="review-list">
-            <c:choose>
-                <c:when test="${empty reviewList}">
-                    <div class="no-reviews">
-                        <p>작성한 리뷰가 없습니다.</p>
-                        <p class="text-muted">음식을 주문하고 리뷰를 남겨보세요!</p>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <c:forEach var="review" items="${reviewList}">
-                        <div class="review-item">
-                            <div class="review-store">${review.STORE_NAME}</div>
-                            <div class="review-date">
-                                <fmt:formatDate value="${review.WRITE_DATE}" pattern="yyyy.MM.dd" />
-                            </div>
-                            
-                            <div class="rating">
-                                <c:forEach begin="1" end="5" var="i">
-                                    <i class="fas fa-star ${i <= review.RATING ? 'text-warning' : 'text-muted'}"></i>
-                                </c:forEach>
-                            </div>
-                            
-                            <c:if test="${not empty review.REVIEW_IMAGE_NAME}">
-                                <div class="review-image">
-                                    <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.REVIEW_IMAGE_NAME}" 
-                                        alt="리뷰 이미지" />
-                                </div>
-                            </c:if>
-                            
-                            <p class="review-content">${review.REVIEW_CONTENT}</p>
-                            
-                            <div style="text-align: right;">
-                                <button type="button" class="btn btn-outline-danger" 
-                                        onclick="if(confirm('리뷰를 삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/userstore/deleteReview?reviewId=${review.REVIEW_ID}'">
-                                    삭제
-                                </button>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:otherwise>
-            </c:choose>
-        </div>
+
+<!-- 리뷰 관리 페이지 -->
+<div class="page-header">
+    <h1 class="page-title">내 리뷰관리</h1>
+    <p class="page-subtitle">작성한 리뷰를 확인하고 관리할 수 있습니다.</p>
+</div>
+
+<div class="review-list-container">
+    <div class="review-count-section">
+        총 <span class="review-count">${fn:length(reviewList)}</span>개의 리뷰
     </div>
-</body>
-</html>
+    
+    <c:choose>
+        <c:when test="${empty reviewList}">
+            <div class="no-reviews">
+                <i class="fas fa-comment-slash mb-3" style="font-size: 3rem; color: var(--gray-400);"></i>
+                <p>작성한 리뷰가 없습니다.</p>
+                <p class="text-muted">음식을 주문하고 리뷰를 남겨보세요!</p>
+                <a href="<c:url value='/user/categoryStores'/>" class="btn btn-primary mt-3">가게 찾아보기</a>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="review-list">
+                <c:forEach var="review" items="${reviewList}">
+                    <div class="review-item">
+                        <div class="review-store">${review.STORE_NAME}</div>
+                        <div class="review-date">
+                            <fmt:formatDate value="${review.WRITE_DATE}" pattern="yyyy.MM.dd" />
+                        </div>
+                        
+                        <div class="rating">
+                            <c:forEach begin="1" end="5" var="i">
+                                <i class="fas fa-star ${i <= review.RATING ? 'text-warning' : 'text-muted'}"></i>
+                            </c:forEach>
+                            <span class="rating-text">${review.RATING}</span>
+                        </div>
+                        
+                        <c:if test="${not empty review.REVIEW_IMAGE_NAME}">
+                            <div class="review-image">
+                                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.REVIEW_IMAGE_NAME}" 
+                                    alt="리뷰 이미지" />
+                            </div>
+                        </c:if>
+                        
+                        <p class="review-content">${review.REVIEW_CONTENT}</p>
+                        
+                        <div class="review-actions">
+                            <a href="${pageContext.request.contextPath}/userstore/viewReview?orderId=${review.ORDER_ID}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> 상세보기
+                            </a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" 
+                                    onclick="if(confirm('리뷰를 삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/userstore/deleteReview?reviewId=${review.REVIEW_ID}'">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+<style>
+.review-list-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.review-count-section {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.review-count {
+    font-weight: 700;
+    color: #ff6b6b;
+}
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.review-item:hover {
+    transform: translateY(-3px);
+}
+
+.review-store {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.review-date {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.fa-star {
+    font-size: 16px;
+    margin-right: 2px;
+}
+
+.text-warning {
+    color: #ffcc00 !important;
+}
+
+.text-muted {
+    color: #ccc !important;
+}
+
+.rating-text {
+    margin-left: 5px;
+    font-weight: 600;
+}
+
+.review-content {
+    margin: 15px 0;
+    line-height: 1.6;
+    color: #555;
+}
+
+.review-image {
+    margin: 15px 0;
+}
+
+.review-image img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-reviews i {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.no-reviews p {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.no-reviews .text-muted {
+    color: #888 !important;
+    font-size: 14px;
+}
+
+.no-reviews .btn {
+    margin-top: 20px;
+}
+</style>

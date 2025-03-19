@@ -41,7 +41,7 @@
 				<li class="mypage-menu-item"><a
 					href="<c:url value='/userstore/myCouponList'/>"
 					class="mypage-menu-link ${activeMenu eq 'myCouponList' ? 'active' : ''}">
-						<i class="fas fa-history"></i> <span>쿠폰함</span>
+						<i class="fas fa-ticket"></i> <span>쿠폰함</span>
 				</a></li>
 				<li class="mypage-menu-item"><a
 					href="<c:url value='/userstore/myReviewList'/>"
