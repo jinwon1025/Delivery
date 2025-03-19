@@ -17,17 +17,25 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 실시간 업데이트 시각 효과를 위한 스타일 -->
+    <style>
+        @keyframes highlight {
+            0% { background-color: #fffacd; }
+            100% { background-color: transparent; }
+        }
+        
+        .highlight-update {
+            animation: highlight 2s ease-in-out;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container mt-4">
     <h2>주문 목록 관리</h2>
     
-    <c:if test="${empty orderList}">
-        <div class="alert alert-info mt-3">
-            현재 주문 내역이 없습니다.
-        </div>
-    </c:if>
+
     
     <c:if test="${not empty storeList}">
         <div class="mb-3">
@@ -69,7 +77,7 @@
             </thead>
             <tbody id="orderTableBody">
                 <c:forEach var="order" items="${orderList}">
-                    <tr class="order-row" data-store-id="${order.STORE_ID}" data-status="${order.ORDER_STATUS}">
+                    <tr class="order-row" data-store-id="${order.STORE_ID}" data-status="${order.ORDER_STATUS}" data-order-id="${order.ORDER_ID}">
                         <td>${order.ORDER_ID}</td>
                         <td>${order.STORE_NAME}</td>
                         <td><fmt:formatDate value="${order.ORDER_TIME}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
@@ -150,24 +158,108 @@
 </div>
 
 <script>
+// 페이지 로드 완료 후 실행
 $(document).ready(function() {
-    // 매장 필터링
-    $('#storeFilter').change(function() {
-        filterOrders();
-    });
+    console.log("스크립트 로드 완료");
     
-    // 상태 필터링
-    $('#statusFilter').change(function() {
-        filterOrders();
-    });
+    // 즉시 한 번 테스트 실행 (1초 기다리지 않고)
+    getOrderList();
     
-    // 주문 상세 보기 버튼 클릭 이벤트
-    $(document).on('click', '.view-details', function() {
-        const orderId = $(this).data('order-id');
-        const storeId = $(this).data('store-id');
+    // 그 후 1초마다 실행
+    setInterval(getOrderList, 1000);
+    
+    // 주문 목록 가져오는 함수
+    function getOrderList() {
+        $.ajax({
+            url: '/owner/getRealtimeOrders',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                // 브라우저 콘솔에 로그 출력
+                console.log("데이터 수신:", data);
+                
+                // 테이블 비우기
+                $("#orderTableBody").empty();
+                
+                // 데이터가 없는 경우 처리
+                if (!data || data.length === 0) {
+                    console.log("주문 내역이 없습니다");
+                    return;
+                }
+                
+                // 행 추가
+                $.each(data, function(index, order) {
+                    // 상태에 따른 배지 클래스 결정
+                    var badgeClass = "bg-dark";
+                    var statusText = "상태 미정";
+                    
+                    switch (parseInt(order.ORDER_STATUS)) {
+                        case 0: badgeClass = "bg-warning"; statusText = "접수 대기"; break;
+                        case 1: badgeClass = "bg-info"; statusText = "접수 완료"; break;
+                        case 2: badgeClass = "bg-primary"; statusText = "준비 중"; break;
+                        case 3: badgeClass = "bg-secondary"; statusText = "배달 중"; break;
+                        case 4: badgeClass = "bg-success"; statusText = "배달 완료"; break;
+                        case 5: badgeClass = "bg-danger"; statusText = "주문 취소"; break;
+                    }
+                    
+                    // 날짜 포맷팅 (오류 방지를 위한 검사 추가)
+                    var formattedDate = "";
+                    if (order.ORDER_TIME) {
+                        try {
+                            var orderDate = new Date(order.ORDER_TIME);
+                            formattedDate = orderDate.getFullYear() + "-" + 
+                                          (orderDate.getMonth() + 1).toString().padStart(2, '0') + "-" +
+                                          orderDate.getDate().toString().padStart(2, '0') + " " +
+                                          orderDate.getHours().toString().padStart(2, '0') + ":" +
+                                          orderDate.getMinutes().toString().padStart(2, '0') + ":" +
+                                          orderDate.getSeconds().toString().padStart(2, '0');
+                        } catch (e) {
+                            console.error("날짜 변환 오류:", e);
+                            formattedDate = order.ORDER_TIME; // 원본 그대로 사용
+                        }
+                    }
+                    
+                    // 가격 포맷팅
+                    var formattedPrice = "금액 정보 없음";
+                    if (order.TOTALPRICE) {
+                        try {
+                            formattedPrice = new Intl.NumberFormat('ko-KR').format(order.TOTALPRICE) + '원';
+                        } catch (e) {
+                            console.error("가격 변환 오류:", e);
+                            formattedPrice = order.TOTALPRICE + '원'; // 원본에 원 추가
+                        }
+                    }
+                    
+                    // 새 행 HTML 생성
+                    var newRow = '<tr class="order-row" data-store-id="' + order.STORE_ID + '" data-status="' + order.ORDER_STATUS + '" data-order-id="' + order.ORDER_ID + '">' +
+                        '<td>' + order.ORDER_ID + '</td>' +
+                        '<td>' + order.STORE_NAME + '</td>' +
+                        '<td>' + formattedDate + '</td>' +
+                        '<td>' + order.STORE_ADDRESS + '</td>' +
+                        '<td>' + formattedPrice + '</td>' +
+                        '<td><span class="badge ' + badgeClass + '">' + statusText + '</span></td>' +
+                        '<td><button class="btn btn-sm btn-primary view-details" data-order-id="' + order.ORDER_ID + '" data-store-id="' + order.STORE_ID + '">상세 보기</button></td>' +
+                        '</tr>';
+                    
+                    // 테이블에 행 추가
+                    $("#orderTableBody").append(newRow);
+                });
+                
+                console.log("테이블 업데이트 완료, 행 수: " + data.length);
+            },
+            error: function(xhr, status, error) {
+                console.error("오류 발생:", status, error);
+                console.log("응답 텍스트:", xhr.responseText);
+            }
+        });
+    }
+    
+    // 주문 상세 보기 버튼 클릭 이벤트 (이벤트 위임)
+    $(document).on("click", ".view-details", function() {
+        var orderId = $(this).data("order-id");
+        var storeId = $(this).data("store-id");
         
-        console.log("Order ID:", orderId); // 디버깅용
-        console.log("Store ID:", storeId); // 디버깅용
+        console.log("상세 보기 클릭:", orderId, storeId);
         
         // 주문 상세 정보를 가져오는 AJAX 호출
         $.ajax({
@@ -178,7 +270,7 @@ $(document).ready(function() {
                 storeId: storeId
             },
             success: function(response) {
-                console.log("Response received:", response); // 디버깅용
+                console.log("상세 정보 수신 성공");
                 $('#orderDetailBody').html(response);
                 $('#orderDetailModal').modal('show');
                 
@@ -188,19 +280,19 @@ $(document).ready(function() {
                 });
             },
             error: function(xhr, status, error) {
-                console.error("AJAX Error:", status, error);
-                console.log(xhr.responseText);
+                console.error("상세 정보 AJAX 오류:", status, error);
+                console.log("응답 텍스트:", xhr.responseText);
                 alert('주문 상세 정보를 불러오는 데 실패했습니다.');
             }
         });
     });
     
     // 주문 상태 업데이트 버튼 클릭 이벤트
-    $(document).on('click', '.update-status', function() {
-        const status = $(this).attr('data-status');
-        const orderId = $(this).attr('data-order-id');
+    $(document).on("click", ".update-status", function() {
+        var status = $(this).attr("data-status");
+        var orderId = $(this).attr("data-order-id");
         
-        console.log("Updating status:", status, "for order:", orderId); // 디버깅용
+        console.log("상태 업데이트 클릭:", status, orderId);
         
         if (confirm('주문 상태를 변경하시겠습니까?')) {
             $.ajax({
@@ -211,42 +303,60 @@ $(document).ready(function() {
                     status: status
                 },
                 success: function(response) {
-                    console.log("Status update response:", response); // 디버깅용
+                    console.log("상태 업데이트 응답:", response);
                     if (response === 'success') {
                         alert('주문 상태가 변경되었습니다.');
-                        location.reload(); // 페이지 새로고침
+                        $('#orderDetailModal').modal('hide');
+                        // 목록 갱신 (즉시 실행)
+                        getOrderList();
                     } else {
                         alert('주문 상태 변경에 실패했습니다.');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error("AJAX Error:", status, error);	
+                    console.error("상태 업데이트 AJAX 오류:", status, error);    
                     alert('주문 상태 변경 중 오류가 발생했습니다.');
                 }
             });
         }
     });
     
+    // 매장 필터링
+    $('#storeFilter').change(function() {
+        filterOrders();
+    });
+    
+    // 상태 필터링
+    $('#statusFilter').change(function() {
+        filterOrders();
+    });
+    
     // 필터링 함수
     function filterOrders() {
-        const storeId = $('#storeFilter').val();
-        const status = $('#statusFilter').val();
+        var storeId = $('#storeFilter').val();
+        var status = $('#statusFilter').val();
         
-        console.log("Filtering - Store:", storeId, "Status:", status); // 디버깅용
+        console.log("필터링 실행:", storeId, status);
         
+        // 모두 전체 선택인 경우 모든 행 표시
+        if (storeId === 'all' && status === 'all') {
+            $('.order-row').show();
+            console.log("모든 주문 표시");
+            return;
+        }
+        
+        // 각 행에 대해 필터링 조건 확인
         $('.order-row').each(function() {
-            const rowStoreId = $(this).attr('data-store-id');
-            const rowStatus = parseInt($(this).attr('data-status'));
+            var rowStoreId = $(this).attr('data-store-id');
+            var rowStatus = $(this).attr('data-status');
             
-            console.log("Row - Store:", rowStoreId, "Status:", rowStatus); // 디버깅용
-            
-            let showRow = true;
+            var showRow = true;
             
             if (storeId !== 'all' && rowStoreId !== storeId) {
                 showRow = false;
             }
             
-            if (status !== 'all' && rowStatus !== parseInt(status)) {
+            if (status !== 'all' && rowStatus !== status) {
                 showRow = false;
             }
             

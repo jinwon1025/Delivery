@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -265,7 +266,7 @@ public class OwnerController {
 		return new ModelAndView("redirect:../owner/myPage");
 	}
 
-	// 주문 목록 조회 메소드 (오타 수정: /ower/orderList → /owner/orderList)
+	// 주문 목록 조회 메소드
 	@GetMapping(value = "/owner/orderList")
 	public ModelAndView orderList(HttpSession session) {
 		ModelAndView mav = new ModelAndView("owner/storeMain");
@@ -509,6 +510,43 @@ public class OwnerController {
 		
 		
 		
+	}
+	
+	@GetMapping("/owner/getRealtimeOrders")
+	@ResponseBody
+	public List<Map<String, Object>> getRealtimeOrders(HttpSession session) {
+	    // 세션에서 로그인한 업주 정보 가져오기
+	    LoginOwner loginOwner = (LoginOwner) session.getAttribute("loginOwner");
+
+	    if (loginOwner != null) {
+	        // 업주의 모든 가게에 대한 주문 목록 가져오기
+	        List<Map<String, Object>> orderList = ownerSerivce.getOrderList(loginOwner.getId());
+	        
+	        // 전체 orderList 크기 출력
+	        System.out.println("주문 목록 크기: " + orderList.size());
+	        
+	        // 전체 orderList 출력 (간단한 출력)
+	        System.out.println("주문 목록 전체: " + orderList);
+	        
+	        // 주문 목록의 각 항목을 자세히 출력
+	        for (int i = 0; i < orderList.size(); i++) {
+	            Map<String, Object> order = orderList.get(i);
+	            System.out.println("주문 #" + i + ": " + order);
+	            
+	            // 각 주문의 개별 필드를 더 자세히 출력하고 싶다면
+	            System.out.println("  - 주문 ID: " + order.get("ORDER_ID"));
+	            System.out.println("  - 매장명: " + order.get("STORE_NAME"));
+	            System.out.println("  - 주문 상태: " + order.get("ORDER_STATUS"));
+	            System.out.println("  - 주문 시간: " + order.get("ORDER_TIME"));
+	            System.out.println("  - 총 금액: " + order.get("TOTALPRICE"));
+	        }
+	        
+	        return orderList;
+	    } else {
+	        // 로그인하지 않은 경우 빈 리스트 반환
+	        System.out.println("로그인 정보 없음 - 빈 주문 목록 반환");
+	        return new ArrayList<>();
+	    }
 	}
 	
 
