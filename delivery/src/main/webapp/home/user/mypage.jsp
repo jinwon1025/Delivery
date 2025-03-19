@@ -19,7 +19,7 @@
 						<i class="fas fa-user"></i> <span>내 정보</span>
 				</a></li>
 				<li class="mypage-menu-item"><a
-					href="<c:url value='/user/mypage/bookMarkList'/>"
+					href="<c:url value='/user/bookMarkList'/>"
 					class="mypage-menu-link ${activeMenu eq 'bookMarkList' ? 'active' : ''}">
 						<i class="fas fa-heart"></i> <span>즐겨찾기</span>
 				</a></li>
@@ -56,7 +56,7 @@
 	<div class="mypage-content">
 		<c:choose>
 			<c:when test="${contentPage eq 'bookMarkList'}">
-				<%@ include file="mypage-bookmarkList.jsp"%>
+				<%@ include file="bookmarkList.jsp"%>
 			</c:when>
 			<c:when test="${contentPage eq 'viewPay'}">
 				<%@ include file="viewPay.jsp"%>

@@ -459,8 +459,10 @@ public class UserController {
 																								// 가져오기
 
 		mav.addObject("bookMarkList", bookMarkList);
+		mav.addObject("activeMenu", "bookMarkList");
+		mav.addObject("contentPage", "bookMarkList");
 		mav.addObject("bmsList", bmsList);
-		mav.addObject("BODY", "bookmarkList.jsp");
+		mav.addObject("BODY", "mypage.jsp");
 		return mav;
 
 	}

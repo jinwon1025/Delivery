@@ -190,6 +190,20 @@
     border-radius: 8px;
     border: 1px dashed #ccc;
 }
+.login-button {
+    display: inline-block;
+    background-color: #4facfe;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+.login-button:hover {
+    background-color: #007bff;
+}
 </style>
 </head>
 <body>
@@ -198,42 +212,50 @@
 <div class="coupon-section">
     <h2 class="coupon-title">사용 가능한 쿠폰</h2>
     
-    <c:if test="${empty availableCoupons}">
-        <div class="no-coupon">
-            현재 사용 가능한 쿠폰이 없습니다.
-        </div>
-    </c:if>
-    
-    <c:if test="${not empty availableCoupons}">
-        <div class="coupon-container">
-            <c:forEach var="coupon" items="${availableCoupons}">
-                <div class="coupon-item ${coupon.ISDOWNLOADED == 1 ? 'downloaded-coupon' : ''}">
-                    <div class="coupon-name">${coupon.CP_NAME}</div>
-                    <div class="coupon-price">₩<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" /></div>
-                    <div class="coupon-min-order">최소주문금액: ₩<fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" /></div>
-                    <div class="coupon-expire">
-                        <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
-                        <fmt:formatDate value="${expireDate}" pattern="yyyy년 MM월 dd일까지" />
+    <c:choose>
+        <c:when test="${empty loginUser}">
+            <div class="no-coupon">
+                쿠폰 다운로드는 로그인 후 이용 가능합니다.
+                <br>
+                <a href="/user/loginForm" class="login-button">로그인하러 가기</a>
+            </div>
+        </c:when>
+        <c:when test="${empty availableCoupons}">
+            <div class="no-coupon">
+                현재 사용 가능한 쿠폰이 없습니다.
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="coupon-container">
+                <c:forEach var="coupon" items="${availableCoupons}">
+                    <div class="coupon-item ${coupon.ISDOWNLOADED == 1 ? 'downloaded-coupon' : ''}">
+                        <div class="coupon-name">${coupon.CP_NAME}</div>
+                        <div class="coupon-price">₩<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" /></div>
+                        <div class="coupon-min-order">최소주문금액: ₩<fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" /></div>
+                        <div class="coupon-expire">
+                            <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
+                            <fmt:formatDate value="${expireDate}" pattern="yyyy년 MM월 dd일까지" />
+                        </div>
+                        
+                        <c:choose>
+                            <c:when test="${coupon.ISDOWNLOADED == 1}">
+                                <button class="coupon-download" disabled>다운로드 완료</button>
+                            </c:when>
+                            <c:otherwise>
+                                <button class="coupon-download"
+                                        data-coupon-id="${coupon.STORE_COUPON_ID}"
+                                        data-coupon-name="${coupon.CP_NAME}"
+                                        data-owner-id="${coupon.OWNER_COUPON_ID}"
+                                        data-expire-date="${coupon.EXPIRE_DATE}"
+                                        data-min-purchase="${coupon.MINIMUM_PURCHASE}"
+                                        onclick="downloadCouponFromElement(this)">다운로드</button>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    
-                    <c:choose>
-                        <c:when test="${coupon.ISDOWNLOADED == 1}">
-                            <button class="coupon-download" disabled>다운로드 완료</button>
-                        </c:when>
-                        <c:otherwise>
-                            <button class="coupon-download"
-                                    data-coupon-id="${coupon.STORE_COUPON_ID}"
-                                    data-coupon-name="${coupon.CP_NAME}"
-                                    data-owner-id="${coupon.OWNER_COUPON_ID}"
-                                    data-expire-date="${coupon.EXPIRE_DATE}"
-                                    data-min-purchase="${coupon.MINIMUM_PURCHASE}"
-                                    onclick="downloadCouponFromElement(this)">다운로드</button>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </c:forEach>
-        </div>
-    </c:if>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
 </div>
 
 <h2>메뉴 목록</h2>

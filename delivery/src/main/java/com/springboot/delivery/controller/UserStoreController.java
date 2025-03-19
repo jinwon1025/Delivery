@@ -69,45 +69,51 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/detail")
    public ModelAndView storeDetial(String store_id, HttpSession session) {
-      Store currentStore = (Store) storeService.getStore(store_id);
-      session.setAttribute("currentStore", currentStore);
-      LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-
-      // 현재 로그인한 사용자 ID 가져오기`
-      String userId = (String) session.getAttribute("userId");
-
-      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-      List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
-
-      ModelAndView mav = new ModelAndView("user/userMain");
-      mav.addObject("maincategoryList", maincategoryList);
-      mav.addObject("storeCategory", mc);
-      mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-
-      StoreCoupon sc = new StoreCoupon();
-      sc.setStore_id(currentStore.getStore_id());
-      sc.setUser_id(loginUser.getUser_id());
-
-      // 사용 가능한 쿠폰 목록 조회
-      List<Map<String, Object>> availableCoupons = userStoreService.getStoreCouponList(sc);
-      mav.addObject("availableCoupons", availableCoupons);
-      System.out.println("=== 조회된 쿠폰 정보 ===");
-      System.out.println("조회된 쿠폰 수: " + (availableCoupons != null ? availableCoupons.size() : "null"));
-
-      if (availableCoupons != null && !availableCoupons.isEmpty()) {
-         for (Map<String, Object> coupon : availableCoupons) {
-            System.out.println(coupon);
-         }
-      }
-
-      if (!mc.isEmpty()) {
-         Integer firstCategoryId = mc.get(0).getMenu_category_id();
-         List<MenuItem> menuList = userStoreService.getAllMenusByStoreId(store_id);
-         mav.addObject("menuList", menuList);
-         mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
-      }
-
-      return mav;
+       Store currentStore = (Store) storeService.getStore(store_id);
+       session.setAttribute("currentStore", currentStore);
+       LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+       
+       // 현재 로그인한 사용자 ID 가져오기`
+       String userId = (String) session.getAttribute("userId");
+       
+       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+       List<MenuCategory> mc = this.userStoreService.storeCategory(store_id);
+       
+       ModelAndView mav = new ModelAndView("user/userMain");
+       mav.addObject("maincategoryList", maincategoryList);
+       mav.addObject("storeCategory", mc);
+       mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+       
+       // 로그인한 경우에만 쿠폰 정보 조회
+       if (loginUser != null) {
+           StoreCoupon sc = new StoreCoupon();
+           sc.setStore_id(currentStore.getStore_id());
+           sc.setUser_id(loginUser.getUser_id());
+           
+           // 사용 가능한 쿠폰 목록 조회
+           List<Map<String, Object>> availableCoupons = userStoreService.getStoreCouponList(sc);
+           mav.addObject("availableCoupons", availableCoupons);
+           System.out.println("=== 조회된 쿠폰 정보 ===");
+           System.out.println("조회된 쿠폰 수: " + (availableCoupons != null ? availableCoupons.size() : "null"));
+           
+           if (availableCoupons != null && !availableCoupons.isEmpty()) {
+               for (Map<String, Object> coupon : availableCoupons) {
+                   System.out.println(coupon);
+               }
+           }
+       } else {
+           // 로그인하지 않은 경우에는 빈 리스트를 전달하거나 null을 전달
+           mav.addObject("availableCoupons", null);
+       }
+       
+       if (!mc.isEmpty()) {
+           Integer firstCategoryId = mc.get(0).getMenu_category_id();
+           List<MenuItem> menuList = userStoreService.getAllMenusByStoreId(store_id);
+           mav.addObject("menuList", menuList);
+           mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
+       }
+       
+       return mav;
    }
 
    @GetMapping(value = "/userstore/menuList")
@@ -127,73 +133,75 @@ public class UserStoreController {
 
    @GetMapping(value = "/userstore/menuDetail")
    public ModelAndView menuDetail(Integer menu_item_id, HttpSession session) {
-      Store store = (Store) session.getAttribute("currentStore");
-      LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-      ModelAndView mav = new ModelAndView("user/userMain");
-
-      List<Maincategory> maincategoryList = adminService.getAllMaincategory();
-      List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
-      mav.addObject("maincategoryList", maincategoryList);
-      mav.addObject("storeCategory", mc);
-      mav.addObject("BODY", "../userstore/userStoreMain.jsp");
-
-      MenuItem mi = this.userStoreService.menuItemDetail(menu_item_id);
-
-      // 장바구니 관련 로직
-      OrderCart oc = new OrderCart();
-      oc.setUser_id(loginUser.getUser_id());
-      oc.setOrder_status(0);
-      System.out.println("유저 아이디" + oc.getUser_id());
-      String existingOrderId = this.userStoreService.findOrderByUserId(oc);
-      String existingOrderStoreId = "none"; // 기본값
-
-      // 장바구니 상태를 확인하여 결과 저장
-      boolean showModal = false;
-
-      if (existingOrderId != null) {
-         oc.setOrder_id(existingOrderId);
-         oc.setOrder_status(0);
-         existingOrderStoreId = this.userStoreService.findStoreByMenuItemInCart(oc);
-
-         // 장바구니가 비어있지 않고, 다른 가게의 상품이 담겨있는 경우
-         if (existingOrderStoreId != null && !existingOrderStoreId.equals(store.getStore_id())) {
-            showModal = true;
-         }
-      }
-
-      // 결과를 모델에 추가
-      mav.addObject("showModal", showModal);
-
-      List<OptionSet> os = this.userStoreService.optionDetail(menu_item_id);
-      Map<String, List<OptionSet>> groupedOptions = new TreeMap<>();
-      for (OptionSet option : os) {
-         groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
-      }
-
-      // 옵션 정보 로깅
-      System.out.println("====== 옵션 정보 ======");
-      for (OptionSet option : os) {
-         System.out.println("옵션 ID: " + option.getOption_id() + ", 이름: " + option.getOption_name() + ", 가격: "
-               + option.getOption_price() + ", 그룹 ID: " + option.getOption_group_id() + ", 그룹 이름: "
-               + option.getOption_group_name() + ", 선택 타입: " + option.getSelection_type());
-      }
-
-      // 그룹화된 옵션 정보 로깅
-      System.out.println("\n====== 그룹화된 옵션 정보 ======");
-      for (Map.Entry<String, List<OptionSet>> entry : groupedOptions.entrySet()) {
-         System.out.println("그룹 이름: " + entry.getKey());
-         System.out.println("옵션 개수: " + entry.getValue().size());
-         if (!entry.getValue().isEmpty()) {
-            System.out.println("선택 타입: " + entry.getValue().get(0).getSelection_type());
-         }
-         System.out.println("------");
-      }
-
-      mav.addObject("menuDetail", mi);
-      mav.addObject("optionGroups", groupedOptions);
-      mav.addObject("STOREBODY", "../userstore/userMenuDetail.jsp");
-
-      return mav;
+       Store store = (Store) session.getAttribute("currentStore");
+       // 로그인 여부 확인
+       LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+       ModelAndView mav = new ModelAndView("user/userMain");
+       
+       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
+       List<MenuCategory> mc = this.userStoreService.storeCategory(store.getStore_id());
+       mav.addObject("maincategoryList", maincategoryList);
+       mav.addObject("storeCategory", mc);
+       mav.addObject("BODY", "../userstore/userStoreMain.jsp");
+       
+       MenuItem mi = this.userStoreService.menuItemDetail(menu_item_id);
+       
+       // 장바구니 관련 로직 - 로그인한 경우에만 실행
+       boolean showModal = false;
+       if (loginUser != null) {
+           OrderCart oc = new OrderCart();
+           oc.setUser_id(loginUser.getUser_id());
+           oc.setOrder_status(0);
+           System.out.println("유저 아이디" + oc.getUser_id());
+           String existingOrderId = this.userStoreService.findOrderByUserId(oc);
+           String existingOrderStoreId = "none"; // 기본값
+           
+           if (existingOrderId != null) {
+               oc.setOrder_id(existingOrderId);
+               oc.setOrder_status(0);
+               existingOrderStoreId = this.userStoreService.findStoreByMenuItemInCart(oc);
+               
+               // 장바구니가 비어있지 않고, 다른 가게의 상품이 담겨있는 경우
+               if (existingOrderStoreId != null && !existingOrderStoreId.equals(store.getStore_id())) {
+                   showModal = true;
+               }
+           }
+       }
+       
+       // 결과를 모델에 추가
+       mav.addObject("showModal", showModal);
+       mav.addObject("loginUser", loginUser); // JSP에서 로그인 여부 확인을 위해 추가
+       
+       List<OptionSet> os = this.userStoreService.optionDetail(menu_item_id);
+       Map<String, List<OptionSet>> groupedOptions = new TreeMap<>();
+       for (OptionSet option : os) {
+           groupedOptions.computeIfAbsent(option.getOption_group_name(), k -> new ArrayList<>()).add(option);
+       }
+       
+       // 옵션 정보 로깅
+       System.out.println("====== 옵션 정보 ======");
+       for (OptionSet option : os) {
+           System.out.println("옵션 ID: " + option.getOption_id() + ", 이름: " + option.getOption_name() + ", 가격: "
+                   + option.getOption_price() + ", 그룹 ID: " + option.getOption_group_id() + ", 그룹 이름: "
+                   + option.getOption_group_name() + ", 선택 타입: " + option.getSelection_type());
+       }
+       
+       // 그룹화된 옵션 정보 로깅
+       System.out.println("\n====== 그룹화된 옵션 정보 ======");
+       for (Map.Entry<String, List<OptionSet>> entry : groupedOptions.entrySet()) {
+           System.out.println("그룹 이름: " + entry.getKey());
+           System.out.println("옵션 개수: " + entry.getValue().size());
+           if (!entry.getValue().isEmpty()) {
+               System.out.println("선택 타입: " + entry.getValue().get(0).getSelection_type());
+           }
+           System.out.println("------");
+       }
+       
+       mav.addObject("menuDetail", mi);
+       mav.addObject("optionGroups", groupedOptions);
+       mav.addObject("STOREBODY", "../userstore/userMenuDetail.jsp");
+       
+       return mav;
    }
 
    @PostMapping(value = "/userstore/addCart")
