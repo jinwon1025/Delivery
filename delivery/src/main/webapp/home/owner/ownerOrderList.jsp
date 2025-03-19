@@ -326,7 +326,7 @@ $(document).ready(function() {
         filterOrders();
     });
     
-    // 상태 필터링
+    // 상태  필터링
     $('#statusFilter').change(function() {
         filterOrders();
     });
