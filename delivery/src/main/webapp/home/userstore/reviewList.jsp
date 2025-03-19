@@ -5,7 +5,7 @@
 
 <!-- 리뷰 관리 페이지 -->
 <div class="page-header">
-    <h1 class="page-title">내 리뷰관리</h1>
+    <h1 class="page-title">내 리뷰 관리</h1>
     <p class="page-subtitle">작성한 리뷰를 확인하고 관리할 수 있습니다.</p>
 </div>
 
