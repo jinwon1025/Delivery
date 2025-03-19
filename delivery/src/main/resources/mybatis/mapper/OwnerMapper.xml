@@ -73,30 +73,30 @@
 	</select>
 
 	<!-- 수정된 쿼리: 업주의 모든 가게에 대한 주문 목록 조회 -->
-	<select id="getOrderList" parameterType="String" resultType="map">
-    SELECT
-        o.order_id,
-        o.user_id,
-        o.order_time,
-        od.order_detail_id,
-        od.store_id,
-        od.store_address,
-        od.toowner as owner_request,
-        od.torider as rider_request,
-        od.order_status,
-        od.totalprice,
-        s.store_name
-    FROM
-        b_order_tbl o
-    JOIN
-        b_order_detail_tbl od ON o.order_id = od.order_id
-    JOIN
-        b_store_tbl s ON od.store_id = s.store_id
-    WHERE
-        s.owner_id = #{owner_id}
-        AND od.order_status > 0
-    ORDER BY
-        o.order_time DESC
+<select id="getOrderList" parameterType="String" resultType="map">
+SELECT
+    o.order_id AS "ORDER_ID",
+    o.user_id AS "USER_ID",
+    o.order_time AS "ORDER_TIME",
+    od.order_detail_id AS "ORDER_DETAIL_ID",
+    od.store_id AS "STORE_ID",
+    od.store_address AS "STORE_ADDRESS",
+    od.toowner AS "OWNER_REQUEST",
+    od.torider AS "RIDER_REQUEST",
+    od.order_status AS "ORDER_STATUS",
+    od.totalprice AS "TOTALPRICE",
+    s.store_name AS "STORE_NAME"
+FROM
+    b_order_tbl o
+JOIN
+    b_order_detail_tbl od ON o.order_id = od.order_id
+JOIN
+    b_store_tbl s ON od.store_id = s.store_id
+WHERE
+    s.owner_id = #{owner_id}
+AND od.order_status > 0
+ORDER BY
+    o.order_time DESC
 </select>
 
 	<select id="getOrderItems" parameterType="map" resultType="map">
@@ -434,6 +434,9 @@
 
 	</select>
 	
+	<select id="getUsedPoint" parameterType="String" resultType="Integer">
+		select point_discount from b_order_detail_tbl where order_id = #{order_id}
+	</select>
 
 
 </mapper>

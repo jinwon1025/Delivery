@@ -131,6 +131,19 @@
 	<select id="getpointRate" resultType="Float">
 		select * from b_point_tbl
 	</select>
+	
+	<select id="getOrderCount" resultType="Integer">
+	
+	
+	select count(order_id) from b_order_tbl
+	
+	</select>
+	
+	<select id="getUsedCouponCount" resultType="Integer">
+	
+	select count(used_cp_id) from b_used_coupon_tbl
+	
+	</select>
 
 
 </mapper>

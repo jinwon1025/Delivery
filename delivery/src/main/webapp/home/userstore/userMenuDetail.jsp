@@ -348,7 +348,14 @@ input[type="radio"] {
 		}
 		
 		function submitForm() {
-		    // 폼 제출 전에 각 옵션 그룹에서 라디오 버튼이 선택되었는지 확인
+		    // 로그인 여부 확인 (가장 먼저 체크)
+		    if (${sessionScope.loginUser == null}) {
+		        alert('장바구니에 추가하려면 로그인해야 합니다.');
+		        window.location.href = '/user/loginForm';
+		        return false;
+		    }
+		    
+		    // 이후 기존의 옵션 유효성 검사 코드...
 		    const form = document.getElementById('cartForm');
 		    const optionGroups = {};
 		    
@@ -384,16 +391,7 @@ input[type="radio"] {
 		    for (const groupId in optionGroups) {
 		        if (!optionGroups[groupId].hasSelection) {
 		            allGroupsHaveSelection = false;
-		            // 그룹 이름 찾기
-		            let groupName = `옵션 그룹 ${groupId}`;
-		            const groupElements = document.querySelectorAll('h3');
-		            for (const el of groupElements) {
-		                if (el.nextElementSibling && el.nextElementSibling.querySelector(`input[data-group-id="${groupId}"]`)) {
-		                    groupName = el.textContent.trim();
-		                    break;
-		                }
-		            }
-		            alert(`${groupName}에서 옵션을 선택해주세요.`);
+		            alert('옵션을 모두 선택해주세요.');
 		            break;
 		        }
 		    }

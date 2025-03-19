@@ -26,4 +26,7 @@ public interface AdminMapper {
 	List<Owner> getAllOwner();
 	void pointRate(Float point_rate);
 	Float getpointRate();
+	
+	Integer getOrderCount();
+	Integer getUsedCouponCount();
 }

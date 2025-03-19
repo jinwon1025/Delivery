@@ -44,6 +44,14 @@ public class AdminController {
         int userCount = adminService.getUserCount();
         mav.addObject("userCount", userCount);
         
+        // 전체 주문 수 가져오기
+        Integer orderCount = this.adminService.getOrderCount();
+        mav.addObject("orderCount", orderCount);
+        
+        // 전체 쿠폰 수 가져오기
+        Integer usedCouponCount = this.adminService.getUsedCouponCount();
+        mav.addObject("usedCouponCount", usedCouponCount);
+        
         // 기본적으로 대시보드 표시
         mav.addObject("activeMenu", "dashboard");      
         return mav;

@@ -50,19 +50,26 @@
     transition: all 0.2s ease;
 }
 
-/* 쿠폰 관련 스타일 */
+/* 쿠폰 관련 개선된 스타일 */
 .coupon-section {
     margin-bottom: 30px;
     border: 1px solid #e0e0e0;
     border-radius: 10px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #f5f7fa;
 }
 .coupon-title {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 15px;
     color: #333;
+    display: flex;
+    align-items: center;
+}
+.coupon-title:before {
+    content: '🎫';
+    margin-right: 8px;
+    font-size: 22px;
 }
 .coupon-container {
     display: flex;
@@ -72,116 +79,158 @@
 .coupon-item {
     position: relative;
     width: 280px;
-    height: 120px;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-    border-radius: 10px;
-    padding: 15px;
+    height: 130px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #333;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.2s ease;
 }
 
 .coupon-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
 }
 
-.coupon-item::before {
+/* 쿠폰 왼쪽 부분 (컬러 영역) */
+.coupon-left {
+    width: 80px;
+    background: #3a4cb4; /* 더 깊고 전문적인 파란색 */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.coupon-left:after {
     content: '';
     position: absolute;
-    left: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 20px;
-    background-color: #f9f9f9;
-    border-radius: 0 50% 50% 0;
+    right: -8px;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    background-image: radial-gradient(circle at 0 50%, transparent 8px, #fff 8px);
+    background-size: 16px 16px;
+    background-repeat: repeat-y;
 }
-.coupon-item::after {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 20px;
-    background-color: #f9f9f9;
-    border-radius: 50% 0 0 50%;
-}
-.coupon-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-.coupon-price {
+
+.coupon-discount {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    text-align: center;
+    line-height: 1;
 }
+
+.coupon-unit {
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+/* 쿠폰 오른쪽 부분 (내용 영역) */
+.coupon-content {
+    flex: 1;
+    padding: 15px;
+    padding-left: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.coupon-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
 .coupon-min-order {
-    font-size: 13px;
-    opacity: 0.9;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
 }
+
+.coupon-expire {
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+}
+
+.coupon-expire:before {
+    content: '⏱️';
+    margin-right: 4px;
+    font-size: 11px;
+}
+
 .coupon-download {
     position: absolute;
-    bottom: 15px;
-    right: 15px;
-    background-color: rgba(255, 255, 255, 0.4);
+    bottom: 12px;
+    right: 12px;
+    background-color: #3a4cb4;
     border: none;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 13px;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 12px;
     font-weight: bold;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .coupon-download:hover {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: #2a3b9f;
 }
 
 .coupon-download[disabled] {
-    background-color: rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.7);
+    background-color: #a0a9d8;
     cursor: not-allowed;
 }
 
-.expired-coupon {
-    background: linear-gradient(135deg, #a9a9a9 0%, #d3d3d3 100%);
-}
-.downloaded-coupon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    border: 2px solid #007bff;
-    position: relative;
+/* 다운로드 완료 쿠폰 스타일 */
+.downloaded-coupon .coupon-left {
+    background: #2e7d32; /* 더 진한 녹색 */
 }
 
-.downloaded-coupon::before {
+.downloaded-coupon .coupon-download {
+    background-color: #2e7d32;
+}
+
+.downloaded-coupon:before {
     content: '✓';
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background: #fff;
-    color: #4facfe;
+    color: #2e7d32;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
 }
 
-.coupon-expire {
-    font-size: 12px;
-    margin-top: 3px;
-    opacity: 0.9;
+/* 만료된 쿠폰 스타일 */
+.expired-coupon .coupon-left {
+    background: #757575;
 }
+
+.expired-coupon .coupon-content {
+    opacity: 0.7;
+}
+
 .no-coupon {
     text-align: center;
     color: #666;
@@ -189,6 +238,22 @@
     background-color: #fff;
     border-radius: 8px;
     border: 1px dashed #ccc;
+}
+
+.login-button {
+    display: inline-block;
+    background-color: #3a4cb4;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.login-button:hover {
+    background-color: #2a3b9f;
 }
 </style>
 </head>
@@ -198,42 +263,57 @@
 <div class="coupon-section">
     <h2 class="coupon-title">사용 가능한 쿠폰</h2>
     
-    <c:if test="${empty availableCoupons}">
-        <div class="no-coupon">
-            현재 사용 가능한 쿠폰이 없습니다.
-        </div>
-    </c:if>
-    
-    <c:if test="${not empty availableCoupons}">
-        <div class="coupon-container">
-            <c:forEach var="coupon" items="${availableCoupons}">
-                <div class="coupon-item ${coupon.ISDOWNLOADED == 1 ? 'downloaded-coupon' : ''}">
-                    <div class="coupon-name">${coupon.CP_NAME}</div>
-                    <div class="coupon-price">₩<fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" /></div>
-                    <div class="coupon-min-order">최소주문금액: ₩<fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" /></div>
-                    <div class="coupon-expire">
-                        <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
-                        <fmt:formatDate value="${expireDate}" pattern="yyyy년 MM월 dd일까지" />
+    <c:choose>
+        <c:when test="${empty loginUser}">
+            <div class="no-coupon">
+                쿠폰 다운로드는 로그인 후 이용 가능합니다.
+                <br>
+                <a href="/user/loginForm" class="login-button">로그인하러 가기</a>
+            </div>
+        </c:when>
+        <c:when test="${empty availableCoupons}">
+            <div class="no-coupon">
+                현재 사용 가능한 쿠폰이 없습니다.
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="coupon-container">
+                <c:forEach var="coupon" items="${availableCoupons}">
+                    <div class="coupon-item ${coupon.ISDOWNLOADED == 1 ? 'downloaded-coupon' : ''}">
+                        <div class="coupon-left">
+                            <div class="coupon-discount">
+                                <fmt:formatNumber value="${coupon.SALE_PRICE}" pattern="#,###" />
+                            </div>
+                            <div class="coupon-unit">원</div>
+                        </div>
+                        <div class="coupon-content">
+                            <div class="coupon-name">${coupon.CP_NAME}</div>
+                            <div class="coupon-min-order">최소주문금액: <fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" />원</div>
+                            <div class="coupon-expire">
+                                <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
+                                <fmt:formatDate value="${expireDate}" pattern="yyyy.MM.dd까지 사용 가능" />
+                            </div>
+                            
+                            <c:choose>
+                                <c:when test="${coupon.ISDOWNLOADED == 1}">
+                                    <button class="coupon-download" disabled>다운로드 완료</button>
+                                </c:when>
+                                <c:otherwise>
+                                    <button class="coupon-download"
+                                            data-coupon-id="${coupon.STORE_COUPON_ID}"
+                                            data-coupon-name="${coupon.CP_NAME}"
+                                            data-owner-id="${coupon.OWNER_COUPON_ID}"
+                                            data-expire-date="${coupon.EXPIRE_DATE}"
+                                            data-min-purchase="${coupon.MINIMUM_PURCHASE}"
+                                            onclick="downloadCouponFromElement(this)">다운로드</button>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
-                    
-                    <c:choose>
-                        <c:when test="${coupon.ISDOWNLOADED == 1}">
-                            <button class="coupon-download" disabled>다운로드 완료</button>
-                        </c:when>
-                        <c:otherwise>
-                            <button class="coupon-download"
-                                    data-coupon-id="${coupon.STORE_COUPON_ID}"
-                                    data-coupon-name="${coupon.CP_NAME}"
-                                    data-owner-id="${coupon.OWNER_COUPON_ID}"
-                                    data-expire-date="${coupon.EXPIRE_DATE}"
-                                    data-min-purchase="${coupon.MINIMUM_PURCHASE}"
-                                    onclick="downloadCouponFromElement(this)">다운로드</button>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </c:forEach>
-        </div>
-    </c:if>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
 </div>
 
 <h2>메뉴 목록</h2>

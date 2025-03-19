@@ -412,7 +412,27 @@
 const totalPrice = ${totalPrice};
 const deliveryFee = ${deliveryFee};
 const hasPaymentPassword = ${hasPaymentPassword != null ? 'true' : 'false'};
-
+document.addEventListener('DOMContentLoaded', function() {
+    // 전액사용 버튼 찾기
+    const pointBtn = document.querySelector('.point-btn');
+    
+    if (pointBtn) {
+        // 버튼 내용 변경 - HTML로 줄바꿈 추가
+        pointBtn.innerHTML = '전액<br>사용';
+        
+        // 버튼 스타일 조정
+        pointBtn.style.width = '50px';
+        pointBtn.style.height = '50px';
+        pointBtn.style.padding = '5px';
+        pointBtn.style.lineHeight = '1.2';
+        pointBtn.style.textAlign = 'center';
+        pointBtn.style.display = 'flex';
+        pointBtn.style.flexDirection = 'column';
+        pointBtn.style.justifyContent = 'center';
+        pointBtn.style.alignItems = 'center';
+        pointBtn.style.fontSize = '14px';
+    }
+});
 // 페이지 로드 직후 실행
 document.addEventListener('DOMContentLoaded', function() {
     // 메뉴 가격과 배달팁 표시 업데이트
@@ -435,7 +455,191 @@ document.addEventListener('DOMContentLoaded', function() {
     // 결제 비밀번호 모달 설정
     setupPaymentPasswordModal();
 });
+//페이지 로드 직후 실행
+document.addEventListener('DOMContentLoaded', function() {
+    // 기존 함수 호출 유지...
+    // 메뉴 가격과 배달팁 표시 업데이트
+    document.getElementById('menuPriceDisplay').textContent = totalPrice.toLocaleString() + '원';
+    document.getElementById('deliveryFeeDisplay').textContent = deliveryFee.toLocaleString() + '원';
+    document.getElementById('totalDisplay').textContent = (totalPrice + deliveryFee).toLocaleString() + '원';
+    
+    // 카드 슬라이더 초기화
+    initCardSlider();
+    
+    // 라이더 요청사항 직접 입력 토글 설정
+    setupRequestHandlers();
+    
+    // 결제 타입 선택 설정
+    setupPaymentTypeHandlers();
+    
+    // 쿠폰 및 포인트 핸들러 설정
+    setupDiscountHandlers();
+    
+    // 결제 비밀번호 모달 설정
+    setupPaymentPasswordModal();
 
+    // 포인트가 0인 경우 처리 추가
+    handleZeroPoints();
+});
+
+	// 포인트가 0인 경우 처리하는 함수
+	function handleZeroPoints() {
+	    // 사용 가능 포인트 가져오기
+	    const availablePointText = document.querySelector('.available-point').textContent;
+	    const availablePointMatch = availablePointText.match(/\d+/);
+	    const availablePoint = availablePointMatch ? parseInt(availablePointMatch[0]) : 0;
+	
+	    // 포인트가 0인 경우
+	    if (availablePoint === 0) {
+	        const pointInput = document.getElementById('point');
+	        const pointBtn = document.querySelector('.point-btn');
+	        
+	        // 입력 필드 비활성화
+	        pointInput.disabled = true;
+	        pointInput.placeholder = '사용 가능한 포인트가 없습니다';
+	        pointInput.style.backgroundColor = '#f5f5f5';
+	        pointInput.style.color = '#999';
+	        
+	        // 전액사용 버튼 비활성화
+	        pointBtn.disabled = true;
+	        pointBtn.style.backgroundColor = '#f5f5f5';
+	        pointBtn.style.color = '#999';
+	        pointBtn.style.cursor = 'not-allowed';
+	        
+	        // 알림 메시지 추가
+	        const pointContainer = document.querySelector('.point-container');
+	        const noPointsNotice = document.createElement('div');
+	        noPointsNotice.className = 'no-points-notice';
+	        noPointsNotice.style.color = '#ff6b6b';
+	        noPointsNotice.style.fontSize = '12px';
+	        noPointsNotice.style.marginTop = '5px';
+	        noPointsNotice.textContent = '포인트가 없습니다. 주문 후 포인트를 적립해보세요!';
+	        
+	        // 이미 알림이 있는지 확인 후 추가
+	        if (!document.querySelector('.no-points-notice')) {
+	            pointContainer.parentNode.insertBefore(noPointsNotice, document.querySelector('.available-point'));
+	        }
+	    }
+	}
+	
+	// 할인 핸들러 설정 함수 (쿠폰, 포인트) 수정
+	function setupDiscountHandlers() {
+	    // 쿠폰 선택시 금액 변경 및 최소 주문금액 체크
+	    document.getElementById('coupon').addEventListener('change', function() {
+	        const selectedOption = this.options[this.selectedIndex];
+	        
+	        if (this.value === "0") {
+	            // 쿠폰 선택 안함
+	            document.getElementById('couponDisplay').textContent = '-0원';
+	            document.getElementById('couponValueHidden').value = 0;
+	            document.getElementById('selectedCouponIdHidden').value = 0;
+	            updateTotalPrice();
+	            return;
+	        }
+	        
+	        const couponId = this.value;
+	        const discountAmount = parseInt(selectedOption.getAttribute('data-discount'));
+	        const minOrderAmount = parseInt(selectedOption.getAttribute('data-min-order'));
+	        const couponName = selectedOption.getAttribute('data-name');
+	        
+	        // 최소 주문금액 체크
+	        if (totalPrice < minOrderAmount) {
+	            alert(`'${couponName}' 쿠폰은 ${minOrderAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`);
+	            this.value = "0"; // 쿠폰 선택 초기화
+	            document.getElementById('couponDisplay').textContent = '-0원';
+	            document.getElementById('couponValueHidden').value = 0;
+	            document.getElementById('selectedCouponIdHidden').value = 0;
+	        } else {
+	            // 쿠폰 적용
+	            document.getElementById('couponDisplay').textContent = '-' + discountAmount.toLocaleString() + '원';
+	            document.getElementById('couponValueHidden').value = discountAmount;
+	            document.getElementById('selectedCouponIdHidden').value = couponId;
+	        }
+	        
+	        updateTotalPrice();
+	    });
+	    
+	    
+	    // 포인트 입력시 금액 변경 - 포인트가 0인 경우 처리 추가
+	    document.getElementById('point').addEventListener('input', function() {
+	        // 사용 가능 포인트 가져오기
+	        const availablePointText = document.querySelector('.available-point').textContent;
+	        const availablePointMatch = availablePointText.match(/\d+/);
+	        const availablePoint = availablePointMatch ? parseInt(availablePointMatch[0]) : 0;
+	        
+	        // 포인트가 0인 경우 입력 방지
+	        if (availablePoint === 0) {
+	            this.value = '';
+	            alert('사용 가능한 포인트가 없습니다.');
+	            return;
+	        }
+	        
+	        // 입력값 가져오기
+	        let pointValue = this.value ? parseInt(this.value) : 0;
+	        
+	        // 음수 입력 방지
+	        if (pointValue < 0) {
+	            this.value = 0;
+	            pointValue = 0;
+	        }
+	        
+	        // 사용 가능 포인트 초과 체크
+	        if (pointValue > availablePoint) {
+	            alert('사용 가능한 포인트를 초과했습니다. 최대 ' + availablePoint.toLocaleString() + 'P까지 사용 가능합니다.');
+	            this.value = availablePoint;
+	            pointValue = availablePoint;
+	        }
+	        
+	        // 포인트 사용 금액 표시 업데이트
+	        document.getElementById('pointDisplay').textContent = '-' + pointValue.toLocaleString() + '원';
+	        document.getElementById('pointValueHidden').value = pointValue;
+	        
+	        updateTotalPrice();
+	    });
+	    
+	    // 전액사용 버튼 - 포인트가 0인 경우 처리 추가
+	    document.querySelector('.point-btn').addEventListener('click', function() {
+	        // 사용 가능 포인트 가져오기
+	        const availablePointText = document.querySelector('.available-point').textContent;
+	        const availablePointMatch = availablePointText.match(/\d+/);
+	        const availablePoint = availablePointMatch ? parseInt(availablePointMatch[0]) : 0;
+	        
+	        // 포인트가 0인 경우
+	        if (availablePoint === 0) {
+	            alert('사용 가능한 포인트가 없습니다.');
+	            return;
+	        }
+	        
+	        // 포인트 입력란에 사용 가능 포인트 설정
+	        document.getElementById('point').value = availablePoint;
+	        
+	        // 포인트 사용 금액 표시 업데이트
+	        document.getElementById('pointDisplay').textContent = '-' + availablePoint.toLocaleString() + '원';
+	        document.getElementById('pointValueHidden').value = availablePoint;
+	        
+	        updateTotalPrice();
+	    });
+	    
+	    // 폼 제출 전 최종 확인 (쿠폰 최소 주문금액 확인)
+	    document.getElementById('orderForm').addEventListener('submit', function(event) {
+	        const couponSelect = document.getElementById('coupon');
+	        
+	        if (couponSelect.value !== "0") {
+	            const selectedOption = couponSelect.options[couponSelect.selectedIndex];
+	            const minOrderAmount = parseInt(selectedOption.getAttribute('data-min-order'));
+	            
+	            if (totalPrice < minOrderAmount) {
+	                event.preventDefault();
+	                alert(`선택한 쿠폰은 ${minOrderAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`);
+	                couponSelect.value = "0";
+	                document.getElementById('couponDisplay').textContent = '-0원';
+	                document.getElementById('couponValueHidden').value = 0;
+	                document.getElementById('selectedCouponIdHidden').value = 0;
+	                updateTotalPrice();
+	            }
+	        }
+	    });
+	}
 // 라이더 및 가게 요청사항 핸들러 설정
 function setupRequestHandlers() {
     // 라이더 요청사항 직접 입력 토글

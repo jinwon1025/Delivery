@@ -9,11 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>장바구니 | 금베달리스트</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>장바구니</title>
 <style>
 :root {
     --primary-color: #FFD700;
@@ -573,14 +569,13 @@ body {
 				<c:forEach items="${cartDetails}" var="item" varStatus="status">
 					<c:if
 						test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID || cartDetails[status.index-1].ORDER_OPTION_ID != item.ORDER_OPTION_ID}">
-						<div class="cart-item">
-							<input type="checkbox" name="selectedItems" class="cart-checkbox"
-								value="${item.MENU_ITEM_ID}" data-price="${item.MENU_PRICE}"
-								data-option-price="${item.TOTAL_OPTION_PRICE}"
-								data-quantity="${item.QUANTITY}"
-								data-order-option-id="${item.ORDER_OPTION_ID}" checked
-								onchange="updateTotalPrice()"> <img
-								src="${pageContext.request.contextPath}/upload/menuItemProfile/${item.IMAGE_NAME}"
+						<div class="cart-item" data-menu-id="${item.MENU_ITEM_ID}" 
+							data-price="${item.MENU_PRICE}" 
+							data-option-price="${item.TOTAL_OPTION_PRICE}" 
+							data-quantity="${item.QUANTITY}" 
+							data-order-option-id="${item.ORDER_OPTION_ID}">
+							
+							<img src="${pageContext.request.contextPath}/upload/menuItemProfile/${item.IMAGE_NAME}"
 								alt="${item.MENU_NAME}" class="menu-image">
 
 							<div class="cart-item-details">
@@ -616,20 +611,19 @@ body {
 							<div class="cart-item-actions">
 								<div class="quantity-container">
 									<button type="button" class="quantity-btn"
-									    data-menu-id="${item.MENU_ITEM_ID}"
-                                        data-option-id="${item.ORDER_OPTION_ID}"
-                                        data-order-id="${item.ORDER_ID}"
+										data-menu-id="${item.MENU_ITEM_ID}"
+										data-option-id="${item.ORDER_OPTION_ID}"
+										data-order-id="${item.ORDER_ID}"
 										onclick="decreaseQuantity(this)">-</button>
 									<input type="number" name="quantity" class="quantity-input"
 										value="${empty item.QUANTITY ? 1 : item.QUANTITY}" min="1"
-										max="10"
-										data-menu-id="${item.MENU_ITEM_ID}"
-                                        data-option-id="${item.ORDER_OPTION_ID}"
-                                        data-order-id="${item.ORDER_ID}">
+										max="10" data-menu-id="${item.MENU_ITEM_ID}"
+										data-option-id="${item.ORDER_OPTION_ID}"
+										data-order-id="${item.ORDER_ID}">
 									<button type="button" class="quantity-btn"
-									    data-menu-id="${item.MENU_ITEM_ID}"
-                                        data-option-id="${item.ORDER_OPTION_ID}"
-                                        data-order-id="${item.ORDER_ID}"
+										data-menu-id="${item.MENU_ITEM_ID}"
+										data-option-id="${item.ORDER_OPTION_ID}"
+										data-order-id="${item.ORDER_ID}"
 										onclick="increaseQuantity(this)">+</button>
 								</div>
 
@@ -715,12 +709,11 @@ body {
 								<c:if
 									test="${status.index == 0 || cartDetails[status.index-1].MENU_ITEM_ID != item.MENU_ITEM_ID || cartDetails[status.index-1].ORDER_OPTION_ID != item.ORDER_OPTION_ID}">
 									<input type="hidden" name="selectedItems"
-										value="${item.MENU_ITEM_ID}" class="selectedItems-hidden">
+										value="${item.MENU_ITEM_ID}">
 									<input type="hidden" name="itemQuantities"
-										value="${empty item.QUANTITY ? 1 : item.QUANTITY}"
-										class="itemQuantities-hidden">
+										value="${empty item.QUANTITY ? 1 : item.QUANTITY}">
 									<input type="hidden" name="orderOptionIds"
-										value="${item.ORDER_OPTION_ID}" class="orderOptionIds-hidden">
+										value="${item.ORDER_OPTION_ID}">
 								</c:if>
 							</c:forEach>
 							<button type="submit" class="btn btn-submit">주문하기</button>
@@ -732,159 +725,22 @@ body {
 	</c:choose>
 
 	<script>
+	    // 로그인 상태를 확인하고 로그인 페이지로 리다이렉트하는 함수
+        function checkLogin() {
+            if (${loginUser == null}) {
+                // 로그인되지 않은 경우
+                alert('로그인이 필요한 서비스입니다.');
+                window.location.href = '/user/loginForm';
+                return false;
+            }
+            return true;
+        }
+    
 	    // 숫자에 천 단위 쉼표 추가하는 함수
         function formatNumberWithCommas(number) {
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-	
-		//전체 선택 체크박스 동작 함수
-		function selectAll(source) {
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			for (let i = 0; i < checkboxes.length; i++) { // 모든 체크박스 순회
-				checkboxes[i].checked = source.checked; // 전체 선택 체크박스 상태에 따라 개별 체크박스 상태 변경
-
-				// 체크박스 상태 변경 시 해당 아이템의 가격 정보도 갱신
-				const cartItem = checkboxes[i].closest('.cart-item'); // 현재 체크박스가 속한 아이템 요소 찾기
-				const quantityInput = cartItem.querySelector('.quantity-input'); // 수량 입력 필드 찾기
-				const quantity = Number(quantityInput.value); // 현재 수량 값 가져오기
-				const itemPrice = Number(checkboxes[i]
-						.getAttribute('data-price')); // 아이템 단가 가져오기
-
-				// 선택된 체크박스만 계산에 포함하기 위해 data-quantity 속성 업데이트
-				checkboxes[i].setAttribute('data-quantity', quantity);
-			}
-
-			// 모든 체크박스 상태 변경 후 총 가격 업데이트
-			updateTotalPrice();
-		}
-
-		// 개별 체크박스 변경 시 전체선택 체크박스 상태 업데이트 함수
-		function updateSelectAllCheckbox() {
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			const selectAllCheckbox = document.getElementById('selectAll'); // 전체 선택 체크박스 요소 가져오기
-
-			let allChecked = true; // 모든 체크박스가 선택되었는지 추적하는 플래그
-			for (let i = 0; i < checkboxes.length; i++) { // 모든 체크박스 순회
-				if (!checkboxes[i].checked) { // 선택되지 않은 체크박스가 있으면
-					allChecked = false; // 플래그 false로 설정
-					break; // 반복 중단
-				}
-			}
-
-			selectAllCheckbox.checked = allChecked; // 모든 체크박스 상태에 따라 전체 선택 체크박스 상태 설정
-		}
-
-		// 총 가격 업데이트 함수
-		function updateTotalPrice() {
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			let totalPrice = 0; // 총 가격 변수 초기화
-
-			for (let i = 0; i < checkboxes.length; i++) { // 모든 체크박스 순회
-				if (checkboxes[i].checked) { // 선택된 체크박스만 처리
-					const cartItem = checkboxes[i].closest('.cart-item'); // 현재 체크박스가 속한 아이템 요소 찾기
-					const quantityInput = cartItem
-							.querySelector('.quantity-input'); // 수량 입력 필드 찾기
-
-					const itemPrice = Number(checkboxes[i]
-							.getAttribute('data-price')); // 아이템 단가 가져오기
-					const optionPrice = Number(checkboxes[i]
-							.getAttribute('data-option-price') || 0); // 옵션 가격 가져오기
-					const quantity = Number(quantityInput.value); // 현재 수량 값 가져오기
-
-					totalPrice += (itemPrice + optionPrice) * quantity; // (단가 + 옵션가격) × 수량을 총 가격에 더하기
-				}
-			}
-
-			// 배달팁 (고정값 또는 서버에서 받아온 값)
-			const deliveryFee = Number(document
-					.getElementById('orderDeliveryFee').value || 0);
-			const finalTotalPrice = totalPrice + deliveryFee;
-
-			// 화면의 가격 정보 업데이트
-			document.getElementById('menuPriceDisplay').innerText = formatNumberWithCommas(totalPrice)
-					+ '원'; // 메뉴 금액 표시
-			document.getElementById('finalTotalPriceDisplay').innerText = formatNumberWithCommas(finalTotalPrice)
-					+ '원'; // 최종 결제 금액 표시
-
-			// 숨겨진 입력 필드 업데이트
-			document.getElementById('hiddenFinalTotalPrice').value = finalTotalPrice; // 숨겨진 최종 금액 입력 필드 업데이트
-			document.getElementById('orderTotalPrice').value = totalPrice; // 주문 총 가격 입력 필드 업데이트
-			document.getElementById('orderFinalTotalPrice').value = finalTotalPrice; // 주문 최종 금액 입력 필드 업데이트
-
-			updateSelectedItemsHidden(); // 선택된 아이템에 대한 숨겨진 입력 필드 업데이트
-
-			// 체크박스 상태 변경 시 전체선택 체크박스도 업데이트
-			updateSelectAllCheckbox(); // 전체 선택 체크박스 상태 업데이트
-		}
-
-		// 주문에 포함할 숨겨진 input 필드 업데이트 함수
-		function updateSelectedItemsHidden() {
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			const hiddenInputs = document
-					.getElementsByClassName('selectedItems-hidden'); // 메뉴 아이템 ID에 대한 숨겨진 입력 필드들 가져오기
-			const quantityInputs = document
-					.getElementsByClassName('itemQuantities-hidden'); // 수량에 대한 숨겨진 입력 필드들 가져오기
-			const orderOptionInputs = document
-					.getElementsByClassName('orderOptionIds-hidden'); // 주문 옵션 ID에 대한 숨겨진 입력 필드들 가져오기
-
-			// 모든 hidden input을 초기에 비활성화 - 선택되지 않은 아이템은 제출되지 않도록 함
-			for (let i = 0; i < hiddenInputs.length; i++) {
-				hiddenInputs[i].disabled = true; // 메뉴 아이템 ID 입력 필드 비활성화
-				if (quantityInputs[i]) {
-					quantityInputs[i].disabled = true; // 수량 입력 필드 비활성화
-				}
-				if (orderOptionInputs[i]) {
-					orderOptionInputs[i].disabled = true; // 주문 옵션 ID 입력 필드 비활성화
-				}
-			}
-
-			// 체크된 체크박스에 해당하는 hidden input 활성화 - 선택된 아이템만 제출
-			for (let i = 0; i < checkboxes.length; i++) {
-				if (checkboxes[i].checked) { // 선택된 체크박스만 처리
-					const cartItem = checkboxes[i].closest('.cart-item'); // 현재 체크박스가 속한 아이템 요소 찾기
-					const quantityInput = cartItem
-							.querySelector('.quantity-input'); // 수량 입력 필드 찾기
-					const orderOptionId = checkboxes[i]
-							.getAttribute('data-order-option-id'); // 주문 옵션 ID 가져오기
-
-					for (let j = 0; j < hiddenInputs.length; j++) {
-						if (hiddenInputs[j].value === checkboxes[i].value
-								&& orderOptionInputs[j].value === orderOptionId) { // 체크박스 값과 주문 옵션 ID가 일치하는지 확인
-							hiddenInputs[j].disabled = false; // 해당 메뉴 아이템 ID 입력 필드 활성화
-							if (quantityInputs[j]) {
-								quantityInputs[j].disabled = false; // 해당 수량 입력 필드 활성화
-								quantityInputs[j].value = quantityInput.value; // 현재 화면에 표시된 수량 값으로 업데이트
-							}
-							if (orderOptionInputs[j]) {
-								orderOptionInputs[j].disabled = false; // 해당 주문 옵션 ID 입력 필드 활성화
-							}
-							break; // 일치하는 항목을 찾았으면 내부 반복 중단
-						}
-					}
-				}
-			}
-		}
-
-		// 주문 전 양식 유효성 검사 함수
-		function validateForm() {
-			const checkboxes = document.getElementsByName('selectedItems'); // 모든 아이템 체크박스 가져오기
-			let atLeastOneChecked = false; // 최소 하나 이상 선택되었는지 추적하는 플래그
-
-			for (let i = 0; i < checkboxes.length; i++) { // 모든 체크박스 순회
-				if (checkboxes[i].checked) { // 선택된 체크박스가 있으면
-					atLeastOneChecked = true; // 플래그 true로 설정
-					break; // 반복 중단
-				}
-			}
-
-			if (!atLeastOneChecked) { // 선택된 항목이 없으면
-				alert('최소 하나 이상의 메뉴를 선택해주세요.'); // 경고 메시지 표시
-				return false; // 폼 제출 취소
-			}
-
-			return true; // 유효한 경우 폼 제출 허용
-		}
-
+		
 		// 삭제 확인 함수
 		function deleteCheck() {
 			return confirm('선택한 메뉴를 장바구니에서 삭제하시겠습니까?'); // 삭제 전 확인 대화상자 표시
@@ -893,12 +749,10 @@ body {
 		// 개별 아이템 가격 업데이트 함수
         function updateItemPrice(quantityInput) {
             const cartItem = quantityInput.closest('.cart-item'); // 현재 수량 입력 필드가 속한 아이템 요소 찾기
-            const checkbox = cartItem.querySelector('input[type="checkbox"]'); // 체크박스 요소 찾기
-
+            
             // 숫자 형식으로 변환 보장
-            const originalPrice = Number(checkbox.getAttribute('data-price')); // 아이템 단가 가져오기
-            const optionPrice = Number(checkbox
-                    .getAttribute('data-option-price') || 0); // 옵션 가격 가져오기
+            const originalPrice = Number(cartItem.getAttribute('data-price')); // 아이템 단가 가져오기
+            const optionPrice = Number(cartItem.getAttribute('data-option-price') || 0); // 옵션 가격 가져오기
             const quantity = Number(quantityInput.value); // 현재 수량 값 가져오기
 
             const calculatedPrice = (originalPrice + optionPrice) * quantity; // (단가 + 옵션가격) × 수량으로 계산된 가격
@@ -906,19 +760,20 @@ body {
             const priceElement = cartItem.querySelector('.cart-item-price'); // 가격 표시 요소 찾기
             priceElement.textContent = formatNumberWithCommas(calculatedPrice) + '원'; // 계산된 가격 표시 (천 단위 구분자 포함)
 
-            // 체크박스의 data-quantity 속성도 업데이트
-            checkbox.setAttribute('data-quantity', quantity); // 수량 데이터 속성 업데이트
-
-            // 전체선택 체크박스 상태 유지
-            const selectAllCheckbox = document.getElementById('selectAll');
-            checkbox.checked = true; // 아이템 체크박스를 항상 선택 상태로 유지
-            selectAllCheckbox.checked = true; // 전체선택 체크박스도 선택 상태로 유지
-
-            updateTotalPrice(); // 총 가격 업데이트
+            // 수량 데이터 속성 업데이트
+            cartItem.setAttribute('data-quantity', quantity);
+            
+            // 모든 항목의 합계 업데이트
+            updateTotalPrice();
         }
         
      // 서버에 장바구니 수량 업데이트 요청 보내는 함수
         function updateCartQuantity(menuItemId, quantity, orderId, orderOptionId) {
+            // 로그인 상태 체크
+            if (!checkLogin()) {
+                return false;
+            }
+            
             console.log("AJAX 요청 준비:", { menuItemId, quantity, orderId, orderOptionId });
             
             // AJAX 요청
@@ -956,6 +811,11 @@ body {
 
     	// 수량 증가 함수
     	function increaseQuantity(button) {
+            // 로그인 상태 체크
+            if (!checkLogin()) {
+                return false;
+            }
+            
             console.log("증가 버튼 클릭됨");
             
             // 버튼에서 직접 데이터 가져오기
@@ -988,6 +848,11 @@ body {
 
     	// 수량 감소 함수
     	function decreaseQuantity(button) {
+            // 로그인 상태 체크
+            if (!checkLogin()) {
+                return false;
+            }
+            
             console.log("감소 버튼 클릭됨");
             
             // 버튼에서 직접 데이터 가져오기
@@ -1020,6 +885,11 @@ body {
         
         // 수량 입력 필드 직접 변경 시 호출되는 함수
         function handleQuantityChange(input) {
+            // 로그인 상태 체크
+            if (!checkLogin()) {
+                return false;
+            }
+            
             console.log("수량 직접 입력됨");
             
             // 입력값 범위 검증 (1~10)
@@ -1048,6 +918,52 @@ body {
             // AJAX 요청 전송
             updateCartQuantity(menuItemId, value, orderId, orderOptionId);
         }
+        
+        // 총 가격 업데이트 함수
+        function updateTotalPrice() {
+            const cartItems = document.querySelectorAll('.cart-item');
+            let totalPrice = 0;
+            
+            cartItems.forEach(item => {
+                const itemPrice = Number(item.getAttribute('data-price'));
+                const optionPrice = Number(item.getAttribute('data-option-price') || 0);
+                const quantity = Number(item.querySelector('.quantity-input').value);
+                
+                totalPrice += (itemPrice + optionPrice) * quantity;
+            });
+            
+            // 배달팁 (고정값 또는 서버에서 받아온 값)
+            const deliveryFee = Number(document.getElementById('orderDeliveryFee').value || 0);
+            const finalTotalPrice = totalPrice + deliveryFee;
+            
+            // 화면의 가격 정보 업데이트
+            document.getElementById('menuPriceDisplay').innerText = formatNumberWithCommas(totalPrice) + '원';
+            document.getElementById('finalTotalPriceDisplay').innerText = formatNumberWithCommas(finalTotalPrice) + '원';
+            
+            // 숨겨진 입력 필드 업데이트
+            document.getElementById('hiddenFinalTotalPrice').value = finalTotalPrice;
+            document.getElementById('orderTotalPrice').value = totalPrice;
+            document.getElementById('orderFinalTotalPrice').value = finalTotalPrice;
+            
+            // 수량 입력 필드 값 업데이트
+            cartItems.forEach(item => {
+                const menuId = item.getAttribute('data-menu-id');
+                const optionId = item.getAttribute('data-order-option-id');
+                const quantity = item.querySelector('.quantity-input').value;
+                
+                // 해당 메뉴 아이템의 수량 입력 필드 찾기
+                const quantityInputs = document.querySelectorAll(`input[name="itemQuantities"]`);
+                const menuInputs = document.querySelectorAll(`input[name="selectedItems"]`);
+                const optionInputs = document.querySelectorAll(`input[name="orderOptionIds"]`);
+                
+                for (let i = 0; i < menuInputs.length; i++) {
+                    if (menuInputs[i].value === menuId && optionInputs[i].value === optionId) {
+                        quantityInputs[i].value = quantity;
+                        break;
+                    }
+                }
+            });
+        }
     	
     	// 페이지 로드 시 초기화
     	document.addEventListener('DOMContentLoaded', function() {
@@ -1058,7 +974,17 @@ body {
     	            handleQuantityChange(this);
     	        });
     	    });
+    	    
+    	    // 초기 총 가격 계산
+    	    updateTotalPrice();
+    	    
+    	    // 로그인 상태 확인
+    	    if (${loginUser == null}) {
+    	        console.log("사용자가 로그인하지 않았습니다.");
+    	    } else {
+    	        console.log("사용자가 로그인되어 있습니다.");
+    	    }
     	});
     </script>
- </body>
- </html>
+</body>
+</html>

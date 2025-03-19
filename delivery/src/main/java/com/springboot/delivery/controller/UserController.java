@@ -231,12 +231,14 @@ public class UserController {
         }
         
         List<BookMarkStore> bmsList = this.userService.getBookMarkStoreByUserId(loginUser.getUser_id());
-
+        mav.addObject("bmsList", bmsList);
+        
         List<Maincategory> maincategoryList = adminService.getAllMaincategory();
         mav.addObject("maincategoryList", maincategoryList);
 
         List<String> bookMarkList = this.userService.getBookMarkList(loginUser.getUser_id());
-
+        mav.addObject("bookMarkList", bookMarkList);
+        
         mav.addObject("activeMenu", "bookMarkList");
         mav.addObject("contentPage", "bookMarkList");
         mav.addObject("BODY", "mypage.jsp");
@@ -457,8 +459,10 @@ public class UserController {
 																								// 가져오기
 
 		mav.addObject("bookMarkList", bookMarkList);
+		mav.addObject("activeMenu", "bookMarkList");
+		mav.addObject("contentPage", "bookMarkList");
 		mav.addObject("bmsList", bmsList);
-		mav.addObject("BODY", "bookmarkList.jsp");
+		mav.addObject("BODY", "mypage.jsp");
 		return mav;
 
 	}
