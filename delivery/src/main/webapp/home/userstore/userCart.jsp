@@ -1056,7 +1056,7 @@ body {
     	    quantityInputs.forEach(input => {
     	        input.addEventListener('change', function() {
     	            handleQuantityChange(this);
-    	        });
+    	         });
     	    });
     	});
     </script>
