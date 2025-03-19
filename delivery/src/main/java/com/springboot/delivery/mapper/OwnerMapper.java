@@ -70,6 +70,8 @@ public interface OwnerMapper {
     Integer getTotalPrice(String order_id);
     
     Integer getStoreUsedQuantity(String owner_coupon_id);
+    
+    Integer getUsedPoint(String order_id);
 }
 
 

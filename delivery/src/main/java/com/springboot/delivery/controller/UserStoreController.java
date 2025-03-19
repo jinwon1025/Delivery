@@ -73,7 +73,7 @@ public class UserStoreController {
       session.setAttribute("currentStore", currentStore);
       LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-      // 현재 로그인한 사용자 ID 가져오기
+      // 현재 로그인한 사용자 ID 가져오기`
       String userId = (String) session.getAttribute("userId");
 
       List<Maincategory> maincategoryList = adminService.getAllMaincategory();
