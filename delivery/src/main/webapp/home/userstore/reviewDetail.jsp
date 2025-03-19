@@ -222,7 +222,7 @@
             <div class="review-header">
                 <div>
                     <div class="review-title">리뷰 상세</div>
-                    <div class="order-id">주문번호: ${review.orderId}</div>
+                    <div class="order-id">주문 번호: ${review.orderId}</div>
                 </div>
             </div>
 
