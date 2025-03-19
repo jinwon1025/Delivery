@@ -249,7 +249,7 @@
                 <div class="review-date">작성일: <fmt:formatDate value="${review.reviewDate}" pattern="yyyy-MM-dd HH:mm" /></div>
             </div>
             
-            <!-- 사업자 답글 (있는 경우에만 표시) - 말풍선 형태로 변경 -->
+            <!-- 사~업자 답글 (있는 경우에만 표시) - 말풍선 형태로 변경 -->
             <c:if test="${review.replyId != null}">
                 <div class="reply-container">
                     <div class="owner-info">
