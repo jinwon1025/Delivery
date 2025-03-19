@@ -27,34 +27,34 @@
             <div class="review-list">
                 <c:forEach var="review" items="${reviewList}">
                     <div class="review-item">
-                        <div class="review-store">${review.STORE_NAME}</div>
+                        <div class="review-store">${review.storeName}</div>
                         <div class="review-date">
-                            <fmt:formatDate value="${review.WRITE_DATE}" pattern="yyyy.MM.dd" />
+                            <fmt:formatDate value="${review.replyDate}" pattern="yyyy.MM.dd" />
                         </div>
                         
                         <div class="rating">
                             <c:forEach begin="1" end="5" var="i">
-                                <i class="fas fa-star ${i <= review.RATING ? 'text-warning' : 'text-muted'}"></i>
+                                <i class="fas fa-star ${i <= review.rating ? 'text-warning' : 'text-muted'}"></i>
                             </c:forEach>
-                            <span class="rating-text">${review.RATING}</span>
+                            <span class="rating-text">${review.rating}</span>
                         </div>
                         
-                        <c:if test="${not empty review.REVIEW_IMAGE_NAME}">
+                        <c:if test="${not empty review.reviewImageName}">
                             <div class="review-image">
-                                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.REVIEW_IMAGE_NAME}" 
+                                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.reviewImageNameE}" 
                                     alt="리뷰 이미지" />
                             </div>
                         </c:if>
                         
-                        <p class="review-content">${review.REVIEW_CONTENT}</p>
+                        <p class="review-content">${review.reviewContent}</p>
                         
                         <div class="review-actions">
-                            <a href="${pageContext.request.contextPath}/userstore/viewReview?orderId=${review.ORDER_ID}" 
+                            <a href="${pageContext.request.contextPath}/userstore/viewReview?orderId=${review.orderId}" 
                                class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-eye"></i> 상세보기
                             </a>
                             <button type="button" class="btn btn-outline-danger btn-sm" 
-                                    onclick="if(confirm('리뷰를 삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/userstore/deleteReview?reviewId=${review.REVIEW_ID}'">
+                                    onclick="if(confirm('리뷰를 삭제하시겠습니까?')) location.href='${pageContext.request.contextPath}/userstore/deleteReview?reviewId=${review.reviewId}'">
                                 <i class="fas fa-trash-alt"></i> 삭제
                             </button>
                         </div>
