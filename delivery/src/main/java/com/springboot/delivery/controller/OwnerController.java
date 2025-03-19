@@ -319,11 +319,12 @@ public class OwnerController {
 	        System.out.println("=================updatePoint============");
 	        if(status == 5) {
 	        	String user_id = this.ownerSerivce.getUserId(orderId);
-		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId);
-		        double pointRate = this.adminService.getpointRate();
-		        Integer point = (int)(totalprice * pointRate);
-	        	Integer totalPoint = this.userStoreService.getPoint(user_id);
-	        	Integer userPoint = totalPoint - point;
+		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId); //주문 가격
+		        double pointRate = this.adminService.getpointRate(); //할인률
+		        Integer point = (int)(totalprice * pointRate); //적립된 포인트
+	        	Integer totalPoint = this.userStoreService.getPoint(user_id); //고객의 현재 포인트
+	        	Integer usedPoint = this.ownerSerivce.getUsedPoint(orderId); // 고객이 주문할때 사용한 포인트
+	        	Integer userPoint = totalPoint - point + usedPoint;
 	        	User user = new User();
 	        	user.setPoint(userPoint);
 	        	user.setUser_id(user_id);

@@ -434,6 +434,9 @@
 
 	</select>
 	
+	<select id="getUsedPoint" parameterType="String" resultType="Integer">
+		select point_discount from b_order_detail_tbl where order_id = #{order_id}
+	</select>
 
 
 </mapper>

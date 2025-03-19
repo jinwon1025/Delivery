@@ -71,9 +71,9 @@ public class UserStoreController {
    public ModelAndView storeDetial(String store_id, HttpSession session) {
        Store currentStore = (Store) storeService.getStore(store_id);
        session.setAttribute("currentStore", currentStore);
-       
-       // 로그인 여부 확인
        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+       
+       // 현재 로그인한 사용자 ID 가져오기`
        String userId = (String) session.getAttribute("userId");
        
        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
