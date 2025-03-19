@@ -73,4 +73,12 @@ public class AdminService{
     	return this.adminMapper.getpointRate();
     }
     
+    public Integer getOrderCount() {
+    	return this.adminMapper.getOrderCount();
+    }
+    
+    public Integer getUsedCouponCount() {
+    	return this.adminMapper.getUsedCouponCount();
+    }
+    
 }

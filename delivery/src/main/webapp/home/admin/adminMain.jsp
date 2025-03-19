@@ -154,20 +154,85 @@ body {
 	background: white;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 	transition: transform 0.3s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
 }
 
 .stat-card:hover {
 	transform: translateY(-5px);
 }
 
-.stat-value {
-	font-size: 2rem;
-	font-weight: 700;
-	margin: 10px 0;
+.stat-icon {
+	font-size: 2.5rem;
+	color: var(--primary-color);
+	margin-bottom: 15px;
 }
 
-.widget-container {
+.stat-title {
+	font-weight: 600;
+	color: var(--gray-600);
+	margin-bottom: 10px;
+}
+
+.stat-value {
+	font-size: 2.5rem;
+	font-weight: 700;
+	color: var(--gray-800);
+}
+
+.welcome-card {
+	background: linear-gradient(135deg, #4568dc, #b06ab3);
+	color: white;
+	border-radius: 12px;
+	padding: 30px;
+	margin-bottom: 30px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-title {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+
+.welcome-subtitle {
+	font-size: 1.1rem;
+	opacity: 0.9;
+}
+
+.quick-actions {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 15px;
 	margin-top: 30px;
+}
+
+.action-card {
+	background: white;
+	border-radius: 12px;
+	padding: 20px;
+	text-align: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.action-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.action-icon {
+	font-size: 2rem;
+	color: var(--primary-color);
+	margin-bottom: 10px;
+}
+
+.action-title {
+	font-weight: 600;
+	color: var(--gray-800);
 }
 
 .page-title {
@@ -186,6 +251,10 @@ body {
 	.stat-cards {
 		grid-template-columns: repeat(2, 1fr);
 	}
+	
+	.quick-actions {
+		grid-template-columns: repeat(2, 1fr);
+	}
 }
 
 @media ( max-width : 768px) {
@@ -200,6 +269,10 @@ body {
 		margin-left: 0;
 	}
 	.stat-cards {
+		grid-template-columns: 1fr;
+	}
+	
+	.quick-actions {
 		grid-template-columns: 1fr;
 	}
 }
@@ -281,74 +354,56 @@ body {
 			<c:choose>
 				<c:when test="${activeMenu eq 'dashboard'}">
 					<!-- 대시보드 내용 -->
-					<h1 class="page-title">대시보드</h1>
-					<p class="page-description">웹사이트 통계 및 주요 정보를 확인할 수 있습니다.</p>
+					<div class="welcome-card">
+						<h1 class="welcome-title">${sessionScope.loginUser.user_name}님, 환영합니다!</h1>
+						<p class="welcome-subtitle">금베달리스트 관리자 대시보드에서 웹사이트의 주요 정보를 확인하세요.</p>
+					</div>
 
 					<div class="stat-cards">
 						<div class="stat-card">
 							<div class="stat-icon">
 								<i class="fas fa-users"></i>
 							</div>
-							<div class="stat-content">
-								<div class="stat-title">
-									<i class="fas fa-user"></i> 전체 회원
-								</div>
-								<div class="stat-value">${userCount != null ? userCount : '0'}</div>
-								<div class="stat-description">지난 달 대비</div>
-								<div class="stat-change positive">
-									<i class="fas fa-arrow-up"></i> 5.3%
-								</div>
-							</div>
+							<div class="stat-title">전체 회원</div>
+							<div class="stat-value">${userCount != null ? userCount : '0'}</div>
 						</div>
 
 						<div class="stat-card">
 							<div class="stat-icon">
-								<i class="fas fa-shopping-cart"></i>
+								<i class="fas fa-shopping-bag"></i>
 							</div>
-							<div class="stat-content">
-								<div class="stat-title">
-									<i class="fas fa-shopping-bag"></i> 주문 건수
-								</div>
-								<div class="stat-value">857</div>
-								<div class="stat-description">지난 달 대비</div>
-								<div class="stat-change positive">
-									<i class="fas fa-arrow-up"></i> 2.7%
-								</div>
-							</div>
+							<div class="stat-title">주문 건수</div>
+							<div class="stat-value">${orderCount != null ? orderCount : '0'}</div>
 						</div>
 
 						<div class="stat-card">
 							<div class="stat-icon">
 								<i class="fas fa-ticket-alt"></i>
 							</div>
-							<div class="stat-content">
-								<div class="stat-title">
-									<i class="fas fa-ticket-alt"></i> 쿠폰 사용
-								</div>
-								<div class="stat-value">432</div>
-								<div class="stat-description">지난 달 대비</div>
-								<div class="stat-change negative">
-									<i class="fas fa-arrow-down"></i> 1.2%
-								</div>
-							</div>
+							<div class="stat-title">쿠폰 사용</div>
+							<div class="stat-value">${usedCouponCount != null ? usedCouponCount : '0'}</div>
 						</div>
 					</div>
 
-					<div class="widget-container">
-						<div class="card">
-							<div class="card-header">
-								<h5 class="mb-0">
-									<i class="fas fa-chart-bar"></i> 최근 거래 통계
-								</h5>
-							</div>
-							<div class="card-body">
-								<p class="text-muted">최근 7일간의 주문 통계 그래프가 여기에 표시됩니다.</p>
-								<div class="text-center py-4">
-									<i class="fas fa-chart-line"
-										style="font-size: 4rem; color: var(--gray-300);"></i>
-									<p class="mt-3">데이터를 준비 중입니다...</p>
-								</div>
-							</div>
+					<h2 class="page-title">빠른 관리 메뉴</h2>
+					<p class="page-description">자주 사용하는 기능에 빠르게 접근하세요.</p>
+					
+					<div class="quick-actions">
+						<div class="action-card" onclick="location.href='<c:url value='/admin/userManagement'/>'">
+							<div class="action-icon"><i class="fas fa-user-plus"></i></div>
+							<div class="action-title">회원 관리</div>
+						</div>
+						<div class="action-card" onclick="location.href='<c:url value='/admin/couponManagement'/>'">
+							<div class="action-icon"><i class="fas fa-tags"></i></div>
+							<div class="action-title">쿠폰 발행</div>
+						</div>
+						<div class="action-card" onclick="location.href='<c:url value='/admin/userNotice'/>'">
+							<div class="action-icon"><i class="fas fa-bullhorn"></i></div>
+							<div class="action-title">공지사항 등록</div>
+						</div>
+						<div class="action-card" onclick="location.href='<c:url value='/admin/pointManagement'/>'">
+							<div class="action-icon"><i class="fas fa-coins"></i></div>
+							<div class="action-title">포인트 관리</div>
 						</div>
 					</div>
 				</c:when>
