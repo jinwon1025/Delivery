@@ -443,6 +443,16 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
         </div>
     </div>
 
+    <!-- 장바구니 추가 성공 알림 모달 추가 -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <p>장바구니에 추가되었습니다!</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="closeSuccessModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function increaseQuantity() {
             const quantityInput = document.getElementById('quantity');
@@ -518,16 +528,50 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
             if (${showModal}) {
                 document.getElementById('customModal').style.display = 'flex';
             } else {
-                document.getElementById('cartForm').submit();
+                submitCartForm();
             }
         }
         
         function confirmAddToCart() {
-            document.getElementById('cartForm').submit();
+            closeModal();
+            submitCartForm();
         }
 
         function closeModal() {
             document.getElementById('customModal').style.display = 'none';
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+        
+        // 폼 제출을 위한 새로운 함수 (AJAX 사용)
+        function submitCartForm() {
+            const form = document.getElementById('cartForm');
+            const formData = new FormData(form);
+            
+            // AJAX 요청 객체 생성
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', form.action, true);
+            
+            // 요청 완료 후 처리
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    // 성공 시 성공 모달 표시
+                    document.getElementById('successModal').style.display = 'flex';
+                } else {
+                    // 실패 시 에러 메시지
+                    alert('장바구니 추가 중 오류가 발생했습니다.');
+                }
+            };
+            
+            // 요청 실패 시
+            xhr.onerror = function() {
+                alert('네트워크 오류가 발생했습니다.');
+            };
+            
+            // 전송
+            xhr.send(formData);
         }
         
         // 수량 입력 필드를 읽기 전용으로 만들기
@@ -543,6 +587,13 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
             quantityInput.addEventListener('wheel', function(e) {
                 e.preventDefault();
             });
+            
+            // URL에서 cart=success 파라미터가 있는지 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('cart') === 'success') {
+                // 페이지 로드 시 장바구니 추가 성공 모달 표시
+                document.getElementById('successModal').style.display = 'flex';
+            }
         });
     </script>
 </body>
