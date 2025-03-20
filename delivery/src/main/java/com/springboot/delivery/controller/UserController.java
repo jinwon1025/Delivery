@@ -61,6 +61,10 @@ public class UserController {
 	        
 	        List<Store> storeList = userService.getAllStore();
 	        String categoryName = "전체 가게";
+	        for(Store store: storeList) {
+				boolean hasCoupons = this.userService.hasStoreCoupons(store.getStore_id());
+				store.setHasCoupons(hasCoupons);
+	        }
 	        
 	        mav.addObject("storeList", storeList);
 	        mav.addObject("categoryName", categoryName);
@@ -173,10 +177,12 @@ public class UserController {
 				List<Maincategory> maincategoryList = adminService.getAllMaincategory();
 				mav.addObject("maincategoryList", maincategoryList);
 
-				List<Store> storeList;
-				String categoryName = "전체 가게";
-
-				storeList = userService.getAllStore();
+		        List<Store> storeList = userService.getAllStore();
+		        String categoryName = "전체 가게";
+		        for(Store store: storeList) {
+					boolean hasCoupons = this.userService.hasStoreCoupons(store.getStore_id());
+					store.setHasCoupons(hasCoupons);
+		        }
 
 				if (session.getAttribute("loginUser") != null) {
 					LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -408,10 +414,19 @@ public class UserController {
 		if (categoryId == null) {
 			// 카테고리 ID가 지정되지 않으면 모든 가게 표시
 			storeList = userService.getAllStore();
+			for(Store store: storeList) {
+				boolean hasCoupons = this.userService.hasStoreCoupons(store.getStore_id());
+				store.setHasCoupons(hasCoupons);
+				System.out.println("가게 이름 :"+store.getStore_name());
+				System.out.println("쿠폰 유무 : "+store.isHasCoupons());
+			}
 		} else {
 			// 지정된 카테고리의 가게만 표시
 			storeList = userService.getStoresByCategory(categoryId);
-
+			for(Store store: storeList) {
+				boolean hasCoupons = this.userService.hasStoreCoupons(store.getStore_id());
+				store.setHasCoupons(hasCoupons);
+			}
 			// 카테고리 이름 찾기
 			for (Maincategory category : maincategoryList) {
 				if (category.getMain_category_id().equals(categoryId)) {

@@ -56,5 +56,7 @@ public interface UserMapper {
 	
 	void increaseStoreCouponQuantity(Integer storeCouponId);
 	void increaseOwnerCouponQuantity(Integer ownerCouponId);
+	
+	boolean hasStoreCoupons(String storeId);
 
 }

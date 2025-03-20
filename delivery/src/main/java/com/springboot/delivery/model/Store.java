@@ -46,6 +46,8 @@ public class Store {
 	
 	private String delivery_time; 
 	
+	private boolean hasCoupons;
+	
 	public Integer getStore_status() {
 	    return store_status;
 	}

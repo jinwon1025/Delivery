@@ -124,4 +124,7 @@ public class UserService {
 		this.userMapper.increaseOwnerCouponQuantity(ownerCouponId);
 	}
 	
+	public boolean hasStoreCoupons(String storeId) {
+		return this.userMapper.hasStoreCoupons(storeId);	
+	}
 }
