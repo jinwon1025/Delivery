@@ -665,7 +665,7 @@ public class UserStoreController {
 	            }
 	        }
 	        String paymentDisplay = paymentMethod.equals("cash") ? "만나서결제" : "카드결제";
-	        // 최종적으로 주문 상태 업데이트 (가장 마지막에 수행)
+	        // 최종적으로 주문상태 업데이트 (가장 마지막에 수행)
 	        if (orderWithAddress != null) {
 	            // 필요한 정보 설정
 	            orderWithAddress.setToowner(storeRequest);
