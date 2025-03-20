@@ -190,73 +190,175 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- 추가 스타일 -->
 <style>
-.stars {
-  font-size: 20px;
-}
-.review-item {
-  position: relative;
-}
-.delete-btn {
-  font-size: 0.8rem;
-}
-.reviewer-name {
-  font-weight: bold;
-  color: #333;
+body {
+  background-color: #f8f9fa;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 답변 말풍선 스타일 */
+.container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  padding: 30px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #343a40;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+h2:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #ffc107;
+  border-radius: 3px;
+}
+
+.stars {
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.review-item {
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-bottom: 25px !important;
+  border: 1px solid #f0f0f0 !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.review-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.delete-btn {
+  font-size: 0.8rem;
+  border: 1px solid #e0e0e0;
+  color: #dc3545;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #495057;
+  background-color: #f8f9fa;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+}
+
+.review-content {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.review-image img {
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.review-image img:hover {
+  transform: scale(1.02);
+}
+
+/* 답변 말풍선 스타일 개선 */
 .reply-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 20px;
   margin-bottom: 20px;
+  background-color: #f8fbff;
+  padding: 15px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.reply-container:before {
+  content: '사장님 답변';
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  background-color: #4a90e2;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .owner-info {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   width: 100%;
 }
 
 .owner-name {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.95rem;
+  color: #4a90e2;
+  font-weight: 600;
   margin-right: 10px;
 }
 
 .owner-image {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .reply-bubble {
   position: relative;
   background-color: #e8f4ff;
-  border-radius: 15px;
+  border-radius: 12px;
   padding: 15px;
-  max-width: 80%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-left: auto;
+  border: 1px solid #d1e6ff;
 }
 
 .reply-bubble:after {
   content: '';
   position: absolute;
-  top: 10px;
-  right: -10px;
-  border-width: 10px 0 10px 10px;
+  top: 15px;
+  right: -12px;
+  border-width: 10px 0 10px 12px;
   border-style: solid;
   border-color: transparent transparent transparent #e8f4ff;
 }
 
 .reply-content {
-  line-height: 1.6;
+  line-height: 1.7;
   color: #333;
   word-break: break-word;
+  font-size: 0.95rem;
 }
 
 .reply-date {
@@ -264,10 +366,27 @@ document.addEventListener('DOMContentLoaded', function() {
   font-size: 0.8rem;
   text-align: right;
   margin-top: 5px;
-  width: 80%;
+  width: 90%;
 }
 
-/* 커스텀 모달 스타일 */
+/* 답글 등록 버튼 스타일 개선 */
+.open-reply-btn {
+  background-color: #ffc107;
+  border: none;
+  color: #212529;
+  padding: 5px 15px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+.open-reply-btn:hover {
+  background-color: #e0a800;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 커스텀 모달 스타일 개선 */
 .modal-background {
   position: fixed;
   top: 0;
@@ -279,36 +398,124 @@ document.addEventListener('DOMContentLoaded', function() {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(3px);
 }
 
 .modal-container {
   background-color: white;
   width: 90%;
-  max-width: 500px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-width: 550px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
+  padding: 18px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h5 {
+  font-weight: 700;
+  color: #343a40;
+  margin: 0;
 }
 
 .modal-close {
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
+  color: #adb5bd;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #495057;
 }
 
 .modal-body {
-  padding: 15px;
+  padding: 20px;
 }
 
 .modal-footer {
-  padding: 15px;
-  text-align: right;
-  border-top: 1px solid #eee;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+.modal-footer .btn {
+  border-radius: 5px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #e9ecef;
+  color: #495057;
+  border: none;
+}
+
+.modal-footer .btn-secondary:hover {
+  background-color: #dee2e6;
+}
+
+.modal-footer .btn-primary {
+  background-color: #4a90e2;
+  border: none;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #3a80d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+textarea.form-control {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  padding: 12px;
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 150px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+textarea.form-control:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  outline: none;
+}
+
+/* 빈 리뷰 화면 스타일 개선 */
+.text-center.py-5 {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 60px 20px !important;
+  margin: 30px 0;
+  border: 1px dashed #dee2e6;
+}
+
+.text-center.py-5 p {
+  font-size: 1.1rem;
+  color: #6c757d;
 }
 </style>
