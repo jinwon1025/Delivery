@@ -78,8 +78,8 @@
 }
 .coupon-item {
     position: relative;
-    width: 280px;
-    height: 130px;
+    width: 300px; /* 너비 증가 */
+    height: 140px; /* 높이 증가 */
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -98,7 +98,7 @@
 
 /* 쿠폰 왼쪽 부분 (컬러 영역) */
 .coupon-left {
-    width: 80px;
+    width: 90px; /* 너비 증가 */
     background: #3a4cb4; /* 더 깊고 전문적인 파란색 */
     color: #fff;
     display: flex;
@@ -121,7 +121,7 @@
 }
 
 .coupon-discount {
-    font-size: 22px;
+    font-size: 24px; /* 폰트 크기 증가 */
     font-weight: bold;
     margin-bottom: 5px;
     text-align: center;
@@ -141,24 +141,33 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between; /* 공간 균등 배분 */
+    padding-bottom: 50px; /* 버튼을 위한 공간 확보 */
+}
+
+.coupon-info {
+    margin-bottom: 5px; /* 텍스트 간격 조정 */
 }
 
 .coupon-name {
     font-size: 16px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* 간격 증가 */
     color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px; /* 텍스트 길이 제한 */
 }
 
 .coupon-min-order {
-    font-size: 12px;
+    font-size: 13px; /* 폰트 크기 증가 */
     color: #666;
-    margin-bottom: 5px;
+    margin-bottom: 6px; /* 간격 증가 */
 }
 
 .coupon-expire {
-    font-size: 11px;
+    font-size: 12px; /* 폰트 크기 증가 */
     color: #888;
     display: flex;
     align-items: center;
@@ -167,7 +176,7 @@
 .coupon-expire:before {
     content: '⏱️';
     margin-right: 4px;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .coupon-download {
@@ -177,8 +186,8 @@
     background-color: #3a4cb4;
     border: none;
     border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 12px;
+    padding: 6px 12px; /* 패딩 증가 */
+    font-size: 13px; /* 폰트 크기 증가 */
     font-weight: bold;
     color: #fff;
     cursor: pointer;
@@ -287,11 +296,13 @@
                             <div class="coupon-unit">원</div>
                         </div>
                         <div class="coupon-content">
-                            <div class="coupon-name">${coupon.CP_NAME}</div>
-                            <div class="coupon-min-order">최소주문금액: <fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" />원</div>
-                            <div class="coupon-expire">
-                                <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
-                                <fmt:formatDate value="${expireDate}" pattern="yyyy.MM.dd까지 사용 가능" />
+                            <div class="coupon-info">
+                                <div class="coupon-name">${coupon.CP_NAME}</div>
+                                <div class="coupon-min-order">최소주문금액: <fmt:formatNumber value="${coupon.MINIMUM_PURCHASE}" pattern="#,###" />원</div>
+                                <div class="coupon-expire">
+                                    <fmt:parseDate value="${coupon.EXPIRE_DATE}" pattern="yyyy-MM-dd" var="expireDate" />
+                                    <fmt:formatDate value="${expireDate}" pattern="yyyy.MM.dd까지 사용 가능" />
+                                </div>
                             </div>
                             
                             <c:choose>
