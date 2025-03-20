@@ -4,22 +4,22 @@
 
 <style>
 .store-closed {
-    opacity: 0.7; /* 투명도를 낮춰 비활성화된 것처럼 보이게 함 */
-    pointer-events: none; /* 마우스 이벤트를 비활성화하여 클릭 불가능하게 만듦 */
-    position: relative;
+	opacity: 0.7; /* 투명도를 낮춰 비활성화된 것처럼 보이게 함 */
+	pointer-events: none; /* 마우스 이벤트를 비활성화하여 클릭 불가능하게 만듦 */
+	position: relative;
 }
 
 .store-status-banner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    z-index: 100;
-    font-weight: bold;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 5px 10px;
+	border-radius: 5px;
+	z-index: 100;
+	font-weight: bold;
 }
 
 .store-list {
@@ -46,18 +46,18 @@
 
 /* 배달시간 배지 스타일만 추가 */
 .delivery-time {
-    display: inline-block;
-    background-color: #FFF8E1;
-    color: #FF8C00;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 14px;
-    margin-top: 5px;
+	display: inline-block;
+	background-color: #FFF8E1;
+	color: #FF8C00;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 15px;
+	font-size: 14px;
+	margin-top: 5px;
 }
 
 /* 반응형 디자인 - 작은 화면에서는 1열로 표시 */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.store-list {
 		grid-template-columns: 1fr;
 	}
@@ -100,7 +100,7 @@
 							<div class="min-order">
 								<span class="min-order-label">최소주문금액:</span> <span
 									class="min-order-value">${store.last_price}원</span> 이상 배달
-								<c:if test="${store.last_price > 12000}">
+								<c:if test="${store.hasCoupons}">
 									<span class="coupon-tag">쿠폰할인</span>
 								</c:if>
 							</div>
@@ -176,51 +176,52 @@
 </form>
 
 <script>
-function bookmarkStore(event, storeId) {
-    event.stopPropagation(); // 이벤트 버블링 방지
+	function bookmarkStore(event, storeId) {
+		event.stopPropagation(); // 이벤트 버블링 방지
 
-    // 로그인 여부 확인
-    var loginUser = "${sessionScope.loginUser.user_id}".trim();
-    if (loginUser === null || loginUser === "") {
-        alert("즐겨찾기를 하려면 로그인해야 합니다.");
-        return false;
-    }
-    // 현재 클릭된 버튼의 아이콘을 찾음
-    var icon = event.currentTarget.querySelector('i');
-    
-    // 아이콘 클래스에 따라 다른 액션 수행
-    if (icon.classList.contains('far')) {
-        // 즐겨찾기 추가
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-        
-        // 즐겨찾기 추가 폼 제출
-        document.getElementById('add_bm_store_id').value = storeId;
-        document.getElementById('addBookmarkForm').submit();
-    } else {
-        // 즐겨찾기 삭제
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-        
-        // 즐겨찾기 삭제 폼 제출
-        document.getElementById('remove_bm_store_id').value = storeId;
-        document.getElementById('removeBookmarkForm').submit();
-    }
-    
-    return false;
-}
+		// 로그인 여부 확인
+		var loginUser = "${sessionScope.loginUser.user_id}".trim();
+		if (loginUser === null || loginUser === "") {
+			alert("즐겨찾기를 하려면 로그인해야 합니다.");
+			return false;
+		}
+		// 현재 클릭된 버튼의 아이콘을 찾음
+		var icon = event.currentTarget.querySelector('i');
 
-function goToStoreDetail(storeId) {
-    // 클릭된 가게 요소에서 'store-closed' 클래스가 있는지 확인
-    var isStoreClosed = event.currentTarget.closest('.store-item').classList.contains('store-closed');
-    
-    if (isStoreClosed) {
-        alert("현재 가게가 영업 준비중입니다. 나중에 다시 방문해 주세요.");
-        return false;
-    }
-    
-    // 가게가 영업 중이면 상세 페이지로 이동
-    document.getElementById('store_id').value = storeId;
-    document.getElementById('storeDetailForm').submit();
-}
+		// 아이콘 클래스에 따라 다른 액션 수행
+		if (icon.classList.contains('far')) {
+			// 즐겨찾기 추가
+			icon.classList.remove('far');
+			icon.classList.add('fas');
+
+			// 즐겨찾기 추가 폼 제출
+			document.getElementById('add_bm_store_id').value = storeId;
+			document.getElementById('addBookmarkForm').submit();
+		} else {
+			// 즐겨찾기 삭제
+			icon.classList.remove('fas');
+			icon.classList.add('far');
+
+			// 즐겨찾기 삭제 폼 제출
+			document.getElementById('remove_bm_store_id').value = storeId;
+			document.getElementById('removeBookmarkForm').submit();
+		}
+
+		return false;
+	}
+
+	function goToStoreDetail(storeId) {
+		// 클릭된 가게 요소에서 'store-closed' 클래스가 있는지 확인
+		var isStoreClosed = event.currentTarget.closest('.store-item').classList
+				.contains('store-closed');
+
+		if (isStoreClosed) {
+			alert("현재 가게가 영업 준비중입니다. 나중에 다시 방문해 주세요.");
+			return false;
+		}
+
+		// 가게가 영업 중이면 상세 페이지로 이동
+		document.getElementById('store_id').value = storeId;
+		document.getElementById('storeDetailForm').submit();
+	}
 </script>

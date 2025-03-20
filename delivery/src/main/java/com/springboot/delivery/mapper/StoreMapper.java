@@ -67,4 +67,5 @@ public interface StoreMapper {
 	Integer getTodayOrderTotalByStore(String store_id);
 	
 	List<Map<String, Object>> getStoreStatus(String owner_id);
+
 }

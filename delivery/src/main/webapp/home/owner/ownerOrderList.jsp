@@ -7,10 +7,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>주문 목록 관리</title>
+    <title>주문 목록 관리 - 금베달리스트 사업자</title>
+    
+    <!-- 공통 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/common/utilities.css'/>">
+    
+    <!-- 사업자 CSS 파일 -->
+    <link rel="stylesheet" href="<c:url value='/css/store/store-layout.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-components.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/store/store-pages.css'/>">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts - Noto Sans KR -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -20,6 +37,53 @@
     
     <!-- 실시간 업데이트 시각 효과를 위한 스타일 -->
     <style>
+        /* 전체 폰트 스타일 통일 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        /* 섹션 타이틀 스타일 */
+        .section-title {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* 테이블 헤더 스타일 */
+        .table thead th {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        /* 테이블 내용 스타일 */
+        .table tbody td {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        /* 선택 필드 레이블 */
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #333;
+        }
+        
+        /* 버튼 스타일 */
+        .btn {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
+        }
+        
+        /* 모달 제목 스타일 */
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
         @keyframes highlight {
             0% { background-color: #fffacd; }
             100% { background-color: transparent; }
@@ -28,6 +92,7 @@
         .highlight-update {
             animation: highlight 2s ease-in-out;
         }
+
 		#deliveryTimeModal {
 		    margin-top: 300px; /* 모달을 아래로 내리는 여백 */
 		}
@@ -37,102 +102,130 @@
 		    top: auto;
 		    margin: 10px auto;
 		}
+        
+        /* 카드 스타일 */
+        .card {
+            border-radius: 0.5rem;
+            border: 1px solid #e9e9e9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e9e9e9;
+            padding: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
     </style>
 </head>
 <body>
 
 <div class="container mt-4">
-    <h2>주문 목록 관리</h2>
-    
-
-    
-    <c:if test="${not empty storeList}">
-        <div class="mb-3">
-            <label for="storeFilter" class="form-label">매장 선택:</label>
-            <select class="form-select" id="storeFilter">
-                <option value="all">모든 매장</option>
-                <c:forEach var="store" items="${storeList}">
-                    <option value="${store.store_id}">${store.store_name}</option>
-                </c:forEach>
-            </select>
-        </div>
-    </c:if>
-    
-    <div class="mb-3">
-        <label for="statusFilter" class="form-label">주문 상태:</label>
-        <select class="form-select" id="statusFilter">
-            <option value="all">모든 상태</option>
-            <option value="0">접수 대기</option>
-            <option value="1">접수 완료</option>
-            <option value="2">준비 중</option>
-            <option value="3">배달 중</option>
-            <option value="4">배달 완료</option>
-            <option value="5">주문 취소</option>
-        </select>
+    <div class="section-title">
+        <h2>주문 목록 관리</h2>
     </div>
     
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>주문 번호</th>
-                    <th>매장명</th>
-                    <th>주문 시간</th>
-                    <th>배달 주소</th>
-                    <th>총 금액</th>
-                    <th>상태</th>
-                    <th>주문 상세</th>
-                </tr>
-            </thead>
-            <tbody id="orderTableBody">
-                <c:forEach var="order" items="${orderList}">
-                    <tr class="order-row" data-store-id="${order.STORE_ID}" data-status="${order.ORDER_STATUS}" data-order-id="${order.ORDER_ID}">
-                        <td>${order.ORDER_ID}</td>
-                        <td>${order.STORE_NAME}</td>
-                        <td><fmt:formatDate value="${order.ORDER_TIME}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                        <td>${order.STORE_ADDRESS}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${empty order.TOTALPRICE}">금액 정보 없음</c:when>
-                                <c:otherwise><fmt:formatNumber value="${order.TOTALPRICE}" pattern="#,###원"/></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${order.ORDER_STATUS == 0}">
-                                    <span class="badge bg-warning">접수 대기</span>
-                                </c:when>
-                                <c:when test="${order.ORDER_STATUS == 1}">
-                                    <span class="badge bg-info">접수 완료</span>
-                                </c:when>
-                                <c:when test="${order.ORDER_STATUS == 2}">
-                                    <span class="badge bg-primary">준비 중</span>
-                                </c:when>
-                                <c:when test="${order.ORDER_STATUS == 3}">
-                                    <span class="badge bg-secondary">배달 중</span>
-                                </c:when>
-                                <c:when test="${order.ORDER_STATUS == 4}">
-                                    <span class="badge bg-success">배달 완료</span>
-                                </c:when>
-                                <c:when test="${order.ORDER_STATUS == 5}">
-                                    <span class="badge bg-danger">주문 취소</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="badge bg-dark">상태 미정</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary view-details" 
-                                    data-order-id="${order.ORDER_ID}"
-                                    data-store-id="${order.STORE_ID}">
-                                상세 보기
-                            </button>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-body">
+            <c:if test="${not empty storeList}">
+                <div class="mb-3">
+                    <label for="storeFilter" class="form-label">매장 선택:</label>
+                    <select class="form-select" id="storeFilter">
+                        <option value="all">모든 매장</option>
+                        <c:forEach var="store" items="${storeList}">
+                            <option value="${store.store_id}">${store.store_name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+            </c:if>
+            
+            <div class="mb-3">
+                <label for="statusFilter" class="form-label">주문 상태:</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="all">모든 상태</option>
+                    <option value="0">접수 대기</option>
+                    <option value="1">접수 완료</option>
+                    <option value="2">준비 중</option>
+                    <option value="3">배달 중</option>
+                    <option value="4">배달 완료</option>
+                    <option value="5">주문 취소</option>
+                </select>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>주문 번호</th>
+                            <th>매장명</th>
+                            <th>주문 시간</th>
+                            <th>배달 주소</th>
+                            <th>총 금액</th>
+                            <th>상태</th>
+                            <th>주문 상세</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <c:forEach var="order" items="${orderList}">
+                            <tr class="order-row" data-store-id="${order.STORE_ID}" data-status="${order.ORDER_STATUS}" data-order-id="${order.ORDER_ID}">
+                                <td>${order.ORDER_ID}</td>
+                                <td>${order.STORE_NAME}</td>
+                                <td><fmt:formatDate value="${order.ORDER_TIME}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                <td>${order.STORE_ADDRESS}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${empty order.TOTALPRICE}">금액 정보 없음</c:when>
+                                        <c:otherwise><fmt:formatNumber value="${order.TOTALPRICE}" pattern="#,###원"/></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${order.ORDER_STATUS == 0}">
+                                            <span class="badge bg-warning">접수 대기</span>
+                                        </c:when>
+                                        <c:when test="${order.ORDER_STATUS == 1}">
+                                            <span class="badge bg-info">접수 완료</span>
+                                        </c:when>
+                                        <c:when test="${order.ORDER_STATUS == 2}">
+                                            <span class="badge bg-primary">준비 중</span>
+                                        </c:when>
+                                        <c:when test="${order.ORDER_STATUS == 3}">
+                                            <span class="badge bg-secondary">배달 중</span>
+                                        </c:when>
+                                        <c:when test="${order.ORDER_STATUS == 4}">
+                                            <span class="badge bg-success">배달 완료</span>
+                                        </c:when>
+                                        <c:when test="${order.ORDER_STATUS == 5}">
+                                            <span class="badge bg-danger">주문 취소</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-dark">상태 미정</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary view-details" 
+                                            data-order-id="${order.ORDER_ID}"
+                                            data-store-id="${order.STORE_ID}">
+                                        상세 보기
+                                    </button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -67,11 +67,20 @@
 		b_store_tbl
 	</select>
 
+	<select id="hasStoreCoupons" parameterType="string"
+		resultType="boolean">
+		SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+		FROM b_store_coupon_tbl
+		WHERE store_id = #{storeId}
+	</select>
+
 	<select id="getStoresByCategory" parameterType="Integer"
 		resultType="com.springboot.delivery.model.Store">
-		select store_id, store_name, store_address, last_price, store_image_name,
+		select store_id, store_name, store_address, last_price,
+		store_image_name,
 		NVL(store_status, 1) as store_status
-		from b_store_tbl where main_category_id = #{main_category_id}
+		from b_store_tbl
+		where main_category_id = #{main_category_id}
 	</select>
 
 	<select id="getBookMarkStoreByUserId" parameterType="String"
@@ -175,11 +184,14 @@
 
 		INSERT INTO b_user_coupon_tbl
 		(user_cp_id, user_id,
-		owner_coupon_id, download_date, status, store_coupon_id, expire_date, minimum_purchase)
+		owner_coupon_id, download_date, status, store_coupon_id, expire_date,
+		minimum_purchase)
 		VALUES
-		(#{user_cp_id}, #{user_id}, #{owner_coupon_id}, sysdate,
+		(#{user_cp_id}, #{user_id}, #{owner_coupon_id},
+		sysdate,
 		#{status},
-		#{store_coupon_id}, #{expire_date}, #{minimum_purchase})
+		#{store_coupon_id}, #{expire_date},
+		#{minimum_purchase})
 
 
 	</insert>

@@ -211,4 +211,6 @@ public class StoreService {
 	public List<Map<String, Object>> getStoreStatus(String owner_id){
 		return this.storeMapper.getStoreStatus(owner_id);
 	}
+	
+
 }

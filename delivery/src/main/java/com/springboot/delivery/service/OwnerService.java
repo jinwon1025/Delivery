@@ -182,6 +182,7 @@ public class OwnerService {
 	public Integer getUsedPoint(String order_id) {
 		return this.ownerMapper.getUsedPoint(order_id);
 	}
+<<<<<<< HEAD
 	
 	public Integer getEstimatedDeliveryTime(String order_id) {
 		return this.ownerMapper.getEstimatedDeliveryTime(order_id);	
@@ -196,4 +197,7 @@ public class OwnerService {
 	    int result = this.ownerMapper.saveEstimatedDeliveryTime(params);
 	    return result > 0; // 성공적으로 업데이트되었는지 여부 반환
 	}
+=======
+
+>>>>>>> branch 'master' of https://github.com/jinwon1025/Delivery.git
 }
