@@ -24,21 +24,7 @@
 					href="<c:url value='/store/storeList'/>" class="mypage-menu-link">
 						<i class="fas fa-store"></i> <span>내 매장 관리</span>
 				</a></li>
-				<li class="mypage-menu-item"><a href="#"
-					class="mypage-menu-link"> <i class="fas fa-utensils"></i> <span>메뉴
-							관리</span>
-				</a></li>
-				<li class="mypage-menu-item"><a href="#"
-					class="mypage-menu-link"> <i class="fas fa-clipboard-list"></i>
-						<span>주문 관리</span>
-				</a></li>
-				<li class="mypage-menu-item"><a href="#"
-					class="mypage-menu-link"> <i class="fas fa-chart-line"></i> <span>매출
-							통계</span>
-				</a></li>
-				<li class="mypage-menu-item"><a href="#"
-					class="mypage-menu-link"> <i class="fas fa-cog"></i> <span>설정</span>
-				</a></li>
+				
 			</ul>
 		</div>
 	</div>

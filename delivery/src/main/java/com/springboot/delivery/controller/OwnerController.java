@@ -417,7 +417,7 @@ public class OwnerController {
 	        mav.addObject("availableCoupons", availableCoupons);
 	        mav.addObject("appliedStoreCoupons", appliedStoreCoupons);
 	        mav.addObject("storeList", storeList);
-	        mav.addObject("BODY", "ownerCouponManagement.jsp");
+	        mav.addObject("BODY", "ownerCouponManager.jsp");
 	    } else {
 	        mav.setViewName("redirect:/owner/index");
 	    }
