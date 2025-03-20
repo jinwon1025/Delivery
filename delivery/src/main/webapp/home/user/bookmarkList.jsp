@@ -70,7 +70,6 @@
 <c:if test="${not empty bmsList}">
     <div class="d-flex justify-content-center mt-4">
         <a href="<c:url value='/user/categoryStores'/>" class="btn btn-primary">다른 가게 찾기</a>
-        <a href="<c:url value='/user/index'/>" class="btn btn-outline-gold ml-2">홈으로</a>
     </div>
 </c:if>
 

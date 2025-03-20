@@ -3,7 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <style>
-
 .store-closed {
     opacity: 0.7; /* 투명도를 낮춰 비활성화된 것처럼 보이게 함 */
     pointer-events: none; /* 마우스 이벤트를 비활성화하여 클릭 불가능하게 만듦 */
@@ -22,7 +21,6 @@
     z-index: 100;
     font-weight: bold;
 }
-
 
 .store-list {
 	display: grid;
@@ -46,16 +44,24 @@
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* 배달시간 배지 스타일만 추가 */
+.delivery-time {
+    display: inline-block;
+    background-color: #FFF8E1;
+    color: #FF8C00;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
 /* 반응형 디자인 - 작은 화면에서는 1열로 표시 */
-@media ( max-width : 768px) {
+@media (max-width: 768px) {
 	.store-list {
 		grid-template-columns: 1fr;
 	}
 }
-
-
-
-
 </style>
 
 <!-- 가게 목록 -->
