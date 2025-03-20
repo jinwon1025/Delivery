@@ -323,7 +323,9 @@
             <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menu.image_name}" alt="${menu.image_name}">
             <div class="menu-name">${menu.menu_name}</div>
             <div class="menu-content">${menu.content}</div>
-            <div class="menu-price">${menu.price}원</div>
+            <div class="menu-price">
+                <fmt:formatNumber value="${menu.price}" pattern="#,###" />원
+            </div>
         </div>
     </c:forEach>
 </div>

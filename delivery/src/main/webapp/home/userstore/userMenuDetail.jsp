@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -360,16 +361,16 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
 
             
             <div class="container">
-                <!-- 왼쪽: 메뉴 이미지 -->
+
                 <div class="menu-image">
                     <img
                         src="${pageContext.request.contextPath}/upload/menuItemProfile/${menuDetail.image_name}"
                         alt="${menuDetail.menu_name}">
                 </div>
 
-                <!-- 오른쪽: 메뉴 상세 정보 및 옵션 선택 -->
+
                 <div class="menu-details">
-                    <p class="price">${menuDetail.price}원</p>
+                    <p class="price"><fmt:formatNumber value="${menuDetail.price}" pattern="#,###" />원</p>
                     <p class="menu-description">${menuDetail.content}</p>
                     
                     <!-- 옵션 그룹 -->
@@ -402,7 +403,7 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
                                     <label for="option_${option.option_id}" class="option-name">
                                         ${option.option_name}
                                     </label>
-                                    <span class="option-price">+${option.option_price}원</span>
+                                    <span class="option-price">+<fmt:formatNumber value="${option.option_price}" pattern="#,###" />원</span>
                                     <input type="hidden" name="allOptionIds" value="${option.option_id}">
                                     <input type="hidden" name="allOptionGroupIds" value="${option.option_group_id}">
                                 </li>
@@ -411,7 +412,7 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
                     </div>
                     </c:forEach>
 
-                    <!-- 수량 선택 컨트롤 -->
+
                     <div class="quantity-container">
                         <button type="button" class="quantity-btn" onclick="decreaseQuantity()">
                             <i class="fas fa-minus"></i>
@@ -422,7 +423,7 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
                         </button>
                     </div>
 
-                    <!-- 장바구니 버튼 -->
+
                     <button type="button" class="add-to-cart" onclick="submitForm()">
                         <i class="fas fa-shopping-cart"></i> 장바구니에 추가
                     </button>
@@ -442,107 +443,107 @@ input[type="radio"]:checked::after, input[type="checkbox"]:checked::after {
         </div>
     </div>
 
-	<script>
-		function increaseQuantity() {
-			const quantityInput = document.getElementById('quantity');
-			const currentValue = parseInt(quantityInput.value);
-			if (currentValue < 10) {
-				quantityInput.value = currentValue + 1;
-			}
-		}
+    <script>
+        function increaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue < 10) {
+                quantityInput.value = currentValue + 1;
+            }
+        }
 
-		function decreaseQuantity() {
-			const quantityInput = document.getElementById('quantity');
-			const currentValue = parseInt(quantityInput.value);
-			if (currentValue > 1) {
-				quantityInput.value = currentValue - 1;
-			}
-		}
-		
-		function submitForm() {
-		    // 로그인 여부 확인 (가장 먼저 체크)
-		    if (${sessionScope.loginUser == null}) {
-		        alert('장바구니에 추가하려면 로그인해야 합니다.');
-		        window.location.href = '/user/loginForm';
-		        return false;
-		    }
-		    
-		    // 이후 기존의 옵션 유효성 검사 코드...
-		    const form = document.getElementById('cartForm');
-		    const optionGroups = {};
-		    
-		    // 폼에서 이전에 추가된 hidden input 제거
-		    document.querySelectorAll('input[name="selectedOptions"][type="hidden"]').forEach(el => {
-		        el.remove();
-		    });
-		    
-		    // 모든 라디오 버튼을 확인하여 그룹별로 분류
-		    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-		        const groupId = radio.getAttribute('data-group-id');
-		        if (!optionGroups[groupId]) {
-		            optionGroups[groupId] = {
-		                name: groupId,
-		                hasSelection: false
-		            };
-		        }
-		        
-		        if (radio.checked) {
-		            optionGroups[groupId].hasSelection = true;
-		            
-		            // 선택된 라디오 버튼의 값을 hidden input으로 추가
-		            const hiddenInput = document.createElement('input');
-		            hiddenInput.type = 'hidden';
-		            hiddenInput.name = 'selectedOptions';
-		            hiddenInput.value = radio.value;
-		            form.appendChild(hiddenInput);
-		        }
-		    });
-		    
-		    // 모든 단일 선택 옵션 그룹에 선택이 있는지 확인
-		    let allGroupsHaveSelection = true;
-		    for (const groupId in optionGroups) {
-		        if (!optionGroups[groupId].hasSelection) {
-		            allGroupsHaveSelection = false;
-		            alert('옵션을 모두 선택해주세요.');
-		            break;
-		        }
-		    }
-		    
-		    if (!allGroupsHaveSelection) {
-		        return;
-		    }
-		    
-		    // 컨트롤러에서 이미 비교 작업이 수행되었으므로 
-		    // showModal이 true인 경우 모달을 표시하고, 아니면 바로 폼 제출
-		    if (${showModal}) {
-		        document.getElementById('customModal').style.display = 'flex';
-		    } else {
-		        document.getElementById('cartForm').submit();
-		    }
-		}
-		
-		function confirmAddToCart() {
-		    document.getElementById('cartForm').submit();
-		}
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        }
+        
+        function submitForm() {
+            // 로그인 여부 확인 (가장 먼저 체크)
+            if (${sessionScope.loginUser == null}) {
+                alert('장바구니에 추가하려면 로그인해야 합니다.');
+                window.location.href = '/user/loginForm';
+                return false;
+            }
+            
+            // 이후 기존의 옵션 유효성 검사 코드...
+            const form = document.getElementById('cartForm');
+            const optionGroups = {};
+            
+            // 폼에서 이전에 추가된 hidden input 제거
+            document.querySelectorAll('input[name="selectedOptions"][type="hidden"]').forEach(el => {
+                el.remove();
+            });
+            
+            // 모든 라디오 버튼을 확인하여 그룹별로 분류
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                const groupId = radio.getAttribute('data-group-id');
+                if (!optionGroups[groupId]) {
+                    optionGroups[groupId] = {
+                        name: groupId,
+                        hasSelection: false
+                    };
+                }
+                
+                if (radio.checked) {
+                    optionGroups[groupId].hasSelection = true;
+                    
+                    // 선택된 라디오 버튼의 값을 hidden input으로 추가
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'selectedOptions';
+                    hiddenInput.value = radio.value;
+                    form.appendChild(hiddenInput);
+                }
+            });
+            
+            // 모든 단일 선택 옵션 그룹에 선택이 있는지 확인
+            let allGroupsHaveSelection = true;
+            for (const groupId in optionGroups) {
+                if (!optionGroups[groupId].hasSelection) {
+                    allGroupsHaveSelection = false;
+                    alert('옵션을 모두 선택해주세요.');
+                    break;
+                }
+            }
+            
+            if (!allGroupsHaveSelection) {
+                return;
+            }
+            
+            // 컨트롤러에서 이미 비교 작업이 수행되었으므로 
+            // showModal이 true인 경우 모달을 표시하고, 아니면 바로 폼 제출
+            if (${showModal}) {
+                document.getElementById('customModal').style.display = 'flex';
+            } else {
+                document.getElementById('cartForm').submit();
+            }
+        }
+        
+        function confirmAddToCart() {
+            document.getElementById('cartForm').submit();
+        }
 
-		function closeModal() {
-		    document.getElementById('customModal').style.display = 'none';
-		}
-		
-		// 수량 입력 필드를 읽기 전용으로 만들기
-		document.addEventListener('DOMContentLoaded', function() {
-		    const quantityInput = document.getElementById('quantity');
-		    
-		    // 직접 입력 방지
-		    quantityInput.addEventListener('keydown', function(e) {
-		        e.preventDefault();
-		    });
-		    
-		    // 마우스 휠로 값 변경 방지
-		    quantityInput.addEventListener('wheel', function(e) {
-		        e.preventDefault();
-		    });
-		});
-	</script>
+        function closeModal() {
+            document.getElementById('customModal').style.display = 'none';
+        }
+        
+        // 수량 입력 필드를 읽기 전용으로 만들기
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.getElementById('quantity');
+            
+            // 직접 입력 방지
+            quantityInput.addEventListener('keydown', function(e) {
+                e.preventDefault();
+            });
+            
+            // 마우스 휠로 값 변경 방지
+            quantityInput.addEventListener('wheel', function(e) {
+                e.preventDefault();
+            });
+        });
+    </script>
 </body>
 </html>
