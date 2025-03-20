@@ -438,5 +438,17 @@ ORDER BY
 		select point_discount from b_order_detail_tbl where order_id = #{order_id}
 	</select>
 
-
+	<!-- 배달 시간 조회 -->
+	<select id="getEstimatedDeliveryTime" parameterType="string" resultType="Integer">
+	    SELECT ESTIMATED_DELIVERY_TIME 
+	    FROM b_order_detail_tbl 
+	    WHERE ORDER_ID = #{orderId}
+	</select>
+	
+	<!-- 배달 시간 저장 -->
+	<update id="saveEstimatedDeliveryTime" parameterType="map">
+	    UPDATE b_order_detail_tbl 
+	    SET ESTIMATED_DELIVERY_TIME = #{deliveryTime}
+	    WHERE ORDER_ID = #{order_id}
+	</update>
 </mapper>

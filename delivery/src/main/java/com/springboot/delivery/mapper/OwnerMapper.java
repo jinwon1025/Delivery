@@ -72,6 +72,10 @@ public interface OwnerMapper {
     Integer getStoreUsedQuantity(String owner_coupon_id);
     
     Integer getUsedPoint(String order_id);
+    
+    Integer getEstimatedDeliveryTime(String order_id);
+    
+    int saveEstimatedDeliveryTime(Map<String, Object> params);
 }
 
 

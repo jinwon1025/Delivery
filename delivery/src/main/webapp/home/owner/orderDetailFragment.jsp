@@ -23,7 +23,7 @@
                                 <span class="badge bg-warning">접수 대기</span>
                             </c:when>
                             <c:when test="${orderInfo.ORDER_STATUS == 1}">
-                                <span class="badge bg-info">접수 완료</span>
+                                <span class="badge bg-info" data-order-status="1">접수 완료</span>
                             </c:when>
                             <c:when test="${orderInfo.ORDER_STATUS == 2}">
                                 <span class="badge bg-primary">준비 중</span>
@@ -140,4 +140,29 @@
             </table>
         </div>
     </div>
+    <!-- 배달 시간 입력 모달 -->
+<div class="modal fade" id="deliveryTimeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deliveryTimeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryTimeModalLabel">배달 시간 입력</h5>
+            </div>
+            <div class="modal-body">
+                <form id="deliveryTimeForm">
+                    <div class="mb-3">
+                        <label for="estimatedDeliveryTime" class="form-label">예상 배달 시간 (분)</label>
+                        <input type="number" class="form-control" id="estimatedDeliveryTime" min="10" max="120" required>
+                        <div class="form-text">10분에서 120분 사이의 시간을 입력해주세요.</div>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>주의!</strong> 배달 시간을 입력해야 다른 작업을 진행할 수 있습니다.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveDeliveryTime">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>

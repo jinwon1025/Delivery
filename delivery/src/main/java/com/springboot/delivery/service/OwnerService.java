@@ -1,5 +1,6 @@
 package com.springboot.delivery.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -180,5 +181,19 @@ public class OwnerService {
 	
 	public Integer getUsedPoint(String order_id) {
 		return this.ownerMapper.getUsedPoint(order_id);
+	}
+	
+	public Integer getEstimatedDeliveryTime(String order_id) {
+		return this.ownerMapper.getEstimatedDeliveryTime(order_id);	
+	}
+	
+
+	public boolean saveEstimatedDeliveryTime(String order_id, int deliveryTime) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("order_id", order_id);
+	    params.put("deliveryTime", deliveryTime);
+	    
+	    int result = this.ownerMapper.saveEstimatedDeliveryTime(params);
+	    return result > 0; // 성공적으로 업데이트되었는지 여부 반환
 	}
 }

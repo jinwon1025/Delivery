@@ -28,4 +28,5 @@ public class OrderCart {
     private String delivery_time;  // 이 필드 추가
     private String payment_method;
     private Integer discount_amount;
+    private Integer estimated_delivery_time;
 }

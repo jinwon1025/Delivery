@@ -311,6 +311,20 @@ public class OwnerController {
 	    
 	    return mav;
 	}
+	@GetMapping("/owner/checkDeliveryTime")
+	@ResponseBody
+	public String checkDeliveryTime(@RequestParam("orderId") String orderId) {
+	    Integer deliveryTime = ownerSerivce.getEstimatedDeliveryTime(orderId);
+	    return (deliveryTime == null || deliveryTime == 0) ? "notSet" : "set";
+	}
+
+	@PostMapping("/owner/saveDeliveryTime")
+	@ResponseBody
+	public String saveDeliveryTime(@RequestParam("orderId") String orderId,
+	                             @RequestParam("deliveryTime") int deliveryTime) {
+	    boolean result = ownerSerivce.saveEstimatedDeliveryTime(orderId, deliveryTime);
+	    return result ? "success" : "fail";
+	}
 
 	@PostMapping(value="/owner/updateOrderStatus")
 	@ResponseBody
@@ -523,22 +537,22 @@ public class OwnerController {
 	        List<Map<String, Object>> orderList = ownerSerivce.getOrderList(loginOwner.getId());
 	        
 	        // 전체 orderList 크기 출력
-	        System.out.println("주문 목록 크기: " + orderList.size());
-	        
-	        // 전체 orderList 출력 (간단한 출력)
-	        System.out.println("주문 목록 전체: " + orderList);
+//	        System.out.println("주문 목록 크기: " + orderList.size());
+//	        
+//	       // 전체 orderList 출력 (간단한 출력)
+//	        System.out.println("주문 목록 전체: " + orderList);
 	        
 	        // 주문 목록의 각 항목을 자세히 출력
 	        for (int i = 0; i < orderList.size(); i++) {
 	            Map<String, Object> order = orderList.get(i);
-	            System.out.println("주문 #" + i + ": " + order);
-	            
-	            // 각 주문의 개별 필드를 더 자세히 출력하고 싶다면
-	            System.out.println("  - 주문 ID: " + order.get("ORDER_ID"));
-	            System.out.println("  - 매장명: " + order.get("STORE_NAME"));
-	            System.out.println("  - 주문 상태: " + order.get("ORDER_STATUS"));
-	            System.out.println("  - 주문 시간: " + order.get("ORDER_TIME"));
-	            System.out.println("  - 총 금액: " + order.get("TOTALPRICE"));
+//	            System.out.println("주문 #" + i + ": " + order);
+//	            
+////	            // 각 주문의 개별 필드를 더 자세히 출력하고 싶다면
+//	            System.out.println("  - 주문 ID: " + order.get("ORDER_ID"));
+//	            System.out.println("  - 매장명: " + order.get("STORE_NAME"));
+//	            System.out.println("  - 주문 상태: " + order.get("ORDER_STATUS"));
+//	            System.out.println("  - 주문 시간: " + order.get("ORDER_TIME"));
+//	            System.out.println("  - 총 금액: " + order.get("TOTALPRICE"));
 	        }
 	        
 	        return orderList;

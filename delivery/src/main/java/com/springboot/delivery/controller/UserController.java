@@ -29,6 +29,7 @@ import com.springboot.delivery.model.User;
 import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.model.UserCoupon;
 import com.springboot.delivery.service.AdminService;
+import com.springboot.delivery.service.OwnerService;
 import com.springboot.delivery.service.UserService;
 
 import jakarta.servlet.ServletContext;
@@ -41,6 +42,8 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private AdminService adminService;
+	@Autowired
+	private OwnerService ownerService;
 
 	@GetMapping(value = "/user/index")
 	public ModelAndView userIndex(HttpSession session) {
@@ -583,20 +586,27 @@ public class UserController {
 	@ResponseBody
 	public java.util.Map<String, Object> getOrderStatus(@RequestParam String orderId) {
 	    java.util.Map<String, Object> result = new java.util.HashMap<>();
-	    
+
 	    try {
 	        // 주문 상태 조회
 	        Integer status = userService.getOrderStatus(orderId);
 	        System.out.println("주문 ID: " + orderId + ", 상태: " + status); // 디버깅용
+	        
+	        // 예상 배달 시간 조회 - 이 부분 추가!
+	        Integer deliveryTime = ownerService.getEstimatedDeliveryTime(orderId);
+	        System.out.println("주문 ID: " + orderId + ", 예상 배달 시간: " + deliveryTime); // 디버깅용
+	        
 	        result.put("status", status);
+	        // 예상 배달 시간도 응답에 포함
+	        result.put("deliveryTime", deliveryTime);
 	        result.put("success", true);
 	    } catch (Exception e) {
 	        System.err.println("주문 상태 조회 실패: " + e.getMessage()); // 디버깅용
-	        e.printStackTrace(); 
+	        e.printStackTrace();
 	        result.put("success", false);
 	        result.put("message", e.getMessage());
 	    }
-	    
+
 	    return result;
 	}
 	@GetMapping(value="/user/deleteCard")

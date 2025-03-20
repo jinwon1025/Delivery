@@ -28,6 +28,15 @@
         .highlight-update {
             animation: highlight 2s ease-in-out;
         }
+		#deliveryTimeModal {
+		    margin-top: 300px; /* 모달을 아래로 내리는 여백 */
+		}
+		
+		#deliveryTimeModal .modal-dialog {
+		    position: relative;
+		    top: auto;
+		    margin: 10px auto;
+		}
     </style>
 </head>
 <body>
@@ -254,12 +263,13 @@ $(document).ready(function() {
         });
     }
     
-    // 주문 상세 보기 버튼 클릭 이벤트 (이벤트 위임)
+ // 주문 상세 보기 버튼 클릭 이벤트 (이벤트 위임)
     $(document).on("click", ".view-details", function() {
         var orderId = $(this).data("order-id");
         var storeId = $(this).data("store-id");
+        var orderStatus = $(this).closest('tr').data("status"); // 주문 상태 가져오기
         
-        console.log("상세 보기 클릭:", orderId, storeId);
+        console.log("상세 보기 클릭:", orderId, storeId, "상태:", orderStatus);
         
         // 주문 상세 정보를 가져오는 AJAX 호출
         $.ajax({
@@ -272,12 +282,21 @@ $(document).ready(function() {
             success: function(response) {
                 console.log("상세 정보 수신 성공");
                 $('#orderDetailBody').html(response);
-                $('#orderDetailModal').modal('show');
                 
-                // 현재 주문 ID를 모달의 상태 변경 버튼에 설정
+                // 현재 주문 ID와 상태를 모달에 설정
                 $('.update-status').each(function() {
                     $(this).attr('data-order-id', orderId);
                 });
+                
+                // 여기서 모달을 표시
+                $('#orderDetailModal').modal('show');
+                
+                // 모달이 완전히 표시된 후에 배달 시간 체크
+                if (orderStatus == 1) {
+                    setTimeout(function() {
+                        checkDeliveryTime(orderId);
+                    }, 500);
+                }
             },
             error: function(xhr, status, error) {
                 console.error("상세 정보 AJAX 오류:", status, error);
@@ -286,6 +305,32 @@ $(document).ready(function() {
             }
         });
     });
+
+    // 배달 시간 체크 함수 분리
+    function checkDeliveryTime(orderId) {
+        console.log("배달 시간 체크 실행:", orderId);
+        // 이미 배달 시간이 설정되어 있는지 확인
+        $.ajax({
+            url: '/owner/checkDeliveryTime',
+            type: 'GET',
+            data: { orderId: orderId },
+            success: function(response) {
+                console.log("배달 시간 체크 응답:", response);
+                if (response === 'notSet') {
+                    $('#deliveryTimeModal').modal('show');
+                    
+                    // 주문 상세 모달의 버튼들 비활성화
+                    $('.update-status').prop('disabled', true);
+                }
+            },
+            error: function() {
+                console.error('배달 시간 확인 중 오류 발생');
+                // 개발 중에는 에러 시에도 모달 표시 (실제 운영 시에는 제거)
+                $('#deliveryTimeModal').modal('show');
+                $('.update-status').prop('disabled', true);
+            }
+        });
+    }
     
     // 주문 상태 업데이트 버튼 클릭 이벤트
     $(document).on("click", ".update-status", function() {
@@ -368,6 +413,102 @@ $(document).ready(function() {
         });
     }
 });
+//주문 상세 모달이 표시될 때 실행
+$(document).on('shown.bs.modal', '#orderDetailModal', function() {
+    // 주문 상태 확인 (span 태그에서 클래스로 확인)
+    var orderStatus = 0;
+    if ($('#orderDetailBody .badge.bg-info').length > 0) {
+        orderStatus = 1; // 접수 완료 상태
+    }
+    
+    var orderId = $('.update-status').first().data('order-id');
+    
+    // 주문 상태가 1이면 배달 시간 입력 모달 표시
+    if (orderStatus == 1) {
+        // 이미 배달 시간이 설정되어 있는지 확인
+        $.ajax({
+            url: '/owner/checkDeliveryTime',
+            type: 'GET',
+            data: { orderId: orderId },
+            success: function(response) {
+                if (response === 'notSet') {
+                    $('#deliveryTimeModal').modal('show');
+                    
+                    // 주문 상세 모달의 버튼들 비활성화
+                    $('.update-status').prop('disabled', true);
+                }
+            },
+            error: function() {
+                console.error('배달 시간 확인 중 오류 발생');
+                // 에러 발생 시에도 모달을 표시하고 버튼 비활성화
+                $('#deliveryTimeModal').modal('show');
+                $('.update-status').prop('disabled', true);
+            }
+        });
+    }
+});
+
+//배달 시간 저장 버튼 클릭 이벤트를 다음과 같이 수정
+$(document).on('click', '#saveDeliveryTime', function() {
+    var deliveryTime = $('#estimatedDeliveryTime').val();
+    var orderId = $('.update-status').first().data('order-id');
+    
+    console.log("저장 시도:", orderId, deliveryTime);
+    
+    // 입력값 검증
+    if (!deliveryTime || deliveryTime < 10 || deliveryTime > 120) {
+        alert('10분에서 120분 사이의 시간을 입력해주세요.');
+        return;
+    }
+    
+    // 배달 시간 저장 AJAX 요청
+    $.ajax({
+        url: '/owner/saveDeliveryTime',
+        type: 'POST',
+        data: {
+            orderId: orderId,
+            deliveryTime: deliveryTime
+        },
+        beforeSend: function() {
+            console.log("AJAX 요청 전송:", orderId, deliveryTime);
+        },
+        success: function(response) {
+            console.log("응답 받음:", response);
+            if (response === 'success') {
+                // 배달 시간 모달 닫기
+                $('#deliveryTimeModal').modal('hide');
+                
+                // 주문 상세 모달의 버튼들 활성화
+                $('.update-status').prop('disabled', false);
+                
+                // 주문 정보에 배달 시간 표시 업데이트
+                var deliveryTimeText = deliveryTime + '분 후 도착 예정';
+                
+                // 주문 정보 테이블에 새로운 행 추가
+                $('.table:contains("주문 상태")').first().append(
+                    '<tr><th>예상 배달 시간</th><td id="estimatedDeliveryTimeDisplay">' + 
+                    deliveryTimeText + '</td></tr>'
+                );
+                
+                alert('배달 시간이 저장되었습니다.');
+            } else {
+                console.error("서버 응답 실패:", response);
+                alert('배달 시간 저장에 실패했습니다.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX 오류:", status, error);
+            console.log("응답 텍스트:", xhr.responseText);
+            alert('배달 시간 저장 중 오류가 발생했습니다.');
+        }
+    });
+});
+
+// 주문 상세 모달이 닫힐 때 배달 시간 모달도 함께 닫히도록
+$(document).on('hidden.bs.modal', '#orderDetailModal', function() {
+    $('#deliveryTimeModal').modal('hide');
+});
+
 </script>
 </body>
 </html>

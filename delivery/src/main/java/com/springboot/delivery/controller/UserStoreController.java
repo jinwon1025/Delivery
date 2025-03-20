@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.springboot.delivery.mapper.OwnerMapper;
 import com.springboot.delivery.model.CartOption;
 import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.LoginUser;
@@ -43,6 +44,7 @@ import com.springboot.delivery.model.UserCard;
 import com.springboot.delivery.model.UserCoupon;
 import com.springboot.delivery.model.UserCouponDetail;
 import com.springboot.delivery.service.AdminService;
+import com.springboot.delivery.service.OwnerService;
 import com.springboot.delivery.service.StoreService;
 import com.springboot.delivery.service.UserService;
 import com.springboot.delivery.service.UserStoreService;
@@ -62,6 +64,8 @@ public class UserStoreController {
    private AdminService adminService;
    @Autowired
    private UserService userService;
+   @Autowired
+   private OwnerService ownerService;
 
    public String generateOrderId() {
       return UUID.randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "").substring(0, 10);
@@ -565,6 +569,8 @@ public class UserStoreController {
 	    
 	    Integer currentStatus = orderStatusCart.getOrder_status();
 	    
+	    Integer deliveryTime = this.ownerService.getEstimatedDeliveryTime(order_Id);
+	    System.out.println("배달시간 : "+deliveryTime);
 	    //할인 금액
 	    Integer discountAmount = 0;
 	    // 이미 처리된 주문인 경우 (주문 상태가 0이 아닌 경우)
@@ -668,7 +674,8 @@ public class UserStoreController {
 	            orderWithAddress.setOrder_id(order_Id);
 	            orderWithAddress.setOrder_status(1); // 주문완료 처리
 	            orderWithAddress.setPayment_method(paymentDisplay);
-	            orderWithAddress.setDiscount_amount(discountAmount); 	
+	            orderWithAddress.setDiscount_amount(discountAmount); 
+	            orderWithAddress.setEstimated_delivery_time(deliveryTime);
 	            // 수정된 객체로 결제 정보 저장
 	            this.userStoreService.insertPay(orderWithAddress);
 	            
@@ -684,6 +691,7 @@ public class UserStoreController {
 	            oc.setOrder_status(1);
 	            oc.setPayment_method(paymentDisplay);
 	            oc.setDiscount_amount(discountAmount);
+	            oc.setEstimated_delivery_time(deliveryTime);
 	            // 현금 결제 시 주소 정보를 추가
 	            CartUser cartUser = this.userStoreService.cartUserData(loginUser.getUser_id());
 	            if (cartUser != null) {

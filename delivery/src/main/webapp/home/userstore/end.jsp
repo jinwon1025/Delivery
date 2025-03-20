@@ -384,7 +384,7 @@
                 </div>
             </div>
             <div class="delivery-info">
-                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${orderCart.delivery_time}</span>분</span>
+                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${orderCart.estimated_delivery_time}</span>분</span>
             </div>
         </div>
 
@@ -403,6 +403,15 @@
         const orderId = $('#order-id').text().trim();
         let currentStatus = 0;
         
+        // 초기 배달 시간 값 확인 및 출력
+        let initialTime = $('#deliveryTimeCounter').text().trim();
+        console.log("초기 배달 시간 값:", initialTime);
+        
+        // 초기값이 없거나 "null"인 경우 기본값 설정
+        if (!initialTime || initialTime === "" || initialTime === "null") {
+            console.log("초기 배달 시간이 없어서 기본값 설정");
+            $('#deliveryTimeCounter').text("30");
+        }
         // 초기 상태를 확실히 설정
         setActiveState(0);
         
@@ -414,37 +423,53 @@
         
         // 주문 상태 확인 및 업데이트 함수
         function updateOrderStatus() {
-            console.log("Checking order status for ID:", orderId);
+    console.log("Checking order status for ID:", orderId);
+    
+    $.ajax({
+        url: '/user/getOrderStatus',
+        type: 'GET',
+        data: { orderId: orderId },
+        success: function(response) {
+            console.log("전체 응답 데이터:", JSON.stringify(response));
             
-            $.ajax({
-                url: '/user/getOrderStatus',
-                type: 'GET',
-                data: { orderId: orderId },
-                success: function(response) {
-                    console.log("Response received:", response);
+            if (response && response.status !== undefined) {
+                const newStatus = parseInt(response.status);
+                console.log("상태:", newStatus, "현재 상태:", currentStatus);
+                
+                // 배달 시간 정보가 있으면 업데이트
+                if (response.deliveryTime !== undefined) {
+                    console.log("배달 시간 데이터 타입:", typeof response.deliveryTime);
+                    console.log("배달 시간 값:", response.deliveryTime);
                     
-                    if (response && response.status !== undefined) {
-                        const newStatus = parseInt(response.status);
-                        console.log("New status:", newStatus, "Current status:", currentStatus);
-                        
-                        // 상태가 변경된 경우에만 UI 업데이트
-                        if (newStatus !== currentStatus) {
-                            currentStatus = newStatus;
-                            updateUI(currentStatus);
-                        }
-                        
-                        // 주문이 취소되거나 배달이 완료된 경우 interval 중지
-                        if (newStatus === 4 || newStatus === 5) {
-                            clearInterval(statusInterval);
-                        }
+                    if (response.deliveryTime && response.deliveryTime > 0) {
+                        console.log("배달 시간을 업데이트합니다:", response.deliveryTime);
+                        $('#deliveryTimeCounter').text(response.deliveryTime);
+                        console.log("업데이트 후 요소 텍스트:", $('#deliveryTimeCounter').text());
+                    } else {
+                        console.log("배달 시간이 없거나 0 이하입니다:", response.deliveryTime);
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching order status:", error);
-                    console.error("Response:", xhr.responseText);
+                } else {
+                    console.log("응답에 배달 시간 정보가 없습니다.");
                 }
-            });
+                
+                // 상태가 변경된 경우에만 UI 업데이트
+                if (newStatus !== currentStatus) {
+                    currentStatus = newStatus;
+                    updateUI(currentStatus);
+                }
+                
+                // 주문이 취소되거나 배달이 완료된 경우 interval 중지
+                if (newStatus === 4 || newStatus === 5) {
+                    clearInterval(statusInterval);
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching order status:", error);
+            console.error("Response:", xhr.responseText);
         }
+    });
+}
         
         // 스텝을 활성화하는 함수
         function setActiveState(maxStep) {
