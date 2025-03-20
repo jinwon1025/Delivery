@@ -181,4 +181,5 @@ public class OwnerService {
 	public Integer getUsedPoint(String order_id) {
 		return this.ownerMapper.getUsedPoint(order_id);
 	}
+
 }

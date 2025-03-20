@@ -101,19 +101,6 @@
                 <i class="fas fa-plus mr-2"></i> 새 가게 등록
             </a>
         </div>
-
-        <div class="d-flex">
-            <div class="form-group mb-0 mr-2">
-                <select class="form-select" id="statusFilter">
-                    <option value="all">모든 가게</option>
-                    <option value="1">영업 중</option>
-                    <option value="0">영업 종료</option>
-                </select>
-            </div>
-            <div class="form-group mb-0">
-                <input type="text" class="form-control" id="storeSearch" placeholder="가게 이름 검색">
-            </div>
-        </div>
     </div>
 </div>
 
@@ -126,7 +113,7 @@
             </c:if>
         </c:forEach>
         
-        <div class="store-card" data-status="${store.store_status}">
+        <div class="store-card">
             <div class="store-card-img">
                 <c:choose>
                     <c:when test="${not empty store.store_image_name}">
@@ -191,57 +178,3 @@
         </a>
     </div>
 </c:if>
-
-<script>
-$(document).ready(function() {
-    // 상태 필터링
-    $('#statusFilter').change(function() {
-        filterStores();
-    });
-    
-    // 가게 이름 검색
-    $('#storeSearch').on('keyup', function() {
-        filterStores();
-    });
-    
-    function filterStores() {
-        const status = $('#statusFilter').val();
-        const searchText = $('#storeSearch').val().toLowerCase();
-        
-        $('.store-card').each(function() {
-            const storeStatus = $(this).data('status').toString();
-            const storeName = $(this).find('.store-card-title').text().toLowerCase();
-            
-            let showStore = true;
-            
-            // 상태 필터링
-            if (status !== 'all' && storeStatus !== status) {
-                showStore = false;
-            }
-            
-            // 이름 검색 필터링
-            if (searchText && !storeName.includes(searchText)) {
-                showStore = false;
-            }
-            
-            if (showStore) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-        
-        // 표시된 가게가 없을 경우 메시지 표시
-        if ($('.store-card:visible').length === 0) {
-            if ($('#noStoresMessage').length === 0) {
-                const noStoresMessage = $('<div id="noStoresMessage" class="text-center py-4 w-100">' +
-                    '<p class="text-muted">검색 조건에 맞는 가게가 없습니다.</p>' +
-                    '</div>');
-                $('#storeCardContainer').after(noStoresMessage);
-            }
-        } else {
-            $('#noStoresMessage').remove();
-        }
-    }
-});
-</script>
