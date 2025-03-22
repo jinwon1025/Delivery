@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>주문 목록 관리 - 금베달리스트 사업자</title>
+    <title>주문 목록 관리 - 금베달리스트 사업자</title>	
     
     <!-- 공통 CSS 파일 -->
     <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
