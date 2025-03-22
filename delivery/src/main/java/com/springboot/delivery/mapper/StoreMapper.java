@@ -67,5 +67,18 @@ public interface StoreMapper {
 	Integer getTodayOrderTotalByStore(String store_id);
 	
 	List<Map<String, Object>> getStoreStatus(String owner_id);
+	
+	void deleteReplyByStoreId(String store_id);
+	
+	void deleteStoreCouponsByStoreId(String store_id);
+	
+	void deleteOrderQuantitiesByStoreId(String store_id);
+	
+	void deleteOrderOptionsByStoreId(String store_id);
+	
+	void deleteOrdersByStoreId(String store_id);
+	
+	void clearOrderCouponReferences(String storeId);
+
 
 }

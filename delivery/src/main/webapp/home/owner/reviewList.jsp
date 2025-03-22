@@ -39,7 +39,6 @@
                   </span>
                 </div>
               </div>
-              <button class="btn btn-sm btn-light rounded-pill delete-btn">삭제</button>
             </div>
             
             <!-- 리뷰 작성자 정보 -->
@@ -175,17 +174,6 @@ function submitReply() {
   // 폼 제출
   document.getElementById('replyForm').submit();
 }
-
-// 리뷰 삭제 버튼 이벤트
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      if(confirm('이 리뷰를 정말 삭제하시겠습니까?')) {
-        // 삭제 로직 구현
-      }
-    });
-  });
-});
 </script>
 
 <!-- 추가 스타일 -->
@@ -242,18 +230,6 @@ h2:after {
 .review-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-.delete-btn {
-  font-size: 0.8rem;
-  border: 1px solid #e0e0e0;
-  color: #dc3545;
-  transition: all 0.2s;
-}
-
-.delete-btn:hover {
-  background-color: #dc3545;
-  color: white;
 }
 
 .reviewer-name {
