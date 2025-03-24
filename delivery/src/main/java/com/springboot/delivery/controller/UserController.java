@@ -165,7 +165,7 @@ public class UserController {
 
 		if (user == null) {
 			System.out.println("로그인 실패");
-			mav.addObject("BODY", "index.jsp");
+			mav.addObject("BODY", "login.jsp");
 			mav.addObject("BBODY", "loginResult.jsp");
 			mav.addObject("FAIL", "YES");
 		} else {
