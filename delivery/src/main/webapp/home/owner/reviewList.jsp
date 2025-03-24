@@ -2,16 +2,23 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<div class="container">
-  <h2 class="text-center mb-4">리뷰관리</h2>
-  
-  <!-- 리뷰 목록 -->
-  <div class="review-list">
+<!-- 리뷰 관리 페이지 시작 -->
+<div class="section-title">
+  <h2>리뷰 관리</h2>
+</div>
+
+<!-- 리뷰 목록 -->
+<div class="card mb-4">
+  <div class="card-body">
     <c:choose>
       <c:when test="${empty rarList}">
         <!-- 리뷰가 하나도 없는 경우 -->
-        <div class="text-center py-5">
-          <p class="text-muted">작성된 리뷰가 없습니다.</p>
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-star fa-3x text-gray-400"></i>
+          </div>
+          <h3 class="font-medium mb-2">작성된 리뷰가 없습니다</h3>
+          <p class="text-gray-500 mb-3">아직 고객이 작성한 리뷰가 없습니다.</p>
         </div>
       </c:when>
       <c:otherwise>
@@ -39,7 +46,6 @@
                   </span>
                 </div>
               </div>
-              <button class="btn btn-sm btn-light rounded-pill delete-btn">삭제</button>
             </div>
             
             <!-- 리뷰 작성자 정보 -->
@@ -175,54 +181,11 @@ function submitReply() {
   // 폼 제출
   document.getElementById('replyForm').submit();
 }
-
-// 리뷰 삭제 버튼 이벤트
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      if(confirm('이 리뷰를 정말 삭제하시겠습니까?')) {
-        // 삭제 로직 구현
-      }
-    });
-  });
-});
 </script>
 
 <!-- 추가 스타일 -->
 <style>
-body {
-  background-color: #f8f9fa;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.container {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.05);
-  padding: 30px;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-h2 {
-  color: #343a40;
-  font-weight: 700;
-  position: relative;
-  padding-bottom: 15px;
-}
-
-h2:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background-color: #ffc107;
-  border-radius: 3px;
-}
-
+/* 별점 스타일 */
 .stars {
   font-size: 20px;
   letter-spacing: 2px;
@@ -242,18 +205,6 @@ h2:after {
 .review-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-.delete-btn {
-  font-size: 0.8rem;
-  border: 1px solid #e0e0e0;
-  color: #dc3545;
-  transition: all 0.2s;
-}
-
-.delete-btn:hover {
-  background-color: #dc3545;
-  color: white;
 }
 
 .reviewer-name {
@@ -505,17 +456,29 @@ textarea.form-control:focus {
   outline: none;
 }
 
-/* 빈 리뷰 화면 스타일 개선 */
-.text-center.py-5 {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding: 60px 20px !important;
-  margin: 30px 0;
-  border: 1px dashed #dee2e6;
+/* 빈 상태 스타일 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  border: 1px dashed #ddd;
+  border-radius: 0.5rem;
+  background-color: #f9f9f9;
+  margin: 2rem 0;
 }
 
-.text-center.py-5 p {
-  font-size: 1.1rem;
+.empty-state-icon {
+  margin-bottom: 1.5rem;
+  color: #aaa;
+}
+
+.empty-state h3 {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
   color: #6c757d;
 }
 </style>
+<!-- 리뷰 관리 페이지 끝 -->

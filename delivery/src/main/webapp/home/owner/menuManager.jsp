@@ -27,8 +27,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
 </head>
 <body>
-
-    
     
     <!-- 메인 컨텐츠 -->
     <main class="main-content">
@@ -39,80 +37,119 @@
             
             <div class="card mb-4">
                 <div class="card-body">
-                    <c:forEach items="${menuList}" var="category" varStatus="status">
-                        <div class="menu-category ${status.first ? 'active' : ''}">
-                            <div class="menu-category-header d-flex justify-content-between align-items-center p-3 bg-gray-100 rounded">
-                                <h3 class="m-0 font-medium">${category.menu_category_name}</h3>
-                                <div class="d-flex align-items-center">
-                                    <form action="/store/categoryUpdate" method="post" class="mr-2" onsubmit="return confirmCategoryUpdate(${category.menu_category_id});">
-                                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
-                                        <input type="hidden" id="menu_category_name_${category.menu_category_id}" name="menu_category_name" value="${category.menu_category_name}"/>
-                                        <button type="submit" class="btn btn-sm btn-primary">수정</button>
-                                    </form>
-                                    <form action="/store/categoryDelete" method="post" class="mr-2" onsubmit="return confirmCategoryDelete();">
-                                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
-                                        <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
-                                    </form>
-                                    <i class="fas fa-chevron-down toggle-icon"></i>
+                    <c:choose>
+                        <c:when test="${empty menuList}">
+                            <!-- 등록된 카테고리가 없는 경우 -->
+                            <div class="empty-state p-5 text-center">
+                                <div class="empty-state-icon mb-4">
+                                    <i class="fas fa-list fa-3x text-gray-400"></i>
                                 </div>
+                                <h3 class="font-medium mb-2">등록된 카테고리가 없습니다</h3>
+                                <p class="text-gray-500 mb-4">아래에서 새로운 카테고리를 추가해 주세요.</p>
+                                <i class="fas fa-arrow-down fa-2x text-gold animate-bounce"></i>
                             </div>
-                            
-                            <div class="menu-items p-3">
-                                <c:forEach items="${menuItemList}" var="menuItem">
-                                    <c:if test="${menuItem.menu_category_id eq category.menu_category_id}">
-                                        <div class="menu-item mb-3 border rounded p-3 bg-white">
-                                            <div class="d-flex">
-                                                <div class="menu-item-image mr-3">
-                                                    <c:choose>
-                                                        <c:when test="${not empty menuItem.image_name}">
-                                                            <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menuItem.image_name}" 
-                                                                 alt="${menuItem.menu_name}" class="rounded">
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <div class="bg-gray-200 rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                                                <i class="fas fa-image text-gray-500"></i>
-                                                            </div>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </div>
-                                                
-                                                <div class="menu-item-details flex-grow-1">
-                                                    <h4 class="font-medium mb-1">${menuItem.menu_name}</h4>
-                                                    <p class="text-sm text-gray-600 mb-2">${menuItem.content}</p>
-                                                    <p class="text-primary font-medium">${menuItem.price}원</p>
-                                                    
-                                                    <div class="menu-item-actions mt-2">
-                                                        <form action="/store/menuDetail" method="post" class="d-inline-block mr-2">
-                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
-                                                            <button type="submit" class="btn btn-sm btn-primary">수정</button>
-                                                        </form>
-                                                        <form action="/store/menuDelete" method="post" class="d-inline-block mr-2" onsubmit="return confirmDelete();">
-                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
-                                                            <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
-                                                        </form>
-                                                        <form action="/store/optionManage" method="get" class="d-inline-block">
-                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
-                                                            <button type="submit" class="btn btn-sm btn-white">옵션 관리</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- 카테고리가 있는 경우 -->
+                            <c:forEach items="${menuList}" var="category" varStatus="status">
+                                <div class="menu-category ${status.first ? 'active' : ''}">
+                                    <div class="menu-category-header d-flex justify-content-between align-items-center p-3 bg-gray-100 rounded">
+                                        <h3 class="m-0 font-medium">${category.menu_category_name}</h3>
+                                        <div class="d-flex align-items-center">
+                                            <form action="/store/categoryUpdate" method="post" class="mr-2" onsubmit="return confirmCategoryUpdate(${category.menu_category_id});">
+                                                <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                                                <input type="hidden" id="menu_category_name_${category.menu_category_id}" name="menu_category_name" value="${category.menu_category_name}"/>
+                                                <button type="submit" class="btn btn-sm btn-primary">수정</button>
+                                            </form>
+                                            <form action="/store/categoryDelete" method="post" class="mr-2" onsubmit="return confirmCategoryDelete();">
+                                                <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
+                                            </form>
+                                            <i class="fas fa-chevron-down toggle-icon"></i>
                                         </div>
-                                    </c:if>
-                                </c:forEach>
-                                
-                                <!-- 메뉴 추가 버튼 -->
-                                <div class="text-center py-3">
-                                    <form action="/store/menuInsert" method="post">
-                                        <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
-                                        <button type="submit" class="btn btn-outline-gold">
-                                            <i class="fas fa-plus mr-2"></i>메뉴 추가
-                                        </button>
-                                    </form>
+                                    </div>
+                                    
+                                    <div class="menu-items p-3">
+                                        <!-- 해당 카테고리에 메뉴 아이템이 있는지 확인 -->
+                                        <c:set var="hasMenuItems" value="false" />
+                                        <c:forEach items="${menuItemList}" var="menuItem">
+                                            <c:if test="${menuItem.menu_category_id eq category.menu_category_id}">
+                                                <c:set var="hasMenuItems" value="true" />
+                                            </c:if>
+                                        </c:forEach>
+                                        
+                                        <c:choose>
+                                            <c:when test="${hasMenuItems eq 'false'}">
+                                                <!-- 해당 카테고리에 등록된 메뉴가 없는 경우 -->
+                                                <div class="empty-menu-state p-4 text-center bg-gray-50 rounded border border-dashed border-gray-300 mb-3">
+                                                    <div class="empty-state-icon mb-3">
+                                                        <i class="fas fa-utensils fa-2x text-gray-400"></i>
+                                                    </div>
+                                                    <h4 class="font-medium mb-2">등록된 메뉴가 없습니다</h4>
+                                                    <p class="text-gray-500 mb-3">아래 버튼을 클릭하여 새로운 메뉴를 추가해 보세요.</p>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- 해당 카테고리에 메뉴가 있는 경우 -->
+                                                <c:forEach items="${menuItemList}" var="menuItem">
+                                                    <c:if test="${menuItem.menu_category_id eq category.menu_category_id}">
+                                                        <div class="menu-item mb-3 border rounded p-3 bg-white">
+                                                            <div class="d-flex">
+                                                                <div class="menu-item-image mr-3">
+                                                                    <c:choose>
+                                                                        <c:when test="${not empty menuItem.image_name}">
+                                                                            <img src="${pageContext.request.contextPath}/upload/menuItemProfile/${menuItem.image_name}" 
+                                                                                 alt="${menuItem.menu_name}" class="rounded">
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <div class="bg-gray-200 rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                                                                <i class="fas fa-image text-gray-500"></i>
+                                                                            </div>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                </div>
+                                                                
+                                                                <div class="menu-item-details flex-grow-1">
+                                                                    <h4 class="font-medium mb-1">${menuItem.menu_name}</h4>
+                                                                    <p class="text-sm text-gray-600 mb-2">${menuItem.content}</p>
+                                                                    <p class="text-primary font-medium">${menuItem.price}원</p>
+                                                                    
+                                                                    <div class="menu-item-actions mt-2">
+                                                                        <form action="/store/menuDetail" method="post" class="d-inline-block mr-2">
+                                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                                                            <button type="submit" class="btn btn-sm btn-primary">수정</button>
+                                                                        </form>
+                                                                        <form action="/store/menuDelete" method="post" class="d-inline-block mr-2" onsubmit="return confirmDelete();">
+                                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                                                            <button type="submit" class="btn btn-sm btn-outline-gold">삭제</button>
+                                                                        </form>
+                                                                        <form action="/store/optionManage" method="get" class="d-inline-block">
+                                                                            <input type="hidden" name="menu_item_id" value="${menuItem.menu_item_id}"/>
+                                                                            <button type="submit" class="btn btn-sm btn-white">옵션 관리</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        
+                                        <!-- 메뉴 추가 버튼 -->
+                                        <div class="text-center py-3">
+                                            <form action="/store/menuInsert" method="post">
+                                                <input type="hidden" name="menu_category_id" value="${category.menu_category_id}"/>
+                                                <button type="submit" class="btn btn-outline-gold">
+                                                    <i class="fas fa-plus mr-2"></i>메뉴 추가
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </c:forEach>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
             
@@ -162,6 +199,15 @@
             // 첫 번째 카테고리는 기본적으로 열려있도록
             $('.menu-category:first-child .menu-items').show();
             $('.menu-category:first-child .toggle-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
+            
+            // 빈 상태 아이콘 애니메이션
+            setInterval(function() {
+                $('.animate-bounce').animate({
+                    marginTop: '10px'
+                }, 1000).animate({
+                    marginTop: '0px'
+                }, 1000);
+            }, 2000);
         });
         
         // 메뉴 삭제 확인

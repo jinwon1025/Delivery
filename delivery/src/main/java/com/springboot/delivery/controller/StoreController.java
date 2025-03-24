@@ -122,31 +122,31 @@ public class StoreController {
 
 	@GetMapping(value = "/store/storeList")
 	public ModelAndView storeList(HttpSession session) {
-	    ModelAndView mav = new ModelAndView("owner/ownerMain");
-	    LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
-	    List<Store> storeList = this.storeService.storeList(owner.getId());
-	    List<Map<String,Object>> storeInfoList = this.storeService.getStoreStatus(owner.getId());
-	    
-	    // storeInfoList 내용 확인
-	    System.out.println("===== storeInfoList 내용 =====");
-	    for (Map<String, Object> storeInfo : storeInfoList) {
-	        System.out.println(storeInfo);
-	    }
-	    
-	    // 더 자세한 내용을 보려면 각 맵의 키와 값을 개별적으로 출력
-	    System.out.println("===== storeInfoList 상세 내용 =====");
-	    for (int i = 0; i < storeInfoList.size(); i++) {
-	        Map<String, Object> storeInfo = storeInfoList.get(i);
-	        System.out.println("가게 #" + (i+1) + " 정보:");
-	        for (String key : storeInfo.keySet()) {
-	            System.out.println("    " + key + ": " + storeInfo.get(key));
-	        }
-	    }
-	    
-	    mav.addObject("storeList", storeList);
-	    mav.addObject("storeInfoList", storeInfoList);
-	    mav.addObject("BODY", "storeList.jsp");
-	    return mav;
+		ModelAndView mav = new ModelAndView("owner/ownerMain");
+		LoginOwner owner = (LoginOwner) session.getAttribute("loginOwner");
+		List<Store> storeList = this.storeService.storeList(owner.getId());
+		List<Map<String, Object>> storeInfoList = this.storeService.getStoreStatus(owner.getId());
+
+		// storeInfoList 내용 확인
+		System.out.println("===== storeInfoList 내용 =====");
+		for (Map<String, Object> storeInfo : storeInfoList) {
+			System.out.println(storeInfo);
+		}
+
+		// 더 자세한 내용을 보려면 각 맵의 키와 값을 개별적으로 출력
+		System.out.println("===== storeInfoList 상세 내용 =====");
+		for (int i = 0; i < storeInfoList.size(); i++) {
+			Map<String, Object> storeInfo = storeInfoList.get(i);
+			System.out.println("가게 #" + (i + 1) + " 정보:");
+			for (String key : storeInfo.keySet()) {
+				System.out.println("    " + key + ": " + storeInfo.get(key));
+			}
+		}
+
+		mav.addObject("storeList", storeList);
+		mav.addObject("storeInfoList", storeInfoList);
+		mav.addObject("BODY", "storeList.jsp");
+		return mav;
 	}
 
 	@GetMapping(value = "/store/storeMain")
@@ -163,19 +163,18 @@ public class StoreController {
 		}
 
 		mav.addObject("store", store);
-		
-		Store menuStore = (Store)session.getAttribute("currentStore");
+
+		Store menuStore = (Store) session.getAttribute("currentStore");
 
 		// 오늘 주문 가져오기
 		Integer todayOrder = this.storeService.getTodayOrderCountByStore(menuStore.getStore_id());
-		if(todayOrder == null) {
+		if (todayOrder == null) {
 			todayOrder = 0;
 		}
-		
-		
+
 		// 가게 메뉴 수 가져오기
 		Integer menuCount = this.storeService.getCountMenuFromStore(menuStore.getStore_id());
-		if(menuCount == null) {
+		if (menuCount == null) {
 			menuCount = 0;
 		}
 
@@ -183,17 +182,17 @@ public class StoreController {
 		Double averageRating;
 		Rating r = this.storeService.getRatingFromStore(menuStore.getStore_id());
 		if (r == null || r.getSum() == null || r.getCount() == null || r.getCount() == 0) {
-		    averageRating = 0.0;
+			averageRating = 0.0;
 		} else {
-		    averageRating = r.getSum().doubleValue() / r.getCount();
+			averageRating = r.getSum().doubleValue() / r.getCount();
 		}
-		
+
 		// 오늘 매출 가져오기
 		Integer totalPrice = this.storeService.getTodayOrderTotalByStore(menuStore.getStore_id());
-		if(totalPrice == null) {
+		if (totalPrice == null) {
 			totalPrice = 0;
 		}
-		
+
 		mav.addObject("todayOrder", todayOrder);
 		mav.addObject("menuCount", menuCount);
 		mav.addObject("averageRating", averageRating);
@@ -268,45 +267,93 @@ public class StoreController {
 
 	@PostMapping(value = "/store/delete")
 	public ModelAndView deleteStore(String store_id, HttpSession session) {
-		// store_id로 스토어 정보 조회
-		Store store = this.storeService.getStore(store_id);
+	    // store_id로 스토어 정보 조회
+	    Store store = this.storeService.getStore(store_id);
 
-		if (store != null) {
-			// 이미지가 있다면 삭제
-			if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
-				ServletContext ctx = session.getServletContext();
-				String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
-				File file = new File(filePath);
-				if (file.exists()) {
-					file.delete();
-				}
-			}
+	    if (store != null) {
+	        System.out.println("===== 가게 삭제 프로세스 시작: " + store_id + " =====");
 
-			// 1. 옵션 삭제
-			this.storeService.deleteOptionsByStoreId(store_id);
-			// 2. 옵션 그룹 삭제
-			this.storeService.deleteOptionGroupsByStoreId(store_id);
-			// 3. 메뉴 아이템 삭제
-			this.storeService.deleteMenuItemByStoreId(store_id);
-			// 4. 메뉴 카테고리 삭제
-			this.storeService.deleteMenuCategoryByStoreId(store_id);
-			// 5. 리뷰 삭제
-			this.storeService.deleteReviewsByStoreId(store_id);
-			// 6. 주문 상세 삭제
-			this.storeService.deleteOrderDetailsByStoreId(store_id);
-			// 7. 사용한 쿠폰 삭제
-			this.storeService.deleteUsedCouponsByStoreId(store_id);
-			// 8. 사용자 쿠폰 삭제
-			this.storeService.deleteUserCouponsByStoreId(store_id);
-			// 9. 사업자 쿠폰 삭제
-			this.storeService.deleteOwnerCouponsByStoreId(store_id);
-			// 10. 즐겨찾기 삭제
-			this.storeService.deleteBookmarksByStoreId(store_id);
-			// 11. 가게 정보 삭제
-			this.storeService.deleteStoreByStoreId(store);
-		}
+	        // 이미지가 있다면 삭제
+	        if (store.getStore_image_name() != null && !store.getStore_image_name().isEmpty()) {
+	            System.out.println("가게 이미지 파일 삭제 시작");
+	            ServletContext ctx = session.getServletContext();
+	            String filePath = ctx.getRealPath("/upload/storeProfile/" + store.getStore_image_name());
+	            File file = new File(filePath);
+	            if (file.exists()) {
+	                file.delete();
+	            }
+	        }
 
-		return new ModelAndView("redirect:../store/storeList");
+	        // 1. 댓글 답변 삭제
+	        System.out.println("1. 댓글 답변 삭제");
+	        this.storeService.deleteReplyByStoreId(store_id);
+
+	        // 2. 댓글 삭제
+	        System.out.println("2. 댓글 삭제");
+	        this.storeService.deleteReviewsByStoreId(store_id);
+
+	        // 주문의 쿠폰 참조 제거 (가장 먼저 수행)
+	        System.out.println("주문의 쿠폰 참조 제거");
+	        this.storeService.clearOrderCouponReferences(store_id);
+
+	        // 3. 주문 메뉴 옵션 수량 삭제
+	        System.out.println("3. 주문 메뉴 옵션 수량 삭제");
+	        this.storeService.deleteOrderQuantitiesByStoreId(store_id);
+
+	        // 4. 주문 메뉴 옵션 삭제
+	        System.out.println("4. 주문 메뉴 옵션 삭제");
+	        this.storeService.deleteOrderOptionsByStoreId(store_id);
+
+	        // 5. 주문 상세 삭제
+	        System.out.println("5. 주문 상세 삭제");
+	        this.storeService.deleteOrderDetailsByStoreId(store_id);
+
+	        // 6. 주문 삭제
+	        System.out.println("6. 주문 삭제");
+	        this.storeService.deleteOrdersByStoreId(store_id);
+
+	        // 7. 사용된 쿠폰 삭제
+	        System.out.println("7. 사용된 쿠폰 삭제");
+	        this.storeService.deleteUsedCouponsByStoreId(store_id);
+
+	        // 8. 사용자 쿠폰 삭제
+	        System.out.println("8. 사용자 쿠폰 삭제");
+	        this.storeService.deleteUserCouponsByStoreId(store_id);
+
+	        // 9. 가게 쿠폰 삭제
+	        System.out.println("9. 가게 쿠폰 삭제");
+	        this.storeService.deleteStoreCouponsByStoreId(store_id);
+
+	        // 10. 옵션 삭제
+	        System.out.println("10. 옵션 삭제");
+	        this.storeService.deleteOptionsByStoreId(store_id);
+
+	        // 11. 옵션 그룹 삭제
+	        System.out.println("11. 옵션 그룹 삭제");
+	        this.storeService.deleteOptionGroupsByStoreId(store_id);
+
+	        // 12. 즐겨찾기 가게 삭제
+	        System.out.println("12. 즐겨찾기 가게 삭제");
+	        this.storeService.deleteBookmarksByStoreId(store_id);
+
+	        // 13. 가게 메뉴 삭제
+	        System.out.println("13. 가게 메뉴 삭제");
+	        this.storeService.deleteMenuItemByStoreId(store_id);
+
+	        // 14. 가게 메뉴 카테고리 삭제
+	        System.out.println("14. 가게 메뉴 카테고리 삭제");
+	        this.storeService.deleteMenuCategoryByStoreId(store_id);
+
+	        // 15. 가게 정보 삭제
+	        System.out.println("15. 가게 정보 삭제");
+	        this.storeService.deleteStoreByStoreId(store);
+
+	        System.out.println("===== 가게 삭제 프로세스 완료: " + store_id + " =====");
+	    } else {
+	        System.out.println("삭제할 가게 정보를 찾을 수 없음: " + store_id);
+	    }
+
+	    return new ModelAndView("redirect:../store/storeList");
 	}
 
 	@PostMapping(value = "/store/categoryRegister")

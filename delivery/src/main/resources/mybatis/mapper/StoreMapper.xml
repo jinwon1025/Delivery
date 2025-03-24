@@ -99,14 +99,10 @@
 	<delete id="deleteUsedCouponsByStoreId" parameterType="String">
 		DELETE
 		FROM b_used_coupon_tbl
-		WHERE USED_CP_ID IN (
-		SELECT USER_CP_ID FROM
-		b_user_coupon_tbl
-		WHERE OWNER_COUPON_ID IN (
-		SELECT OWNER_COUPON_ID FROM
-		b_owner_coupon_tbl
-		WHERE STORE_ID = #{store_id}
-		)
+		WHERE STORE_COUPON_ID IN (
+		SELECT STORE_COUPON_ID
+		FROM b_store_coupon_tbl
+		WHERE STORE_ID = #{storeId}
 		)
 
 	</delete>
@@ -115,10 +111,10 @@
 	<delete id="deleteUserCouponsByStoreId" parameterType="String">
 		DELETE
 		FROM b_user_coupon_tbl
-		WHERE owner_coupon_id IN (
-		SELECT owner_coupon_id
-		FROM b_owner_coupon_tbl
-		WHERE store_id = #{store_id}
+		WHERE STORE_COUPON_ID IN (
+		SELECT STORE_COUPON_ID
+		FROM b_store_coupon_tbl
+		WHERE STORE_ID = #{storeId}
 		)
 	</delete>
 
@@ -477,6 +473,65 @@
 		s.store_name
 	</select>
 
+	<delete id="deleteReplyByStoreId" parameterType="String">
+
+		delete from
+		b_reply_tbl where store_id = #{store_id}
+
+	</delete>
+
+	<delete id="deleteStoreCouponsByStoreId" parameterType="String">
+		DELETE
+		FROM b_store_coupon_tbl
+		WHERE STORE_ID = #{storeId}
+	</delete>
+
+	<delete id="deleteOrderQuantitiesByStoreId"
+		parameterType="String">
+		DELETE FROM order_quantity_tbl
+		WHERE order_id IN (
+		SELECT
+		order_id
+		FROM b_order_detail_tbl
+		WHERE STORE_ID = #{storeId}
+		)
+	</delete>
+
+	<delete id="deleteOrderOptionsByStoreId" parameterType="String">
+		DELETE
+		FROM order_option_tbl
+		WHERE menu_item_id IN (
+		SELECT menu_item_id
+		FROM
+		b_menu_item_tbl
+		WHERE STORE_ID = #{storeId}
+		)
+	</delete>
+
+
+
+	<delete id="deleteOrdersByStoreId" parameterType="String">
+		DELETE FROM b_order_tbl
+		WHERE ORDER_ID IN (
+		SELECT ORDER_ID
+		FROM b_order_detail_tbl
+		WHERE STORE_ID = #{storeId}
+		)
+	</delete>
 	
+	<update id="clearOrderCouponReferences" parameterType="String">
+    UPDATE b_order_tbl
+    SET USER_CP_ID = NULL
+    WHERE ORDER_ID IN (
+        SELECT ORDER_ID
+        FROM b_order_detail_tbl
+        WHERE STORE_ID = #{storeId}
+    )
+</update>
+
+
+
+
+
 
 </mapper>

@@ -212,5 +212,28 @@ public class StoreService {
 		return this.storeMapper.getStoreStatus(owner_id);
 	}
 	
+	public void deleteReplyByStoreId(String store_id) {
+		this.storeMapper.deleteReplyByStoreId(store_id);
+	}
+	
+	public void deleteStoreCouponsByStoreId(String store_id) {
+		this.storeMapper.deleteStoreCouponsByStoreId(store_id);
+	}
+	
+	public void deleteOrderQuantitiesByStoreId(String store_id) {
+		this.storeMapper.deleteOrderQuantitiesByStoreId(store_id);
+	}
+	
+	public void deleteOrderOptionsByStoreId(String store_id) {
+		this.storeMapper.deleteOrderOptionsByStoreId(store_id);
+	}
+	
+	public void deleteOrdersByStoreId(String store_id) {
+		this.storeMapper.deleteOrdersByStoreId(store_id);
+	}
+	
+	public void clearOrderCouponReferences(String storeId) {
+	    this.storeMapper.clearOrderCouponReferences(storeId);
+	}
 
 }
