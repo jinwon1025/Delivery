@@ -384,195 +384,95 @@
                 </div>
             </div>
             <div class="delivery-info">
-<<<<<<< HEAD
-			    <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${orderCart.estimated_delivery_time}</span>분</span>
-			</div>
-=======
-                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${delivery_time}</span>
+                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${delivery_time}</span>분</span>
             </div>
->>>>>>> refs/remotes/origin/master
-        </div>
-
+            
         <!-- 버튼 영역 -->
         <div class="action-buttons">
             <a href="/user/index" class="btn btn-continue">쇼핑 계속하기</a>
             <a href="/userstore/orderDetail?orderId=${orderCart.order_id}" class="btn btn-outline">주문 내역 보기</a>
         </div>
-    </div>
+    </div><!-- 전체 컨테이너 닫기 -->
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-    $(document).ready(function() {
-        // 디버깅용 초기 로그
+<script>
+    $(document).ready(function () {
         console.log("주문 완료 페이지 스크립트 시작");
-        
-        // 주문 ID와 초기 상태 설정
+
         const orderId = $('#order-id').text().trim();
         let currentStatus = 0;
-        
-        // 초기 배달 시간 값 확인 및 출력
-        let initialTime = $('#deliveryTimeCounter').text().trim();
-        console.log("초기 배달 시간 값:", initialTime);
-        
-        // 초기값이 없거나 "null"인 경우 기본값 설정
-        if (!initialTime || initialTime === "" || initialTime === "null") {
-            console.log("초기 배달 시간이 없어서 기본값 설정");
-            $('#deliveryTimeCounter').text("30");
-            initialTime = "30";
-        }
-        
-        // 초기 상태를 확실히 설정
+        let initialDeliveryTime = $('#deliveryTimeCounter').text().trim() || "30";
+
         setActiveState(0);
-        
-        // 초기 상태 업데이트
         updateOrderStatus();
-        
-        // 주기적으로 주문 상태 확인 (2초마다)
         const statusInterval = setInterval(updateOrderStatus, 2000);
-        
-        // 주문 상태 확인 및 업데이트 함수
-<<<<<<< HEAD
-       function updateOrderStatus() {
-    console.log("Checking order status for ID:", orderId);
-    
-    $.ajax({
-        url: '/user/getOrderStatus',
-        type: 'GET',
-        data: { orderId: orderId },
-        success: function(response) {
-            console.log("전체 응답 데이터:", JSON.stringify(response));
-=======
+
         function updateOrderStatus() {
-            console.log("주문 ID 확인:", orderId);
->>>>>>> refs/remotes/origin/master
-            
-<<<<<<< HEAD
-            if (response && response.status !== undefined) {
-                const newStatus = parseInt(response.status);
-                console.log("상태:", newStatus, "현재 상태:", currentStatus);
-                
-                // 배달 시간 정보 확인 및 업데이트
-                if (response.deliveryTime && response.deliveryTime > 0) {
-                    $('#deliveryTimeCounter').text(response.deliveryTime);
-=======
+            console.log("주문 상태 확인 요청, 주문 ID:", orderId);
+
             $.ajax({
                 url: '/user/getOrderStatus',
                 type: 'GET',
                 data: { orderId: orderId },
-                dataType: 'json', // JSON 데이터 타입 명시
-                success: function(response) {
-                    // 전체 응답 데이터 로깅
-                    console.log("전체 응답 데이터:", JSON.stringify(response));
-                    
-                    // 상세한 로깅 추가
-                    if (response) {
-                        console.log("상태:", response.status);
-                        console.log("배달 시간:", response.deliveryTime);
-                        console.log("배달 시간 타입:", typeof response.deliveryTime);
+                dataType: 'json',
+                success: function (response) {
+                    console.log("응답 데이터:", JSON.stringify(response));
+
+                    if (!response || response.status === undefined) {
+                        console.warn("유효하지 않은 응답");
+                        return;
                     }
-                    
-                    if (response && response.status !== undefined) {
-                        const newStatus = parseInt(response.status);
-                        console.log("상태:", newStatus, "현재 상태:", currentStatus);
-                        
-                        let uiNeedsUpdate = false;
-                        
-                        // 배달 시간 정보가 있으면 업데이트
-                        if (response.deliveryTime !== undefined) {
-                            console.log("배달 시간 데이터 타입:", typeof response.deliveryTime);
-                            console.log("배달 시간 값:", response.deliveryTime);
-                            
-                            // 배달 시간 값 안전하게 변환
-                            const deliveryTime = response.deliveryTime !== null 
-                                ? String(response.deliveryTime) 
-                                : "30";
-                            
-                            // 기존 시간과 다르면 업데이트
-                            const oldDeliveryTime = $('#deliveryTimeCounter').text().trim();
-                            if (oldDeliveryTime !== deliveryTime) {
-                                console.log("배달 시간 업데이트:", deliveryTime);
-                                $('#deliveryTimeCounter').text(deliveryTime);
-                                uiNeedsUpdate = true;
-                            }
-                        } else {
-                            console.log("응답에 배달 시간 정보가 없습니다.");
-                        }
-                        
-                        // 상태가 변경되었거나 배달 시간이 변경된 경우 UI 업데이트
-                        if (newStatus !== currentStatus) {
-                            currentStatus = newStatus;
-                            uiNeedsUpdate = true;
-                        }
-                        
-                        if (uiNeedsUpdate) {
-                            updateUI(currentStatus);
-                        }
-                        
-                        // 주문이 취소되거나 배달이 완료된 경우 interval 중지
-                        if (newStatus === 4 || newStatus === 5) {
-                            clearInterval(statusInterval);
-                        }
-                    } else {
-                        console.log("유효한 응답 데이터가 없습니다.");
+
+                    const newStatus = parseInt(response.status);
+                    const newDeliveryTime = response.deliveryTime ? String(response.deliveryTime) : "30";
+
+                    if (newDeliveryTime !== initialDeliveryTime) {
+                        console.log("배달 시간 업데이트:", newDeliveryTime);
+                        $('#deliveryTimeCounter').text(newDeliveryTime);
+                        initialDeliveryTime = newDeliveryTime;
+                    }
+
+                    if (newStatus !== currentStatus) {
+                        console.log("상태 변경 감지:", currentStatus, "→", newStatus);
+                        currentStatus = newStatus;
+                        updateUI(currentStatus);
+                    }
+
+                    if (newStatus === 4 || newStatus === 5) {
+                        clearInterval(statusInterval);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("주문 상태 조회 오류:", error);
-                    console.error("응답 상태:", status);
-                    console.error("응답 텍스트:", xhr.responseText);
->>>>>>> refs/remotes/origin/master
+                    console.error("응답 상태:", status, "응답 텍스트:", xhr.responseText);
                 }
             });
         }
-        
-        // 스텝을 활성화하는 함수
+
         function setActiveState(maxStep) {
-            // 모든 스텝 초기화
             for (let i = 0; i <= 4; i++) {
-                const step = document.getElementById('step' + i);
-                step.style.backgroundColor = 'white';
-                step.style.borderColor = '#dee2e6';
-                $(step).removeClass('active');
-                $(step).empty(); // 체크표시 제거
-                
-                // 라벨 다시 추가
-                const label = document.createElement('div');
-                label.className = 'track-label';
-                
-                // 각 단계별 라벨 텍스트 설정
+                const step = $('#step' + i);
+                step.removeClass('active').css({ backgroundColor: 'white', borderColor: '#dee2e6' }).empty();
+
                 const labelTexts = ['주문 완료', '접수 완료', '준비 시작', '배달 시작', '배달 완료'];
-                label.textContent = labelTexts[i];
-                
-                step.appendChild(label);
+                step.append('<div class="track-label">' + labelTexts[i] + '</div>');
             }
-            
-            // 활성화된 스텝 설정 (0부터 maxStep까지)
+
             for (let i = 0; i <= Math.min(maxStep, 4); i++) {
-                const step = document.getElementById('step' + i);
-                step.style.backgroundColor = '#FFD700';
-                step.style.borderColor = '#FFD700';
-                $(step).addClass('active');
-                
-                // 체크 표시 추가 (하나만 추가되도록)
-                if ($(step).find('.check-mark').length === 0) {
-                    const checkMark = document.createElement('span');
-                    checkMark.className = 'check-mark';
-                    checkMark.textContent = '✓';
-                    
-                    // 라벨 요소를 먼저 찾고 그 앞에 체크마크 추가
-                    const label = $(step).find('.track-label')[0];
-                    step.insertBefore(checkMark, label);
+                const step = $('#step' + i);
+                step.addClass('active').css({ backgroundColor: '#FFD700', borderColor: '#FFD700' });
+
+                if (step.find('.check-mark').length === 0) {
+                    step.prepend('<span class="check-mark">✓</span>');
                 }
             }
         }
-        
-        // UI 업데이트 함수
+
         function updateUI(status) {
-            console.log("UI 업데이트 시작, 상태:", status);
-            
-            // 상태 텍스트 업데이트
+            console.log("UI 업데이트, 상태:", status);
+
             const statusTextMap = {
                 0: "접수 대기 중입니다.",
                 1: "매장에서 주문을 접수했습니다.",
@@ -581,7 +481,7 @@
                 4: "배달이 완료되었습니다. 맛있게 드세요!",
                 5: "주문이 취소되었습니다."
             };
-            
+
             const statusBadgeMap = {
                 0: { text: "주문 완료", class: "bg-warning" },
                 1: { text: "접수 완료", class: "bg-info" },
@@ -590,60 +490,33 @@
                 4: { text: "배달 완료", class: "bg-success" },
                 5: { text: "주문 취소", class: "bg-danger" }
             };
-           
-            // 배달 트래커 막대 업데이트
+
             const progressWidth = status === 5 ? 0 : Math.min(status, 4) * 25;
-            console.log("진행 막대 너비:", progressWidth + '%');
-            
-            // CSS 변수 설정
             $('#delivery-track').css('--progress', progressWidth + '%');
-            
-            // 스텝 표시 업데이트 - 직접 적용
-            if (status === 5) {
-                // 취소인 경우 첫 번째 단계만 활성화
-                setActiveState(0);
-            } else {
-                // 취소가 아닌 경우 해당 단계까지 활성화
-                setActiveState(status);
-            }
-            
-            // 상태 텍스트 업데이트
+
+            setActiveState(status === 5 ? 0 : status);
             $('#status-text').text(statusTextMap[status]);
-            
-            // 상태 배지 업데이트
+
             const badgeInfo = statusBadgeMap[status];
-            const $statusBadge = $('#status-badge');
-            $statusBadge.text(badgeInfo.text);
-            $statusBadge.removeClass();
-            $statusBadge.addClass('status-badge ' + badgeInfo.class);
-            
-            // 배달 완료 또는 취소일 때 배지 애니메이션 제거
-            if (status === 4 || status === 5) {
-                $statusBadge.removeClass('pulse');
-            } else {
-                $statusBadge.addClass('pulse');
-            }
-            
-            // 예상 배달 시간 업데이트
-            let deliveryTimeText = $('#deliveryTimeCounter').text().trim();
-            if (!deliveryTimeText || deliveryTimeText === "") {
-                deliveryTimeText = "30"; // 기본값
-                $('#deliveryTimeCounter').text(deliveryTimeText);
-            }
-            
+            $('#status-badge').text(badgeInfo.text).removeClass().addClass('status-badge ' + badgeInfo.class);
+
+            $('#status-badge').toggleClass('pulse', status !== 4 && status !== 5);
+
+            // 여기 부분이 변경됨
             if (status === 3) {
-                $('#delivery-estimate').text(`배달 중입니다. 예상 도착 시간: 약 ${deliveryTimeText}분 이내`);
+                $('#delivery-estimate-text').html(`배달 중입니다. 예상 도착 시간: 약 <span id="deliveryTimeCounter">${initialDeliveryTime}</span>분 이내`);
             } else if (status === 4) {
-                $('#delivery-estimate').text('배달이 완료되었습니다.');
+                $('#delivery-estimate-text').text('배달이 완료되었습니다.');
             } else if (status === 5) {
-                $('#delivery-estimate').text('주문이 취소되었습니다.');
+                $('#delivery-estimate-text').text('주문이 취소되었습니다.');
             } else {
-                $('#delivery-estimate').text(`배달 예상 시간: 약 ${deliveryTimeText}분`);
+                $('#delivery-estimate-text').html(`배달 예상 시간: 약 <span id="deliveryTimeCounter">${initialDeliveryTime}</span>분`);
             }
-            
+
             console.log("UI 업데이트 완료");
         }
     });
-    </script>
+</script>
+
 </body>
-</html> 
+</html>

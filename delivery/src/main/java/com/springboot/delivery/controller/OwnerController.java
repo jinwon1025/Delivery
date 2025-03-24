@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -328,28 +329,41 @@ public class OwnerController {
 
 	@PostMapping(value="/owner/updateOrderStatus")
 	@ResponseBody
-	public String updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
+	public Map<String, Object> updateOrderStatus(@RequestParam String orderId, @RequestParam int status) {
+	    Map<String, Object> result = new HashMap<>();
+	    
 	    try {
+	        // 주문 상태 업데이트
 	        ownerSerivce.updateOrderStatus(orderId, status);
+	        
+	        // 배달 시간 조회 (이미 저장된)
+	        Integer deliveryTime = this.ownerSerivce.getEstimatedDeliveryTime(orderId);
+	        
 	        System.out.println("=================updatePoint============");
 	        if(status == 5) {
-	        	String user_id = this.ownerSerivce.getUserId(orderId);
-		        Integer totalprice = this.ownerSerivce.getTotalPrice(orderId); //주문 가격
-		        double pointRate = this.adminService.getpointRate(); //할인률
-		        Integer point = (int)(totalprice * pointRate); //적립된 포인트
-	        	Integer totalPoint = this.userStoreService.getPoint(user_id); //고객의 현재 포인트
-	        	Integer usedPoint = this.ownerSerivce.getUsedPoint(orderId); // 고객이 주문할때 사용한 포인트
-	        	Integer userPoint = totalPoint - point + usedPoint;
-	        	User user = new User();
-	        	user.setPoint(userPoint);
-	        	user.setUser_id(user_id);
-	        	this.userStoreService.updatePoint(user);
-	        	
+	            String user_id = this.ownerSerivce.getUserId(orderId);
+	            Integer totalprice = this.ownerSerivce.getTotalPrice(orderId); //주문 가격
+	            double pointRate = this.adminService.getpointRate(); //할인률
+	            Integer point = (int)(totalprice * pointRate); //적립된 포인트
+	            Integer totalPoint = this.userStoreService.getPoint(user_id); //고객의 현재 포인트
+	            Integer usedPoint = this.ownerSerivce.getUsedPoint(orderId); // 고객이 주문할때 사용한 포인트
+	            Integer userPoint = totalPoint - point + usedPoint;
+	            User user = new User();
+	            user.setPoint(userPoint);
+	            user.setUser_id(user_id);
+	            this.userStoreService.updatePoint(user);
 	        }
-	        return "success";
+	        
+	        // 성공 응답에 배달 시간도 함께 포함
+	        result.put("status", "success");
+	        result.put("deliveryTime", deliveryTime);
+	        return result;
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return "error";
+	        result.put("status", "error");
+	        result.put("message", e.getMessage());
+	        return result;
 	    }
 	}
 	
