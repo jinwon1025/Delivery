@@ -384,8 +384,8 @@
                 </div>
             </div>
             <div class="delivery-info">
-                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${orderCart.estimated_delivery_time}</span>분</span>
-            </div>
+			    <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${orderCart.estimated_delivery_time}</span>분</span>
+			</div>
         </div>
 
         <!-- 버튼 영역 -->
@@ -422,7 +422,7 @@
         const statusInterval = setInterval(updateOrderStatus, 2000);
         
         // 주문 상태 확인 및 업데이트 함수
-        function updateOrderStatus() {
+       function updateOrderStatus() {
     console.log("Checking order status for ID:", orderId);
     
     $.ajax({
@@ -436,20 +436,9 @@
                 const newStatus = parseInt(response.status);
                 console.log("상태:", newStatus, "현재 상태:", currentStatus);
                 
-                // 배달 시간 정보가 있으면 업데이트
-                if (response.deliveryTime !== undefined) {
-                    console.log("배달 시간 데이터 타입:", typeof response.deliveryTime);
-                    console.log("배달 시간 값:", response.deliveryTime);
-                    
-                    if (response.deliveryTime && response.deliveryTime > 0) {
-                        console.log("배달 시간을 업데이트합니다:", response.deliveryTime);
-                        $('#deliveryTimeCounter').text(response.deliveryTime);
-                        console.log("업데이트 후 요소 텍스트:", $('#deliveryTimeCounter').text());
-                    } else {
-                        console.log("배달 시간이 없거나 0 이하입니다:", response.deliveryTime);
-                    }
-                } else {
-                    console.log("응답에 배달 시간 정보가 없습니다.");
+                // 배달 시간 정보 확인 및 업데이트
+                if (response.deliveryTime && response.deliveryTime > 0) {
+                    $('#deliveryTimeCounter').text(response.deliveryTime);
                 }
                 
                 // 상태가 변경된 경우에만 UI 업데이트

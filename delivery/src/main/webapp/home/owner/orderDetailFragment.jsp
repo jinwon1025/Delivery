@@ -166,3 +166,31 @@
     </div>
 </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('#saveDeliveryTime').click(function() {
+        var orderId = '${orderInfo.ORDER_ID}';
+        var deliveryTime = $('#estimatedDeliveryTime').val();
+        
+        $.ajax({
+            url: '/owner/saveDeliveryTime',
+            type: 'POST',
+            data: {
+                orderId: orderId,
+                deliveryTime: deliveryTime
+            },
+            success: function(response) {
+                if(response === 'success') {
+                    alert('배달 시간이 저장되었습니다.');
+                    $('#deliveryTimeModal').modal('hide');
+                } else {
+                    alert('배달 시간 저장에 실패했습니다.');
+                }
+            },
+            error: function() {
+                alert('서버 통신 중 오류가 발생했습니다.');
+            }
+        });
+    });
+});
+</script>

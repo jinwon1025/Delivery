@@ -440,9 +440,9 @@ ORDER BY
 
 	<!-- 배달 시간 조회 -->
 	<select id="getEstimatedDeliveryTime" parameterType="string" resultType="Integer">
-	    SELECT ESTIMATED_DELIVERY_TIME 
+	    SELECT ESTIMATED_DELIVERY_TIME	 
 	    FROM b_order_detail_tbl 
-	    WHERE ORDER_ID = #{orderId}
+	    WHERE ORDER_ID = #{order_id}
 	</select>
 	
 	<!-- 배달 시간 저장 -->

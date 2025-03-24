@@ -607,7 +607,7 @@ public class UserController {
 	        Integer status = userService.getOrderStatus(orderId);
 	        System.out.println("주문 ID: " + orderId + ", 상태: " + status); // 디버깅용
 	        
-	        // 예상 배달 시간 조회 - 이 부분 추가!
+	        // 예상 배달 시간 조회
 	        Integer deliveryTime = ownerService.getEstimatedDeliveryTime(orderId);
 	        System.out.println("주문 ID: " + orderId + ", 예상 배달 시간: " + deliveryTime); // 디버깅용
 	        

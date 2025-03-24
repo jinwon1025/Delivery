@@ -675,7 +675,6 @@ public class UserStoreController {
 	            orderWithAddress.setOrder_status(1); // 주문완료 처리
 	            orderWithAddress.setPayment_method(paymentDisplay);
 	            orderWithAddress.setDiscount_amount(discountAmount); 
-	            orderWithAddress.setEstimated_delivery_time(deliveryTime);
 	            // 수정된 객체로 결제 정보 저장
 	            this.userStoreService.insertPay(orderWithAddress);
 	            
@@ -691,7 +690,6 @@ public class UserStoreController {
 	            oc.setOrder_status(1);
 	            oc.setPayment_method(paymentDisplay);
 	            oc.setDiscount_amount(discountAmount);
-	            oc.setEstimated_delivery_time(deliveryTime);
 	            // 현금 결제 시 주소 정보를 추가
 	            CartUser cartUser = this.userStoreService.cartUserData(loginUser.getUser_id());
 	            if (cartUser != null) {
