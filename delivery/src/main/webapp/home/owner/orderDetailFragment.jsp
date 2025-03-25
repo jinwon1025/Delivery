@@ -17,7 +17,7 @@
                 </tr>
                 <tr>
                     <th>주문 상태</th>
-                    <td>
+                    <td class="order-status-value" data-status="${orderInfo.ORDER_STATUS}">
                         <c:choose>
                             <c:when test="${orderInfo.ORDER_STATUS == 0}">
                                 <span class="badge bg-warning">접수 대기</span>

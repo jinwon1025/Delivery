@@ -97,8 +97,157 @@
         font-size: 12px;
     }
     
-    .mr-3 {
+    .gm-mr-3 {
         margin-right: 1rem;
+    }
+
+    /* 부트스트랩과 충돌할 수 있는 클래스에 gm- 접두사 추가 */
+    .gm-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .gm-col-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .gm-container {
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        max-width: 1140px;
+    }
+
+    .gm-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: 0.25rem;
+    }
+
+    .gm-card-title {
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+
+    .gm-text-center {
+        text-align: center;
+    }
+
+    .gm-text-primary {
+        color: #4e73df;
+    }
+
+    .gm-text-muted {
+        color: #6c757d;
+    }
+
+    .gm-text-sm {
+        font-size: 0.875rem;
+    }
+
+    .gm-p-4 {
+        padding: 1.5rem;
+    }
+
+    .gm-mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .gm-mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .gm-mt-2 {
+        margin-top: 0.5rem;
+    }
+
+    .gm-mt-4 {
+        margin-top: 1.5rem;
+    }
+
+    .gm-h-100 {
+        height: 100%;
+    }
+
+    .gm-btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .gm-btn-white {
+        color: #212529;
+        background-color: #fff;
+        border-color: #fff;
+    }
+
+    .gm-btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+
+    .gm-btn-primary {
+        color: #fff;
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+
+    .gm-d-flex {
+        display: flex;
+    }
+
+    .gm-justify-content-between {
+        justify-content: space-between;
+    }
+
+    .gm-align-items-center {
+        align-items: center;
+    }
+
+    .gm-text-white {
+        color: #fff;
+    }
+
+    .gm-bg-gradient-gold {
+        background: linear-gradient(135deg, #d4af37 0%, #f2c94c 100%);
+    }
+
+    .gm-p-4 {
+        padding: 1.5rem;
+    }
+
+    .gm-opacity-90 {
+        opacity: 0.9;
+    }
+
+    .gm-font-bold {
+        font-weight: 700;
     }
 </style>
 </head>
@@ -134,7 +283,7 @@
                         </a>
                     </c:when>
                     <c:otherwise>
-                        <a href="<c:url value='/owner/goLogin'/>" class="btn btn-sm btn-primary">로그인</a>
+                        <a href="<c:url value='/owner/goLogin'/>" class="gm-btn gm-btn-sm gm-btn-primary">로그인</a>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -142,15 +291,15 @@
     </header>
 
     <!-- 현재 관리 중인 가게 정보 -->
-    <div class="store-banner bg-gradient-gold text-white p-4 mb-4">
-        <div class="container d-flex justify-content-between align-items-center">
+    <div class="gm-bg-gradient-gold gm-text-white gm-p-4 gm-mb-4">
+        <div class="gm-container gm-d-flex gm-justify-content-between gm-align-items-center">
             <div>
-                <h1 class="font-bold">${sessionScope.currentStore.store_name}</h1>
-                <p class="text-sm opacity-90">${sessionScope.currentStore.store_id}</p>
+                <h1 class="gm-font-bold">${sessionScope.currentStore.store_name}</h1>
+                <p class="gm-text-sm gm-opacity-90">${sessionScope.currentStore.store_id}</p>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="gm-d-flex gm-align-items-center">
                 <!-- 영업 상태 토글 스위치 -->
-                <div class="store-status-toggle mr-3">
+                <div class="store-status-toggle gm-mr-3">
                     <span class="status-label mr-2">영업 상태:</span>
                     <div class="toggle-switch">
                         <input type="checkbox" id="storeStatusToggle" 
@@ -163,7 +312,7 @@
                         </label>
                     </div>
                 </div>
-                <a href="<c:url value='/store/storeList'/>" class="btn btn-white">
+                <a href="<c:url value='/store/storeList'/>" class="gm-btn gm-btn-white">
                     <i class="fas fa-store mr-1"></i> 다른 가게 선택
                 </a>
             </div>
@@ -171,7 +320,7 @@
     </div>
 
     <!-- 네비게이션 -->
-    <nav class="store-nav mb-4">
+    <nav class="store-nav gm-mb-4">
         <div class="nav-container">
             <div class="nav-menu">
                 <a href="<c:url value='/store/menuManager'/>" class="nav-item ${fn:contains(pageContext.request.requestURI, 'menu') ? 'active' : ''}">
@@ -246,44 +395,44 @@
                     <div class="dashboard-section">
                         <h2 class="section-title">빠른 메뉴</h2>
 
-                        <div class="row mt-4">
-                            <div class="col-3">
-                                <a href="<c:url value='/store/menuManager'/>" class="card text-center p-4 h-100">
-                                    <div class="text-primary mb-3">
+                        <div class="gm-row gm-mt-4">
+                            <div class="gm-col-3">
+                                <a href="<c:url value='/store/menuManager'/>" class="gm-card gm-text-center gm-p-4 gm-h-100">
+                                    <div class="gm-text-primary gm-mb-3">
                                         <i class="fas fa-utensils" style="font-size: 3rem;"></i>
                                     </div>
-                                    <h3 class="card-title">메뉴 관리</h3>
-                                    <p class="text-sm text-muted mt-2">메뉴와 옵션을 관리합니다</p>
+                                    <h3 class="gm-card-title">메뉴 관리</h3>
+                                    <p class="gm-text-sm gm-text-muted gm-mt-2">메뉴와 옵션을 관리합니다</p>
                                 </a>
                             </div>
 
-                            <div class="col-3">
-                                <a href="#" class="card text-center p-4 h-100">
-                                    <div class="text-primary mb-3">
+                            <div class="gm-col-3">
+                                <a href="#" class="gm-card gm-text-center gm-p-4 gm-h-100">
+                                    <div class="gm-text-primary gm-mb-3">
                                         <i class="fas fa-clipboard-list" style="font-size: 3rem;"></i>
                                     </div>
-                                    <h3 class="card-title">주문 목록</h3>
-                                    <p class="text-sm text-muted mt-2">들어온 주문을 확인합니다</p>
+                                    <h3 class="gm-card-title">주문 목록</h3>
+                                    <p class="gm-text-sm gm-text-muted gm-mt-2">들어온 주문을 확인합니다</p>
                                 </a>
                             </div>
 
-                            <div class="col-3">
-                                <a href="<c:url value='/store/goStoreModify'/>" class="card text-center p-4 h-100">
-                                    <div class="text-primary mb-3">
+                            <div class="gm-col-3">
+                                <a href="<c:url value='/store/goStoreModify'/>" class="gm-card gm-text-center gm-p-4 gm-h-100">
+                                    <div class="gm-text-primary gm-mb-3">
                                         <i class="fas fa-edit" style="font-size: 3rem;"></i>
                                     </div>
-                                    <h3 class="card-title">가게 정보</h3>
-                                    <p class="text-sm text-muted mt-2">가게 정보를 수정합니다</p>
+                                    <h3 class="gm-card-title">가게 정보</h3>
+                                    <p class="gm-text-sm gm-text-muted gm-mt-2">가게 정보를 수정합니다</p>
                                 </a>
                             </div>
 
-                            <div class="col-3">
-                                <a href="#" class="card text-center p-4 h-100">
-                                    <div class="text-primary mb-3">
+                            <div class="gm-col-3">
+                                <a href="#" class="gm-card gm-text-center gm-p-4 gm-h-100">
+                                    <div class="gm-text-primary gm-mb-3">
                                         <i class="fas fa-chart-line" style="font-size: 3rem;"></i>
                                     </div>
-                                    <h3 class="card-title">매출 통계</h3>
-                                    <p class="text-sm text-muted mt-2">매출 통계를 확인합니다</p>
+                                    <h3 class="gm-card-title">매출 통계</h3>
+                                    <p class="gm-text-sm gm-text-muted gm-mt-2">매출 통계를 확인합니다</p>
                                 </a>
                             </div>
                         </div>

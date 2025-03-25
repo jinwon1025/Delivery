@@ -9,6 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>주문 목록 관리 - 금베달리스트 사업자</title>	
     
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 공통 CSS 파일 -->
     <link rel="stylesheet" href="<c:url value='/css/common/reset.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/common/typography.css'/>">
@@ -20,8 +28,7 @@
     <link rel="stylesheet" href="<c:url value='/css/store/store-components.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/store/store-pages.css'/>">
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -29,11 +36,6 @@
     <!-- Google Fonts - Noto Sans KR -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
     
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- 실시간 업데이트 시각 효과를 위한 스타일 -->
     <style>
@@ -261,8 +263,13 @@
 
 <script>
 // 페이지 로드 완료 후 실행
+// 페이지 로드 완료 후 실행
 $(document).ready(function() {
     console.log("스크립트 로드 완료");
+    
+    // 필터링 상태를 저장할 변수들
+    var currentStoreFilter = 'all';
+    var currentStatusFilter = 'all';
     
     // 즉시 한 번 테스트 실행 (1초 기다리지 않고)
     getOrderList();
@@ -348,6 +355,9 @@ $(document).ready(function() {
                 });
                 
                 console.log("테이블 업데이트 완료, 행 수: " + data.length);
+                
+                // 필터링 적용 (데이터 로드 후 필터링 다시 적용)
+                applyFilters();
             },
             error: function(xhr, status, error) {
                 console.error("오류 발생:", status, error);
@@ -356,11 +366,11 @@ $(document).ready(function() {
         });
     }
     
- // 주문 상세 보기 버튼 클릭 이벤트 (이벤트 위임)
+ // 주문 상세 보기 버튼 클릭 이벤트
     $(document).on("click", ".view-details", function() {
         var orderId = $(this).data("order-id");
         var storeId = $(this).data("store-id");
-        var orderStatus = $(this).closest('tr').data("status"); // 주문 상태 가져오기
+        var orderStatus = $(this).closest('tr').data("status");
         
         console.log("상세 보기 클릭:", orderId, storeId, "상태:", orderStatus);
         
@@ -381,11 +391,36 @@ $(document).ready(function() {
                     $(this).attr('data-order-id', orderId);
                 });
                 
+                // 주문 상태 확인 (처음 클릭한 행의 상태 사용)
+                var currentStatus = parseInt(orderStatus);
+                console.log("현재 주문 상태:", currentStatus);
+                
+                // 이전에 추가된 안내 메시지가 있으면 제거
+                $('.status-message').remove();
+                
+                // 모든 버튼 초기화
+                $('.update-status').prop('disabled', false);
+                
+                // 배달 완료(4) 상태인 경우 상태 변경 버튼 비활성화
+                if (currentStatus == 4) {
+                    $('.update-status').prop('disabled', true);
+                    // 추가 안내 메시지 표시
+                    $('.status-buttons').append('<div class="text-danger mt-2 status-message">* 배달 완료된 주문은 상태를 변경할 수 없습니다.</div>');
+                } else {
+                    // 이미 적용된 상태 버튼 비활성화 (현재 상태보다 낮은 상태로 변경 불가)
+                    $('.update-status').each(function() {
+                        var buttonStatus = parseInt($(this).attr('data-status'));
+                        if (buttonStatus <= currentStatus) {
+                            $(this).prop('disabled', true);
+                        }
+                    });
+                }
+                
                 // 여기서 모달을 표시
                 $('#orderDetailModal').modal('show');
                 
-                // 모달이 완전히 표시된 후에 배달 시간 체크
-                if (orderStatus == 1) {
+                // 모달이 완전히 표시된 후에 배달 시간 체크 (접수 완료 상태일 때)
+                if (currentStatus == 1) {
                     setTimeout(function() {
                         checkDeliveryTime(orderId);
                     }, 500);
@@ -425,56 +460,71 @@ $(document).ready(function() {
         });
     }
     
+
     // 주문 상태 업데이트 버튼 클릭 이벤트
-    $(document).on("click", ".update-status", function() {
-        var status = $(this).attr("data-status");
-        var orderId = $(this).attr("data-order-id");
-        
-        console.log("상태 업데이트 클릭:", status, orderId);
-        
-        if (confirm('주문 상태를 변경하시겠습니까?')) {
-            $.ajax({
-                url: '/owner/updateOrderStatus',
-                type: 'POST',
-                data: {
-                    orderId: orderId,
-                    status: status
-                },
-                success: function(response) {
-                    console.log("상태 업데이트 응답:", response);
-                    if (response === 'success') {
-                        alert('주문 상태가 변경되었습니다.');
-                        $('#orderDetailModal').modal('hide');
-                        // 목록 갱신 (즉시 실행)
-                        getOrderList();
-                    } else {
-                        alert('주문 상태 변경에 실패했습니다.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("상태 업데이트 AJAX 오류:", status, error);    
-                    alert('주문 상태 변경 중 오류가 발생했습니다.');
-                }
-            });
-        }
-    });
+	$(document).on("click", ".update-status", function() {
+	    var status = $(this).attr("data-status");
+	    var orderId = $(this).attr("data-order-id");
+	    var currentStatus = $(this).closest('.modal-content').find('.order-status-value').data('status');
+	    
+	    console.log("상태 업데이트 클릭:", status, orderId, "현재 상태:", currentStatus);
+	    
+	    // 배달 완료(4) 상태인 경우 더 이상 상태 변경 불가
+	    if (currentStatus == 4) {
+	        alert('배달 완료된 주문은 상태를 변경할 수 없습니다.');
+	        return;
+	    }
+	    
+	    if (confirm('주문 상태를 변경하시겠습니까?')) {
+	        $.ajax({
+	            url: '/owner/updateOrderStatus',
+	            type: 'POST',
+	            data: {
+	                orderId: orderId,
+	                status: status
+	            },
+	            success: function(response) {
+	                console.log("상태 업데이트 응답:", response);
+	                // 응답 문자열 정확히 비교 ('success' 문자열이나 {success: true} 객체일 수 있음)
+	                if (response === 'success' || response.success === true || response.includes('success')) {
+	                    alert('주문 상태가 변경되었습니다.');
+	                    $('#orderDetailModal').modal('hide');
+	                    // 목록 갱신 (즉시 실행)
+	                    getOrderList();
+	                } else {
+	                    alert('주문 상태 변경에 실패했습니다.');
+	                }
+	            },
+	            error: function(xhr, status, error) {
+	                console.error("상태 업데이트 AJAX 오류:", status, error);    
+	                alert('주문 상태 변경 중 오류가 발생했습니다.');
+	            }
+	        });
+	    }
+	});
     
     // 매장 필터링
     $('#storeFilter').change(function() {
-        filterOrders();
+        currentStoreFilter = $(this).val();
+        applyFilters();
     });
     
-    // 상태  필터링
+    // 상태 필터링
     $('#statusFilter').change(function() {
-        filterOrders();
+        currentStatusFilter = $(this).val();
+        applyFilters();
     });
     
-    // 필터링 함수
-    function filterOrders() {
-        var storeId = $('#storeFilter').val();
-        var status = $('#statusFilter').val();
+    // 필터링 함수 분리
+    function applyFilters() {
+        var storeId = currentStoreFilter;
+        var status = currentStatusFilter;
         
-        console.log("필터링 실행:", storeId, status);
+        console.log("필터링 적용:", storeId, status);
+        
+        // 필터링 UI 업데이트 (현재 선택된 값으로 변경)
+        $('#storeFilter').val(storeId);
+        $('#statusFilter').val(status);
         
         // 모두 전체 선택인 경우 모든 행 표시
         if (storeId === 'all' && status === 'all') {
@@ -485,8 +535,8 @@ $(document).ready(function() {
         
         // 각 행에 대해 필터링 조건 확인
         $('.order-row').each(function() {
-            var rowStoreId = $(this).attr('data-store-id');
-            var rowStatus = $(this).attr('data-status');
+            var rowStoreId = $(this).data('store-id');
+            var rowStatus = $(this).data('status');
             
             var showRow = true;
             
@@ -494,7 +544,7 @@ $(document).ready(function() {
                 showRow = false;
             }
             
-            if (status !== 'all' && rowStatus !== status) {
+            if (status !== 'all' && rowStatus != status) {
                 showRow = false;
             }
             
@@ -506,6 +556,7 @@ $(document).ready(function() {
         });
     }
 });
+
 //주문 상세 모달이 표시될 때 실행
 $(document).on('shown.bs.modal', '#orderDetailModal', function() {
     // 주문 상태 확인 (span 태그에서 클래스로 확인)
