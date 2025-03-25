@@ -582,26 +582,50 @@ body {
 										<c:forEach items="${cartDetails}" var="option">
 											<c:if
 												test="${option.MENU_ITEM_ID == item.MENU_ITEM_ID && option.ORDER_OPTION_ID == item.ORDER_OPTION_ID}">
-												<c:set var="optionNames"
-													value="${fn:split(option.OPTION_NAMES, ', ')}" />
-												<c:set var="optionPrices"
-													value="${fn:split(option.OPTION_PRICES, ', ')}" />
 
-												<c:forEach items="${optionNames}" var="name"
-													varStatus="optStatus">
-													<div class="option-item">
-														${name}
-														<c:if
-															test="${not empty optionPrices[optStatus.index] && optionPrices[optStatus.index] != '0'}">
-            (+<fmt:formatNumber value="${optionPrices[optStatus.index]}"
-																pattern="#,###" />원)
-        </c:if>
-														<c:if
-															test="${empty optionPrices[optStatus.index] || optionPrices[optStatus.index] == '0'}">
-            (+0원)
-        </c:if>
-													</div>
-												</c:forEach>
+												<!-- 수정된 부분: 옵션 이름 표시 방식 -->
+												<c:choose>
+													<c:when test="${fn:contains(option.OPTION_NAMES, ', ')}">
+														<!-- 여러 옵션이 있는 경우 -->
+														<c:set var="optionNames"
+															value="${fn:split(option.OPTION_NAMES, ', ')}" />
+														<c:set var="optionPrices"
+															value="${fn:split(option.OPTION_PRICES, ', ')}" />
+
+														<c:forEach items="${optionNames}" var="name"
+															varStatus="optStatus">
+															<div class="option-item">
+																${name}
+																<c:if
+																	test="${not empty optionPrices[optStatus.index] && optionPrices[optStatus.index] != '0'}">
+																	(+<fmt:formatNumber
+																		value="${optionPrices[optStatus.index]}"
+																		pattern="#,###" />원)
+																</c:if>
+																<c:if
+																	test="${empty optionPrices[optStatus.index] || optionPrices[optStatus.index] == '0'}">
+																	(+0원)
+																</c:if>
+															</div>
+														</c:forEach>
+													</c:when>
+													<c:otherwise>
+														<!-- 단일 옵션이거나 쉼표가 없는 경우 -->
+														<div class="option-item">
+															${option.OPTION_NAMES}
+															<c:if
+																test="${not empty option.OPTION_PRICES && option.OPTION_PRICES != '0'}">
+																(+<fmt:formatNumber value="${option.OPTION_PRICES}"
+																	pattern="#,###" />원)
+															</c:if>
+															<c:if
+																test="${empty option.OPTION_PRICES || option.OPTION_PRICES == '0'}">
+																(+0원)
+															</c:if>
+														</div>
+													</c:otherwise>
+												</c:choose>
+
 											</c:if>
 										</c:forEach>
 									</div>
@@ -693,6 +717,7 @@ body {
 				<!-- 하단 주문 정보 및 버튼  컨테이너 -->
 				<div class="order-footer">
 					<div class="order-footer-right">
+
 
 						<a
 							href="/userstore/returnToStore?store_id=${cartDetails[0].STORE_ID}"
