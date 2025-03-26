@@ -46,6 +46,7 @@ public interface UserStoreMapper {
 	Integer findMatchingOptionId(MatchingOptionParam mop);
 	void increaseQuantity(QuantityUpdateParam qup);
 	String findOrderByUserId(OrderCart oc);
+	List<MenuItem> menuListByCategory(Integer menu_category_id);
 	String findStoreByMenuItemInCart(OrderCart oc);
 	void deleteOrderQuantityInCart(String order_id);
 	void deleteOrderOptionInCart(String order_id);
@@ -60,6 +61,8 @@ public interface UserStoreMapper {
 
 	// 주문 상세 정보 조회
 	Map<String, Object> getOrderInfoByOrderId(String orderId);
+	
+	List<Map<String, Object>> getAllMenusByStoreIdGroupedByCategory(String store_id);
 
 	// 주문의 메뉴 항목 조회
 	List<Map<String, Object>> getOrderItemsByOrderId(String orderId);

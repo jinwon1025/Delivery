@@ -41,8 +41,16 @@ public class UserStoreService {
 	public List<OptionSet> optionDetail(Integer menu_item_id){
 		return this.userStoreMapper.optionDetail(menu_item_id);
 	}
+	
+	public List<MenuItem> menuListByCategory(Integer menu_category_id) {
+		return this.userStoreMapper.menuListByCategory(menu_category_id);
+	}
 	public void insertOrder(OrderCart orderCart) {
 		this.userStoreMapper.insertOrder(orderCart);
+	}
+	
+	public List<Map<String, Object>> getAllMenusByStoreIdGroupedByCategory(String store_id) {
+	    return userStoreMapper.getAllMenusByStoreIdGroupedByCategory(store_id);
 	}
 	public void insertOrderDetail(OrderCart orderCart) {
 		this.userStoreMapper.insertOrderDetail(orderCart);

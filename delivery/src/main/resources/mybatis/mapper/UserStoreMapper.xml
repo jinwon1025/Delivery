@@ -21,6 +21,14 @@
 		#{menu_item_id}
 	</select>
 
+	<select id="menuListByCategory" parameterType="Integer"
+		resultType="com.springboot.delivery.model.MenuItem">
+		SELECT * FROM b_menu_item_tbl
+		WHERE menu_category_id =
+		#{menu_category_id}
+		ORDER BY menu_name
+	</select>
+
 	<select id="optionDetail" parameterType="Integer"
 		resultType="com.springboot.delivery.model.OptionSet">
 		SELECT
@@ -437,40 +445,54 @@
 		o.ORDER_ID = #{orderId}
 	</select>
 
-	<select id="getOrderItemsByOrderId" parameterType="String" resultType="map">
-    SELECT 
-        oo.ORDER_OPTION_ID,
-        oo.MENU_ITEM_ID,
-        mi.MENU_NAME,
-        oq.QUANTITY,
-        mi.PRICE AS MENU_PRICE,
-        (
-            SELECT LISTAGG(opt.OPTION_NAME || '|' || opt.OPTION_PRICE, ',') WITHIN GROUP (ORDER BY opt.OPTION_ID)
-            FROM order_option_tbl oot
-            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
-            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
-        ) AS OPTION_INFO,
-        (
-            SELECT SUM(opt.OPTION_PRICE)
-            FROM order_option_tbl oot
-            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
-            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
-        ) AS TOTAL_OPTION_PRICE,
-        (mi.PRICE * oq.QUANTITY) + (
-            SELECT NVL(SUM(opt.OPTION_PRICE), 0)
-            FROM order_option_tbl oot
-            JOIN b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
-            WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
-        ) AS ITEM_TOTAL_PRICE
-    FROM 
-        order_option_tbl oo
-        JOIN b_menu_item_tbl mi ON oo.MENU_ITEM_ID = mi.MENU_ITEM_ID
-        JOIN order_quantity_tbl oq ON oo.ORDER_OPTION_ID = oq.ORDER_OPTION_ID
-    WHERE 
-        oo.ORDER_ID = #{orderId}
-    GROUP BY 
-        oo.ORDER_OPTION_ID, oo.ORDER_ID, oo.MENU_ITEM_ID, mi.MENU_NAME, oq.QUANTITY, mi.PRICE
-</select>
+	<select id="getOrderItemsByOrderId" parameterType="String"
+		resultType="map">
+		SELECT
+		oo.ORDER_OPTION_ID,
+		oo.MENU_ITEM_ID,
+		mi.MENU_NAME,
+		oq.QUANTITY,
+		mi.PRICE AS MENU_PRICE,
+		(
+		SELECT LISTAGG(opt.OPTION_NAME ||
+		'|' || opt.OPTION_PRICE, ',') WITHIN GROUP
+		(ORDER BY opt.OPTION_ID)
+		FROM order_option_tbl oot
+		JOIN b_option_tbl opt ON oot.OPTION_ID =
+		opt.OPTION_ID
+		WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID =
+		oo.MENU_ITEM_ID
+		) AS OPTION_INFO,
+		(
+		SELECT SUM(opt.OPTION_PRICE)
+		FROM
+		order_option_tbl oot
+		JOIN b_option_tbl opt ON oot.OPTION_ID =
+		opt.OPTION_ID
+		WHERE oot.ORDER_ID = oo.ORDER_ID AND oot.MENU_ITEM_ID =
+		oo.MENU_ITEM_ID
+		) AS TOTAL_OPTION_PRICE,
+		(mi.PRICE * oq.QUANTITY) + (
+		SELECT NVL(SUM(opt.OPTION_PRICE), 0)
+		FROM order_option_tbl oot
+		JOIN
+		b_option_tbl opt ON oot.OPTION_ID = opt.OPTION_ID
+		WHERE oot.ORDER_ID =
+		oo.ORDER_ID AND oot.MENU_ITEM_ID = oo.MENU_ITEM_ID
+		) AS
+		ITEM_TOTAL_PRICE
+		FROM
+		order_option_tbl oo
+		JOIN b_menu_item_tbl mi ON
+		oo.MENU_ITEM_ID = mi.MENU_ITEM_ID
+		JOIN order_quantity_tbl oq ON
+		oo.ORDER_OPTION_ID = oq.ORDER_OPTION_ID
+		WHERE
+		oo.ORDER_ID = #{orderId}
+		GROUP BY
+		oo.ORDER_OPTION_ID, oo.ORDER_ID, oo.MENU_ITEM_ID,
+		mi.MENU_NAME, oq.QUANTITY, mi.PRICE
+	</select>
 
 	<select id="getMenuOptions" parameterType="map" resultType="map">
 		SELECT
@@ -478,11 +500,13 @@
 		opt.OPTION_PRICE
 		FROM
 		order_option_tbl oo
-		JOIN b_option_tbl opt ON oo.OPTION_ID = opt.OPTION_ID
+		JOIN
+		b_option_tbl opt ON oo.OPTION_ID = opt.OPTION_ID
 		WHERE
-		oo.ORDER_ID = #{orderId}
+		oo.ORDER_ID =
+		#{orderId}
 		AND oo.MENU_ITEM_ID = #{menuItemId}
-	</select>	
+	</select>
 
 	<insert id="registerReview"
 		parameterType="com.springboot.delivery.model.Review">
@@ -618,6 +642,15 @@
 	<select id="getAllMenusByStoreId" parameterType="String"
 		resultType="com.springboot.delivery.model.MenuItem">
 		select * from b_menu_item_tbl where store_id = #{store_id}
+	</select>
+
+	<select id="getAllMenusByStoreIdGroupedByCategory"
+		parameterType="String" resultType="Map">
+		SELECT c.menu_category_id, c.menu_category_name, m.*
+		FROM b_menu_item_tbl m
+		JOIN b_menu_category_tbl c ON m.menu_category_id = c.menu_category_id
+		WHERE m.store_id = #{store_id}
+		ORDER BY c.menu_category_id, m.menu_item_id
 	</select>
 
 	<update id="insertCouponId"
@@ -836,13 +869,15 @@
 		where order_id=#{order_id}
 
 	</update>
-	
+
 	<update id="updateCartItemQuantity"
 		parameterType="com.springboot.delivery.model.CartOption">
-	
-	update order_quantity_tbl set quantity = #{quantity} where order_option_id=#{order_option_id} and order_id=#{order_id}
-	
-	
+
+		update order_quantity_tbl set quantity = #{quantity}
+		where
+		order_option_id=#{order_option_id} and order_id=#{order_id}
+
+
 	</update>
 
 

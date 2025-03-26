@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.springboot.delivery.mapper.OwnerMapper;
 import com.springboot.delivery.model.CartOption;
 import com.springboot.delivery.model.CartUser;
 import com.springboot.delivery.model.LoginUser;
@@ -77,7 +77,6 @@ public class UserStoreController {
        session.setAttribute("currentStore", currentStore);
        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
        
-       // 현재 로그인한 사용자 ID 가져오기`
        String userId = (String) session.getAttribute("userId");
        
        List<Maincategory> maincategoryList = adminService.getAllMaincategory();
@@ -94,26 +93,34 @@ public class UserStoreController {
            sc.setStore_id(currentStore.getStore_id());
            sc.setUser_id(loginUser.getUser_id());
            
-           // 사용 가능한 쿠폰 목록 조회
            List<Map<String, Object>> availableCoupons = userStoreService.getStoreCouponList(sc);
            mav.addObject("availableCoupons", availableCoupons);
-           System.out.println("=== 조회된 쿠폰 정보 ===");
-           System.out.println("조회된 쿠폰 수: " + (availableCoupons != null ? availableCoupons.size() : "null"));
-           
-           if (availableCoupons != null && !availableCoupons.isEmpty()) {
-               for (Map<String, Object> coupon : availableCoupons) {
-                   System.out.println(coupon);
-               }
-           }
        } else {
-           // 로그인하지 않은 경우에는 빈 리스트를 전달하거나 null을 전달
            mav.addObject("availableCoupons", null);
        }
        
        if (!mc.isEmpty()) {
-           Integer firstCategoryId = mc.get(0).getMenu_category_id();
-           List<MenuItem> menuList = userStoreService.getAllMenusByStoreId(store_id);
-           mav.addObject("menuList", menuList);
+           // 메뉴 카테고리별로 그룹화된 메뉴 아이템을 가져오기
+           List<Map<String, Object>> menuItemsByCategory = userStoreService.getAllMenusByStoreIdGroupedByCategory(store_id);
+           
+           // 카테고리별로 메뉴 아이템 그룹화
+           Map<Integer, Map<String, Object>> categorizedMenus = new LinkedHashMap<>();
+           
+           for (Map<String, Object> item : menuItemsByCategory) {
+               Integer categoryId = ((Number) item.get("MENU_CATEGORY_ID")).intValue();
+               String categoryName = (String) item.get("MENU_CATEGORY_NAME");
+               
+               if (!categorizedMenus.containsKey(categoryId)) {
+                   Map<String, Object> categoryMap = new HashMap<>();
+                   categoryMap.put("categoryName", categoryName);
+                   categoryMap.put("menuItems", new ArrayList<Map<String, Object>>());
+                   categorizedMenus.put(categoryId, categoryMap);
+               }
+               
+               ((List<Map<String, Object>>) categorizedMenus.get(categoryId).get("menuItems")).add(item);
+           }
+           
+           mav.addObject("categorizedMenus", categorizedMenus);
            mav.addObject("STOREBODY", "../userstore/userMenuList.jsp");
        }
        
