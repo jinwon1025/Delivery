@@ -407,7 +407,7 @@
                             </div>
 
                             <div class="gm-col-3">
-                                <a href="#" class="gm-card gm-text-center gm-p-4 gm-h-100">
+                                <a href="/owner/orderList" class="gm-card gm-text-center gm-p-4 gm-h-100">
                                     <div class="gm-text-primary gm-mb-3">
                                         <i class="fas fa-clipboard-list" style="font-size: 3rem;"></i>
                                     </div>
@@ -426,15 +426,6 @@
                                 </a>
                             </div>
 
-                            <div class="gm-col-3">
-                                <a href="#" class="gm-card gm-text-center gm-p-4 gm-h-100">
-                                    <div class="gm-text-primary gm-mb-3">
-                                        <i class="fas fa-chart-line" style="font-size: 3rem;"></i>
-                                    </div>
-                                    <h3 class="gm-card-title">매출 통계</h3>
-                                    <p class="gm-text-sm gm-text-muted gm-mt-2">매출 통계를 확인합니다</p>
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </c:otherwise>
