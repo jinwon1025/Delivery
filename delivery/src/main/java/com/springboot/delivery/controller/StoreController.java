@@ -513,12 +513,56 @@ public class StoreController {
 	}
 
 	@PostMapping(value = "/store/menuModify")
-	public ModelAndView menuModify(HttpSession session, Integer menu_item_id, MenuItem menuItem) {
-		Store currentStore = (Store) session.getAttribute("currentStore");
-		menuItem.setMenu_item_id(menu_item_id);
-		menuItem.setStore_id(currentStore.getStore_id());
-		this.storeService.menuModify(menuItem);
-		return new ModelAndView("redirect:/store/menuManager");
+	public ModelAndView menuModify(
+	        HttpSession session, 
+	        Integer menu_item_id, 
+	        @RequestParam(value = "image", required = false) MultipartFile multiFile,
+	        MenuItem menuItem) {
+	    
+	    // 현재 매장 정보 가져오기
+	    Store currentStore = (Store) session.getAttribute("currentStore");
+	    menuItem.setMenu_item_id(menu_item_id);
+	    menuItem.setStore_id(currentStore.getStore_id());
+	    
+	    // 기존 메뉴 정보 가져오기
+	    MenuItem existingMenuItem = this.storeService.getMenuItemById(menu_item_id);
+	    String existingImageName = existingMenuItem.getImage_name();
+	    
+	    ServletContext ctx = session.getServletContext();
+	    
+	    if (multiFile != null && !multiFile.isEmpty()) {
+	        // 새로운 이미지가 업로드된 경우
+	        String newFileName = currentStore.getStore_id() + "_menu_" + menu_item_id + "_" + multiFile.getOriginalFilename();
+	        String newPath = ctx.getRealPath("/upload/menuItemProfile/" + newFileName);
+	        
+	        // 기존 이미지가 있으면 삭제
+	        if (existingImageName != null && !existingImageName.isEmpty()) {
+	            String existingPath = ctx.getRealPath("/upload/menuItemProfile/" + existingImageName);
+	            File existingFile = new File(existingPath);
+	            if (existingFile.exists()) {
+	                existingFile.delete();
+	            }
+	        }
+	        
+	        // 새 이미지 저장
+	        try (OutputStream os = new FileOutputStream(newPath);
+	             BufferedInputStream bis = new BufferedInputStream(multiFile.getInputStream())) {
+	            byte[] buffer = new byte[8156];
+	            int read;
+	            while ((read = bis.read(buffer)) > 0) {
+	                os.write(buffer, 0, read);
+	            }
+	            menuItem.setImage_name(newFileName);
+	        } catch (Exception e) {
+	            System.out.println("메뉴 이미지 업로드 중 문제 발생: " + e.getMessage());
+	        }
+	    } else {
+	        // 이미지를 변경하지 않는 경우 기존 이미지 유지
+	        menuItem.setImage_name(existingImageName);
+	    }
+	    
+	    this.storeService.menuModify(menuItem);
+	    return new ModelAndView("redirect:/store/menuManager");
 	}
 
 	@PostMapping(value = "/store/categoryDelete")

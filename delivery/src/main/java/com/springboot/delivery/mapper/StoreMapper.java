@@ -40,6 +40,7 @@ public interface StoreMapper {
 	void deleteMenu(MenuItem mi);
 	MenuItem menuDetail(MenuItem mi); 
 	void menuModify(MenuItem mi);
+	MenuItem getMenuItemById(Integer menu_item_id);
 	void categoryDelete(Integer menu_category_id);
 	void categoryMenuDelete(Integer menu_category_id);
 	void categoryNameUpdate(MenuCategory mc);

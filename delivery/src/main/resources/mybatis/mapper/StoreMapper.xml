@@ -227,6 +227,20 @@
 		menu_item_id=#{menu_item_id}
 
 	</select>
+	
+	<select id="getMenuItemById" parameterType="Integer" resultType="com.springboot.delivery.model.MenuItem">
+    SELECT 
+        menu_item_id,
+        store_id,
+        menu_name,
+        price,
+        content,
+        image_name
+    FROM 
+        b_menu_item_tbl
+    WHERE 
+        menu_item_id = #{menu_item_id}
+</select>
 
 	<update id="menuModify"
 		parameterType="com.springboot.delivery.model.MenuItem">

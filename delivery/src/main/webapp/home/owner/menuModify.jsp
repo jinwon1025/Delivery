@@ -92,8 +92,7 @@
                     
                     <div class="form-group">
                         <label class="form-label" for="image_name">메뉴 이미지 변경</label>
-                        <form:input path="image_name" id="image_name" type="file" cssClass="form-control" 
-                                   onchange="previewImage(this);" accept="image/*" />
+                        <input type="file" name="image" id="image_name" class="form-control" onchange="previewImage(this);" accept="image/*" />
                     </div>
                     
                     <div class="form-actions">
