@@ -1,6 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>쿠폰 관리</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
@@ -88,11 +93,6 @@
     .date-input {
         display: flex;
         align-items: center;
-    }
-    
-    .date-input i {
-        margin-left: -30px;
-        color: #888;
     }
     
     /* 셀렉트 박스 */
@@ -239,6 +239,8 @@
         }
     }
 </style>
+</head>
+<body>
 
 <div class="coupon-container">
     <!-- 쿠폰 발행 섹션 -->
@@ -264,10 +266,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="expireDate" class="form-label">만료일</label>
-                    <div class="date-input">
-                        <input type="date" id="expireDate" class="form-control" name="expire_date" required>
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
+                    <input type="date" id="expireDate" class="form-control" name="expire_date" required>
                 </div>
                 
                 <div class="form-group">
@@ -283,7 +282,7 @@
                         <select id="ownerId" class="form-control custom-select" name="owner_id" required>
                             <option value="">사장님을 선택하세요</option>
                             <c:forEach var="owner" items="${ownerList}">
-                                <option value="${owner.owner_id}">${owner.owner_id} - ${owner.owner_name}</option>
+                                <option value="${owner.owner_id}">${owner.owner_id}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -417,3 +416,6 @@
         });
     }
 </script>
+
+</body>
+</html>

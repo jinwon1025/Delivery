@@ -8,7 +8,7 @@
   
   <%-- 장바구니 페이지인 경우 가게 이름을 표시하지 않음 --%>
   <c:if test="${!fn:contains(STOREBODY, 'userCart.jsp')}">
-    <h1>${sessionScope.currentStore.store_name} (${sessionScope.currentStore.store_id})</h1>
+    <h1>${sessionScope.currentStore.store_name}</h1>
   </c:if>
   
   <c:choose>

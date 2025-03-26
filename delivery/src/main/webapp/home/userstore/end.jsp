@@ -383,9 +383,6 @@
                     <div class="track-label">배달 완료</div>
                 </div>
             </div>
-            <div class="delivery-info">
-                <span id="delivery-estimate">배달 예상 시간: 약 <span id="deliveryTimeCounter">${delivery_time}</span>분</span>
-            </div>
             
         <!-- 버튼 영역 -->
         <div class="action-buttons">
@@ -403,7 +400,6 @@
 
         const orderId = $('#order-id').text().trim();
         let currentStatus = 0;
-        let initialDeliveryTime = $('#deliveryTimeCounter').text().trim() || "30";
 
         setActiveState(0);
         updateOrderStatus();
@@ -426,13 +422,6 @@
                     }
 
                     const newStatus = parseInt(response.status);
-                    const newDeliveryTime = response.deliveryTime ? String(response.deliveryTime) : "30";
-
-                    if (newDeliveryTime !== initialDeliveryTime) {
-                        console.log("배달 시간 업데이트:", newDeliveryTime);
-                        $('#deliveryTimeCounter').text(newDeliveryTime);
-                        initialDeliveryTime = newDeliveryTime;
-                    }
 
                     if (newStatus !== currentStatus) {
                         console.log("상태 변경 감지:", currentStatus, "→", newStatus);
@@ -501,17 +490,6 @@
             $('#status-badge').text(badgeInfo.text).removeClass().addClass('status-badge ' + badgeInfo.class);
 
             $('#status-badge').toggleClass('pulse', status !== 4 && status !== 5);
-
-            // 여기 부분이 변경됨
-            if (status === 3) {
-                $('#delivery-estimate-text').html(`배달 중입니다. 예상 도착 시간: 약 <span id="deliveryTimeCounter">${initialDeliveryTime}</span>분 이내`);
-            } else if (status === 4) {
-                $('#delivery-estimate-text').text('배달이 완료되었습니다.');
-            } else if (status === 5) {
-                $('#delivery-estimate-text').text('주문이 취소되었습니다.');
-            } else {
-                $('#delivery-estimate-text').html(`배달 예상 시간: 약 <span id="deliveryTimeCounter">${initialDeliveryTime}</span>분`);
-            }
 
             console.log("UI 업데이트 완료");
         }

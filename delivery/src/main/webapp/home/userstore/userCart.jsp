@@ -18,7 +18,7 @@
 	rel="stylesheet">
 <style>
 :root {
-	--primary-color: #FFD700;
+	--primary-color: #E0C25E;
 	--primary-dark: #E6C200;
 	--primary-light: #FFF8E1;
 	--secondary-color: #333333;
@@ -516,7 +516,7 @@ body {
 				<div class="cart-header">
 					<h1>
 						<svg class="cart-logo" xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"
+							viewBox="0 0 24 24" fill="none" stroke="#E0C25E" stroke-width="2"
 							stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="9" cy="21" r="1"></circle>
                             <circle cx="20" cy="21" r="1"></circle>
@@ -549,7 +549,7 @@ body {
 				<div class="cart-header">
 					<h1>
 						<svg class="cart-logo" xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"
+							viewBox="0 0 24 24" fill="none" stroke="#E0C25E" stroke-width="2"
 							stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="9" cy="21" r="1"></circle>
                             <circle cx="20" cy="21" r="1"></circle>
