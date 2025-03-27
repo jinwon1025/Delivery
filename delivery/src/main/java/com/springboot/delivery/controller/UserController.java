@@ -649,6 +649,8 @@ public class UserController {
 	        session.removeAttribute("successMsg"); // 세션에서 제거
 	    }
 		mav.addObject("BODY","payPasswordRegister.jsp");
+		mav.addObject("activeMenu", "viewPay");
+        mav.addObject("contentPage", "viewPay");
 		return mav;
 	}
 	@PostMapping(value="/user/registerPayPassword")

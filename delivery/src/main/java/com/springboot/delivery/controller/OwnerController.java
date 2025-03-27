@@ -307,6 +307,23 @@ public class OwnerController {
 	    // 주문 기본 정보 가져오기
 	    Map<String, Object> orderInfo = ownerSerivce.getOrderInfo(orderId);
 	    
+	    // orderItems 콘솔 출력
+	    System.out.println("===== 주문 상품 목록 (orderItems) =====");
+	    for (int i = 0; i < orderItems.size(); i++) {
+	        Map<String, Object> item = orderItems.get(i);
+	        System.out.println("상품 #" + (i+1) + ": " + item);
+	        // 각 항목의 키값들 출력
+	        for (String key : item.keySet()) {
+	            System.out.println("  " + key + ": " + item.get(key));
+	        }
+	    }
+	    
+	    // orderInfo 콘솔 출력
+	    System.out.println("===== 주문 기본 정보 (orderInfo) =====");
+	    for (String key : orderInfo.keySet()) {
+	        System.out.println(key + ": " + orderInfo.get(key));
+	    }
+	    
 	    mav.addObject("orderItems", orderItems);
 	    mav.addObject("orderInfo", orderInfo);
 	    

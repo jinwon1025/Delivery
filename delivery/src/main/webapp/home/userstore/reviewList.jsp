@@ -41,7 +41,7 @@
                         
                         <c:if test="${not empty review.reviewImageName}">
                             <div class="review-image">
-                                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.reviewImageNameE}" 
+                                <img src="${pageContext.request.contextPath}/upload/reviewProfile/${review.reviewImageName}" 
                                     alt="리뷰 이미지" />
                             </div>
                         </c:if>

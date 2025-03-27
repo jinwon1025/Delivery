@@ -242,6 +242,11 @@ public class UserStoreController {
          @RequestParam(required = false) List<Integer> selectedOptions,
          @RequestParam(required = false) List<Integer> allOptionIds,
          @RequestParam(required = false) List<Integer> allOptionGroupIds, Integer quantity) {
+	   
+	   System.out.println("selectedOptions: " + selectedOptions);
+	   System.out.println("allOptionIds: " + allOptionIds);
+	   System.out.println("allOptionGroupIds: " + allOptionGroupIds);
+	   System.out.println("quantity: " + quantity);
 
       // 필요한 사용자 및 상점 정보 가져오기
       LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -259,6 +264,7 @@ public class UserStoreController {
 
       // 현재 사용자의 장바구니(order_status=0) 주문 ID 가져오기
       String existingCartId = this.userStoreService.isMenuInCart(loginUser.getUser_id());
+      System.out.println("익시스팅 카트 아이디: "+ existingCartId);
 
       if (existingCartId == null) {
          System.out.println("장바구니에 이전 항목이 없습니다.");
@@ -930,6 +936,10 @@ public class UserStoreController {
        
        // 사용자의 리뷰 목록 조회
        List<Map<String, Object>> reviewList = userStoreService.getMyReviewList(loginUser.getUser_id());
+       
+       for (Map<String, Object> review : reviewList) {
+    	    System.out.println("리뷰 ID: " + review.get("reviewId") + ", 이미지 이름: " + review.get("reviewImageName"));
+    	}
        
        // 이 부분이 중요! reviewList를 모델에 추가
        mav.addObject("reviewList", reviewList);

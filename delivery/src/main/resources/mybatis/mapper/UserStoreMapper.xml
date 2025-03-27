@@ -118,6 +118,13 @@
 
 	</select>
 
+	<select id="getOrderStatusById" parameterType="String"
+		resultType="Integer">
+		SELECT order_status
+		FROM b_order_detail_tbl
+		WHERE order_id = #{orderId}
+	</select>
+
 	<select id="getCartMenuDetails" parameterType="String"
 		resultType="map">
 		SELECT
@@ -165,10 +172,11 @@
 		SELECT 1 FROM b_order_detail_tbl
 		WHERE b_order_detail_tbl.order_id = b_order_tbl.order_id
 		AND
-		order_status = 0
+		order_status = 0 -- 반드시 장바구니 상태인 주문만 조회
 		)
 		ORDER BY order_time DESC
-		) WHERE ROWNUM = 1
+		)
+		WHERE ROWNUM = 1
 	</select>
 
 	<select id="checkOrder" parameterType="String"
@@ -646,10 +654,13 @@
 
 	<select id="getAllMenusByStoreIdGroupedByCategory"
 		parameterType="String" resultType="Map">
-		SELECT c.menu_category_id, c.menu_category_name, m.*
+		SELECT c.menu_category_id,
+		c.menu_category_name, m.*
 		FROM b_menu_item_tbl m
-		JOIN b_menu_category_tbl c ON m.menu_category_id = c.menu_category_id
-		WHERE m.store_id = #{store_id}
+		JOIN
+		b_menu_category_tbl c ON m.menu_category_id = c.menu_category_id
+		WHERE
+		m.store_id = #{store_id}
 		ORDER BY c.menu_category_id, m.menu_item_id
 	</select>
 

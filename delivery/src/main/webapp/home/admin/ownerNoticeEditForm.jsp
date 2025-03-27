@@ -3,7 +3,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-edit"></i> 사용자 공지사항 수정</h5>
+        <h5 class="mb-0"><i class="fas fa-edit"></i> 사업자 공지사항 수정</h5>
     </div>
     <div class="card-body">
         <form action="/admin/ownerNotice/edit" method="post">

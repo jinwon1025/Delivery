@@ -327,7 +327,7 @@
                             
                             <div class="form-group">
                                 <label class="form-label" for="minimumPurchaseInput">
-                                    <i class="fas fa-tags"></i> 최소 주문금액
+                                    <i class="fas fa-tags"></i> 최소주문금액
                                 </label>
                                 <div class="form-input-group">
                                     <input type="number" id="minimumPurchaseInput" class="form-input" min="0" value="10000" required>

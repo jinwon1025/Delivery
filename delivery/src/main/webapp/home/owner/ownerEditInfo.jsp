@@ -55,11 +55,6 @@
                                     <i class="fas fa-store"></i> 내 매장 관리
                                 </a>
                             </li>
-                            <li class="mypage-menu-item">
-                                <a href="#" class="mypage-menu-link">
-                                    <i class="fas fa-bell"></i> 알림 설정
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>

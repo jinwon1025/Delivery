@@ -110,7 +110,7 @@
                         <tr>
                             <td>
                                 <c:if test="${not empty item.IMAGE_NAME}">
-                                    <img src="/upload/menuItem/${item.IMAGE_NAME}" alt="${item.MENU_NAME}" style="width: 50px; height: 50px;" class="me-2">
+                                    <img src="/upload/menuItemProfile/${item.IMAGE_NAME}" alt="${item.MENU_NAME}" style="width: 50px; height: 50px;" class="me-2">
                                 </c:if>
                                 ${item.MENU_NAME}
                             </td>

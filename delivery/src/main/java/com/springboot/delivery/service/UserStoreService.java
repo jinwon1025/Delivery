@@ -274,5 +274,8 @@ public class UserStoreService {
 	public void updateCartItemQuantity(CartOption ca) {
 		this.userStoreMapper.updateCartItemQuantity(ca);
 	}
+	public Integer getOrderStatusById(String orderId) {
+	    return userStoreMapper.getOrderStatusById(orderId);
+	}
 
 }
